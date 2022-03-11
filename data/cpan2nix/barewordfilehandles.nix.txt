@@ -1,0 +1,15 @@
+  barewordfilehandles = buildPerlPackage {
+    pname = "bareword-filehandles";
+    version = "0.007";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/I/IL/ILMARI/bareword-filehandles-0.007.tar.gz";
+      sha256 = "4134533716d87af8fff56e250c488ad06df0a7bff48e7cf7de63ff6bc8d9c17f";
+    };
+    buildInputs = [ ExtUtilsDepends ];
+    propagatedBuildInputs = [ BHooksOPCheck ];
+    meta = {
+      homepage = "https://github.com/ilmari/bareword-filehandles";
+      description = "Disables bareword filehandles";
+      license = with lib.licenses; [ artistic1 gpl1Plus ];
+    };
+  };

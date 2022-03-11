@@ -1,0 +1,14 @@
+  TestFatal = buildPerlPackage {
+    pname = "Test-Fatal";
+    version = "0.016";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/R/RJ/RJBS/Test-Fatal-0.016.tar.gz";
+      sha256 = "7283d430f2ba2030b8cd979ae3039d3f1b2ec3dde1a11ca6ae09f992a66f788f";
+    };
+    propagatedBuildInputs = [ TryTiny ];
+    meta = {
+      homepage = "https://github.com/rjbs/Test-Fatal";
+      description = "Incredibly simple helpers for testing code with exceptions";
+      license = with lib.licenses; [ artistic1 gpl1Plus ];
+    };
+  };

@@ -1,0 +1,14 @@
+  Moo = buildPerlPackage {
+    pname = "Moo";
+    version = "2.005004";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/H/HA/HAARG/Moo-2.005004.tar.gz";
+      sha256 = "e3030b80bd554a66f6b3c27fd53b1b5909d12af05c4c11ece9a58f8d1e478928";
+    };
+    buildInputs = [ TestFatal ];
+    propagatedBuildInputs = [ ClassMethodModifiers RoleTiny SubQuote ];
+    meta = {
+      description = "Minimalist Object Orientation (with Moose compatibility)";
+      license = with lib.licenses; [ artistic1 gpl1Plus ];
+    };
+  };

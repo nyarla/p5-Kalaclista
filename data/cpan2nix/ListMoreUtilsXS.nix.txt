@@ -1,0 +1,13 @@
+  ListMoreUtilsXS = buildPerlPackage {
+    pname = "List-MoreUtils-XS";
+    version = "0.430";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/R/RE/REHSACK/List-MoreUtils-XS-0.430.tar.gz";
+      sha256 = "e8ce46d57c179eecd8758293e9400ff300aaf20fefe0a9d15b9fe2302b9cb242";
+    };
+    meta = {
+      homepage = "https://metacpan.org/release/List-MoreUtils-XS";
+      description = "Provide the stuff missing in List::Util in XS";
+      license = lib.licenses.asl20;
+    };
+  };

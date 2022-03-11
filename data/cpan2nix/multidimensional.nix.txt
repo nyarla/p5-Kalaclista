@@ -1,0 +1,15 @@
+  multidimensional = buildPerlPackage {
+    pname = "multidimensional";
+    version = "0.014";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/I/IL/ILMARI/multidimensional-0.014.tar.gz";
+      sha256 = "12eb14317447bd15ab9799677db9eda20e784d8b113e44a5f6f11f529e862c5f";
+    };
+    buildInputs = [ ExtUtilsDepends ];
+    propagatedBuildInputs = [ BHooksOPCheck ];
+    meta = {
+      homepage = "https://github.com/ilmari/multidimensional";
+      description = "Disables multidimensional array emulation";
+      license = with lib.licenses; [ artistic1 gpl1Plus ];
+    };
+  };

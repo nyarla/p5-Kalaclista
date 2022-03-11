@@ -1,0 +1,12 @@
+  RoleTiny = buildPerlPackage {
+    pname = "Role-Tiny";
+    version = "2.002004";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/H/HA/HAARG/Role-Tiny-2.002004.tar.gz";
+      sha256 = "d7bdee9e138a4f83aa52d0a981625644bda87ff16642dfa845dcb44d9a242b45";
+    };
+    meta = {
+      description = "Roles: a nouvelle cuisine portion size slice of Moose";
+      license = with lib.licenses; [ artistic1 gpl1Plus ];
+    };
+  };

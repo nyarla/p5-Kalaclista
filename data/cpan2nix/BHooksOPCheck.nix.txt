@@ -1,0 +1,14 @@
+  BHooksOPCheck = buildPerlPackage {
+    pname = "B-Hooks-OP-Check";
+    version = "0.22";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/E/ET/ETHER/B-Hooks-OP-Check-0.22.tar.gz";
+      sha256 = "c7b5d1bef59ef9087ff67eb3168d2624be94ae5464469e259ad11bfb8ad8cdcd";
+    };
+    buildInputs = [ ExtUtilsDepends ];
+    meta = {
+      homepage = "https://github.com/karenetheridge/B-Hooks-OP-Check";
+      description = "Wrap OP check callbacks";
+      license = with lib.licenses; [ artistic1 gpl1Plus ];
+    };
+  };

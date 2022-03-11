@@ -1,0 +1,13 @@
+  TermTable = buildPerlPackage {
+    pname = "Term-Table";
+    version = "0.016";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/E/EX/EXODIST/Term-Table-0.016.tar.gz";
+      sha256 = "8fb4fbb8e96a2d6c514949eb8cfd7e66319bcb1cbf7cea0ab19af887a72d97bf";
+    };
+    propagatedBuildInputs = [ Importer ];
+    meta = {
+      description = "Format a header and rows into a table";
+      license = with lib.licenses; [ artistic1 gpl1Plus ];
+    };
+  };

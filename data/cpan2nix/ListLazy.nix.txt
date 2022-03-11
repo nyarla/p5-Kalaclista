@@ -1,0 +1,15 @@
+  ListLazy = buildPerlPackage {
+    pname = "List-Lazy";
+    version = "0.3.2";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/Y/YA/YANICK/List-Lazy-0.3.2.tar.gz";
+      sha256 = "52b53709be0dfb7feae7edf212b8e1843bce72f02afd8dc74fb879305d982832";
+    };
+    buildInputs = [ TestWarn ];
+    propagatedBuildInputs = [ Clone ExporterTiny ListMoreUtils Moo MooXHandlesVia ];
+    meta = {
+      homepage = "https://github.com/yanick/List-Lazy";
+      description = "Generate lists lazily";
+      license = with lib.licenses; [ artistic1 gpl1Plus ];
+    };
+  };

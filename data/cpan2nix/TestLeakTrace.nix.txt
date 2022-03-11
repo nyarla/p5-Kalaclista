@@ -1,0 +1,12 @@
+  TestLeakTrace = buildPerlPackage {
+    pname = "Test-LeakTrace";
+    version = "0.17";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/L/LE/LEEJO/Test-LeakTrace-0.17.tar.gz";
+      sha256 = "777d64d2938f5ea586300eef97ef03eacb43d4c1853c9c3b1091eb3311467970";
+    };
+    meta = {
+      homepage = "https://metacpan.org/release/Test-LeakTrace";
+      license = with lib.licenses; [ artistic1 gpl1Plus ];
+    };
+  };

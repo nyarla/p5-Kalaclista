@@ -1,0 +1,12 @@
+  TestDeep = buildPerlPackage {
+    pname = "Test-Deep";
+    version = "1.130";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/R/RJ/RJBS/Test-Deep-1.130.tar.gz";
+      sha256 = "4064f494f5f62587d0ae501ca439105821ee5846c687dc6503233f55300a7c56";
+    };
+    meta = {
+      homepage = "http://github.com/rjbs/Test-Deep/";
+      license = with lib.licenses; [ artistic1 gpl1Plus ];
+    };
+  };
