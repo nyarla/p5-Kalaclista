@@ -1,4 +1,3 @@
-
   ClassAccessorLite = buildPerlPackage {
     pname = "Class-Accessor-Lite";
     version = "0.08";

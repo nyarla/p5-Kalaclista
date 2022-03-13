@@ -7,22 +7,23 @@ _entries_split:
 	@rm -rf resources/_sources
 	perl -Ilib scripts/entries/split-frontmatter.pl $(JOBS)
 
-.PHONY: cpan2nix _cpan2nix-dump_dependences _cpan2nix-make_nix _cpan2nix-packing
-cpan2nix: 	_cpan2nix-dump_dependences \
-			_cpan2nix-make_nix \
-			_cpan2nix-packing
+.PHONY: cpan2nix cpan2nix-dump cpan2nix-makenix cpan2nix-build
 
-_cpan2nix-dump_dependences:
+cpan2nix: \
+	cpan2nix-dump \
+	cpan2nix-makenix \
+	cpan2nix-build
+
+cpan2nix-dump:
 	@perl scripts/cpan2nix/find-deps.pl
 
-_cpan2nix-make_nix:
+cpan2nix-makenix:
 	@cat resources/_cpan2nix/modules.txt | xargs -P$(JOBS) -I{} perl scripts/cpan2nix/make-nix.pl {}
 
-_cpan2nix-packing:
-	@echo '{pkgs,...}: with pkgs; pkgs.lib.attrValues (with perlPackages; rec {' >cpanfile.nix
-	(find data/cpan2nix/ -type f -name '*.nix.txt' | perl scripts/cpan2nix/filter-cpan-nix.pl ) >>cpanfile.nix
-	@echo '})' >>cpanfile.nix
-	@nixfmt cpanfile.nix
+cpan2nix-build:
+	@echo '{ pkgs, ... }: with pkgs; with perlPackages; let modules = rec {' >cpanfile.nix
+	@find data/cpan2nix/ -type f -name '*.nix.txt' -exec cat {} \; >>cpanfile.nix
+	@echo "}; in with modules; [ $(shell cat resources/_cpan2nix/modules.txt | sed 's/:://g') ]" >>cpanfile.nix
 
 .PHONY: shell
 shell:

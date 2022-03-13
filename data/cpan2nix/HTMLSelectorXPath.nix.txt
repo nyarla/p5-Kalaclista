@@ -1,0 +1,13 @@
+  HTMLSelectorXPath = buildPerlPackage {
+    pname = "HTML-Selector-XPath";
+    version = "0.26";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/C/CO/CORION/HTML-Selector-XPath-0.26.tar.gz";
+      sha256 = "3df80a81284d1e375d9d1f6fec16e96c31b2c309451b4ba82e5fd1db23ac1f24";
+    };
+    buildInputs = [ TestBase ];
+    meta = {
+      description = "CSS Selector to XPath compiler";
+      license = with lib.licenses; [ artistic1 gpl1Plus ];
+    };
+  };
