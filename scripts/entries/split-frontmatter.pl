@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Kalaclista::Parallel::Text;
+use Kalaclista::Sequential::Files;
 
 use Path::Tiny;
 
@@ -35,7 +35,7 @@ sub splitting {
   $path =~ s{\.[^.]+$}{};
 
   if ( !defined($text) || $text eq q{} ) {
-    return { done => "skip: " . $path . "/" };
+    return { msg => "skip: " . $path . "/" };
   }
 
   for my $ext (qw(md yaml)) {
@@ -45,29 +45,21 @@ sub splitting {
     $out->spew( ( $ext eq q{md} ) ? $text : $yaml );
   }
 
-  return { done => $path . "/" };
+  return { msg => "done: " . $path . "/" };
 }
 
 sub main {
-  my $jobs = shift;
+  my $destdir = path(shift);
 
-  my $destdir   = path("resources/_sources");
-  my $contents  = path("private/content")->realpath;
-  my $processor = Kalaclista::Parallel::Text->new(
-    threads => $jobs,
-    source  => sub {
-      my ( $processor, $file ) = @_;
-      return [ $destdir, $file ];
-    },
+  my $processor = Kalaclista::Sequential::Files->new(
     process => sub {
-      my ( $processor, $args ) = @_;
-      my ( $destdir,   $file ) = $args->@*;
-
-      return splitting( $destdir, $file );
+      my ( $self, $file ) = @_;
+      splitting( $destdir, $file );
     },
+    result => sub { },
   );
 
-  $processor->run( $contents->stringify, "**", "*.md" );
+  $processor->run( path(shift)->realpath->stringify, '**', '*.md' );
 }
 
 main(@ARGV);
