@@ -32,6 +32,9 @@ sub main {
 
     match_datetime($lastmod);
 
+    is( $loc->scheme, 'https' );
+    is( $loc->host,   'the.kalaclista.com' );
+
     if ( is_pages($loc) ) {
       ok(1);
       next;
