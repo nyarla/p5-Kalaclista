@@ -81,16 +81,15 @@
       license = with lib.licenses; [ artistic1 gpl1Plus ];
     };
   };
-  HTMLSelectorXPath = buildPerlPackage {
-    pname = "HTML-Selector-XPath";
-    version = "0.26";
+  Carp = buildPerlPackage {
+    pname = "Carp";
+    version = "1.50";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/C/CO/CORION/HTML-Selector-XPath-0.26.tar.gz";
-      sha256 = "3df80a81284d1e375d9d1f6fec16e96c31b2c309451b4ba82e5fd1db23ac1f24";
+      url = "mirror://cpan/authors/id/X/XS/XSAWYERX/Carp-1.50.tar.gz";
+      sha256 = "f5273b4e1a6d51b22996c48cb3a3cbc72fd456c4038f5c20b127e2d4bcbcebd9";
     };
-    buildInputs = [ TestBase ];
     meta = {
-      description = "CSS Selector to XPath compiler";
+      description = "Alternative warn and die for modules";
       license = with lib.licenses; [ artistic1 gpl1Plus ];
     };
   };
@@ -105,19 +104,6 @@
       homepage = "https://metacpan.org/release/List-MoreUtils-XS";
       description = "Provide the stuff missing in List::Util in XS";
       license = lib.licenses.asl20;
-    };
-  };
-  ModuleBuildTiny = buildPerlModule {
-    pname = "Module-Build-Tiny";
-    version = "0.039";
-    src = fetchurl {
-      url = "mirror://cpan/authors/id/L/LE/LEONT/Module-Build-Tiny-0.039.tar.gz";
-      sha256 = "7d580ff6ace0cbe555bf36b86dc8ea232581530cbeaaea09bccb57b55797f11c";
-    };
-    propagatedBuildInputs = [ ExtUtilsConfig ExtUtilsHelpers ExtUtilsInstallPaths ];
-    meta = {
-      description = "A tiny replacement for Module::Build";
-      license = with lib.licenses; [ artistic1 gpl1Plus ];
     };
   };
   barewordfilehandles = buildPerlPackage {
@@ -147,27 +133,6 @@
     meta = {
       homepage = "https://github.com/yanick/Path-Tiny-Glob";
       description = "File globbing utility";
-      license = with lib.licenses; [ artistic1 gpl1Plus ];
-    };
-  };
-  XMLLibXMLjQuery = buildPerlModule {
-    pname = "XML-LibXML-jQuery";
-    version = "0.08";
-    src = fetchurl {
-      url = "mirror://cpan/authors/id/C/CA/CAFEGRATZ/XML-LibXML-jQuery-0.08.tar.gz";
-      sha256 = "e6012793cd1a90101b3c4ba1ffed3f707fa6fbd9d92bde9390d2f5bf05411503";
-    };
-    
-    prePatch = ''
-      rm t/as_html.t
-      rm t/replace_with.t
-    '';
-
-    buildInputs = [ ModuleBuildTiny TestException ];
-    propagatedBuildInputs = [ HTMLSelectorXPath JSON XMLLibXML ];
-    meta = {
-      homepage = "https://github.com/cafe01/xml-libxml-jquery";
-      description = "Fast, jQuery-like DOM manipulation over XML::LibXML";
       license = with lib.licenses; [ artistic1 gpl1Plus ];
     };
   };
@@ -210,4 +175,4 @@
       description = "Perl extension for creating asynchronous forking queue processing applications";
     };
   };
-}; in with modules; [  AlgorithmDiff BCOW BHooksOPCheck CaptureTiny ClassAccessorLite ClassMethodModifiers Clone DataPerl ExporterTiny ExtUtilsConfig ExtUtilsDepends ExtUtilsHelpers ExtUtilsInstallPaths HTMLSelectorXPath Importer JSON ListLazy ListMoreUtils ListMoreUtilsXS ModuleBuild ModuleBuildTiny ModulePluggable ModuleRuntime Moo MooXHandlesVia MooXTypesMooseLike ParallelForkBossWorkerAsync PathTiny PathTinyGlob RoleTiny ScopeGuard Spiffy SubInfo SubQuote SubUplevel TermTable Test2Suite TestBase TestDeep TestException TestFatal TestLeakTrace TestNeeds TestNumberDelta TestOutput TestRequires TestWarn TextDiff TimeMoment TryTiny URI XMLLibXML XMLLibXMLjQuery YAMLTiny barewordfilehandles indirect multidimensional strictures ]
+}; in with modules; [  BCOW BHooksOPCheck CaptureTiny Carp ClassAccessorLite ClassMethodModifiers Clone DataPerl ExporterTiny ExtUtilsDepends Importer ListLazy ListMoreUtils ListMoreUtilsXS ModuleBuild ModulePluggable ModuleRuntime Moo MooXHandlesVia MooXTypesMooseLike ParallelForkBossWorkerAsync PathTiny PathTinyGlob RoleTiny ScopeGuard SubInfo SubQuote SubUplevel TermTable Test2Suite TestDeep TestException TestFatal TestLeakTrace TestNeeds TestNumberDelta TestOutput TestRequires TestWarn TimeMoment TryTiny URI XMLLibXML YAMLTiny barewordfilehandles indirect multidimensional strictures ]

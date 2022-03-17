@@ -2,11 +2,20 @@ JOBS = $(shell cat /proc/cpuinfo | grep processor | tail -n1 | cut -d\  -f2)
 CWD = $(shell pwd)
 SRC = /tmp/the-kalaclista-com-v5
 
-.PHONY: entries-split
+.PHONY: \
+	entries-split \
+	entries-sitemap
+
+build: entries-split
+	$(MAKE) -j $(JOBS) ENV=production \
+		entries-sitemap
 
 entries-split:
 	@rm -rf $(SRC)/resources/_sources
 	@perl -Ilib scripts/entries/split-frontmatter.pl $(SRC)/resources/_sources private/content
+
+entries-sitemap:
+	@perl -Ilib scripts/entries/make-sitemap_xml.pl $(SRC)/resources/_sources dist/sitemap.xml
 
 .PHONY: cpan2nix cpan2nix-dump cpan2nix-makenix cpan2nix-build
 
@@ -26,10 +35,13 @@ cpan2nix-build:
 	@find data/cpan2nix/ -type f -name '*.nix.txt' -exec cat {} \; >>cpanfile.nix
 	@echo "}; in with modules; [ $(shell cat resources/_cpan2nix/modules.txt | sed 's/:://g') ]" >>cpanfile.nix
 
-.PHONY: test
+.PHONY: t xt
 
-test:
+t:
 	@prove -Ilib t/*/*.t
+
+xt: build
+	@prove -Ilib xt/*.t
 
 .PHONY: shell
 shell:
