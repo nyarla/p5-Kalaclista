@@ -38,10 +38,10 @@ cpan2nix-build:
 .PHONY: t xt
 
 t:
-	@prove -Ilib t/*/*.t
+	@prove -Ilib -j$(JOBS) t/*/*.t
 
 xt: build
-	@prove -Ilib xt/*.t
+	@prove -Ilib -j$(JOBS) xt/*.t
 
 .PHONY: shell
 shell:
