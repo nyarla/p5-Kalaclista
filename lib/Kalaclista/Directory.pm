@@ -1,4 +1,4 @@
-package Kalaclista::Test;
+package Kalaclista::Directory;
 
 use strict;
 use warnings;

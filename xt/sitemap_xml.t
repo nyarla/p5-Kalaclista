@@ -5,7 +5,8 @@ use warnings;
 
 use Test2::V0;
 
-use Kalaclista::Test;
+use Kalaclista::Directory;
+
 use Kalaclista::Test::DateTime qw( match_datetime );
 use Kalaclista::Test::URI qw(
   is_pages
@@ -21,7 +22,7 @@ use URI;
 
 sub main {
   my $xml = XML::LibXML->load_xml(
-    string => Kalaclista::Test->distdir->child('sitemap.xml')->slurp );
+    string => Kalaclista::Directory->distdir->child('sitemap.xml')->slurp );
 
   my $xc = XML::LibXML::XPathContext->new($xml);
   $xc->registerNs( 'm', 'http://www.sitemaps.org/schemas/sitemap/0.9' );
