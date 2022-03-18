@@ -13,6 +13,22 @@
       license = with lib.licenses; [ artistic1 gpl1Plus ];
     };
   };
+  CommonMark = buildPerlPackage {
+    pname = "CommonMark";
+    version = "0.290000";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/N/NW/NWELLNHOF/CommonMark-0.290000.tar.gz";
+      sha256 = "a501b4c3ef6ca89f8703f9ed0b2dc0da878281f2b1277a7ec92902e088c2eadd";
+    };
+    buildInputs = [ pkgs.cmark DevelChecklib ];
+
+    PERL_MM_OPT = ''INC="-I${pkgs.cmark}/include" LIBS="-L${pkgs.cmark}/lib -lcmark"'';
+
+    meta = {
+      description = "Interface to the CommonMark C library";
+      license = with lib.licenses; [ artistic1 gpl1Plus ];
+    };
+  };
   indirect = buildPerlPackage {
     pname = "indirect";
     version = "0.39";
@@ -164,6 +180,18 @@
       license = lib.licenses.asl20;
     };
   };
+  HTML5DOM = buildPerlPackage {
+    pname = "HTML5-DOM";
+    version = "1.25";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/Z/ZH/ZHUMARIN/HTML5-DOM-1.25.tar.gz";
+      sha256 = "a815c4bd6bada87203628f8e658d78610fdf9bd6b9dacfd10c437819416cee54";
+    };
+    meta = {
+      description = "Super fast html5 DOM library with css selectors (based on Modest/MyHTML)";
+      license = lib.licenses.mit;
+    };
+  };
   ParallelForkBossWorkerAsync = buildPerlPackage {
     pname = "Parallel-Fork-BossWorkerAsync";
     version = "0.09";
@@ -175,4 +203,4 @@
       description = "Perl extension for creating asynchronous forking queue processing applications";
     };
   };
-}; in with modules; [  BCOW BHooksOPCheck CaptureTiny Carp ClassAccessorLite ClassMethodModifiers Clone DataPerl ExporterTiny ExtUtilsDepends Importer ListLazy ListMoreUtils ListMoreUtilsXS ModuleBuild ModulePluggable ModuleRuntime Moo MooXHandlesVia MooXTypesMooseLike ParallelForkBossWorkerAsync PathTiny PathTinyGlob RoleTiny ScopeGuard SubInfo SubQuote SubUplevel TermTable Test2Suite TestDeep TestException TestFatal TestLeakTrace TestNeeds TestNumberDelta TestOutput TestRequires TestWarn TimeMoment TryTiny URI XMLLibXML YAMLTiny barewordfilehandles indirect multidimensional strictures ]
+}; in with modules; [  BCOW BHooksOPCheck CaptureTiny Carp ClassAccessorLite ClassMethodModifiers Clone CommonMark DataPerl ExporterTiny ExtUtilsDepends HTML5DOM Importer ListLazy ListMoreUtils ListMoreUtilsXS MockConfig ModuleBuild ModulePluggable ModuleRuntime Moo MooXHandlesVia MooXTypesMooseLike ParallelForkBossWorkerAsync PathTiny PathTinyGlob RoleTiny ScopeGuard SubInfo SubQuote SubUplevel TermTable Test2Suite TestDeep TestException TestFatal TestLeakTrace TestNeeds TestNumberDelta TestOutput TestRequires TestWarn TimeMoment TryTiny URI XMLLibXML YAMLTiny barewordfilehandles indirect multidimensional strictures ]
