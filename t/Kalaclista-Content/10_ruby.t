@@ -10,7 +10,7 @@ use Test2::V0;
 
 sub simple {
   my $text    = q!聖剣{約束されし勝利の剣|エクスカリバー}!;
-  my $content = Kalaclista::Content->new( source => $text );
+  my $content = Kalaclista::Content->new( text => $text );
 
   is(
     $content->expand_inline_ruby->at('body > *:first-child'),
@@ -20,7 +20,7 @@ sub simple {
 
 sub multiple {
   my $text    = q!{富士山|ふ|じ|さん}!;
-  my $content = Kalaclista::Content->new( source => $text );
+  my $content = Kalaclista::Content->new( text => $text );
 
   is(
     $content->expand_inline_ruby->at('body > *:first-child'),

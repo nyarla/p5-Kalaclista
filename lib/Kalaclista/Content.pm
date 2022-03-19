@@ -6,10 +6,14 @@ use utf8;
 
 use CommonMark;
 use HTML5::DOM;
+use Path::Tiny;
+use URI;
+
+use Kalaclista::Image;
 
 use Class::Accessor::Lite (
   new => 1,
-  rw  => [qw( title type date lastmod slug source )],
+  rw  => [qw( title type date lastmod src dst text )],
 );
 
 my $parser = HTML5::DOM->new(
@@ -26,7 +30,7 @@ sub dom {
       return $self->{'dom'};
     }
 
-    my $src  = $self->source;
+    my $src  = $self->text;
     my $node = CommonMark->parse( string => $src );
 
     my $html = $node->render( format => 'html', unsafe => 1 );
@@ -76,6 +80,48 @@ sub _expand_inline_ruby {
   $out .= '</ruby>';
 
   return $out;
+}
+
+sub expand_block_image {
+  my $self = shift;
+
+  for my $node ( $self->dom->find('p > img:only-child')->@* ) {
+    my $src   = $node->getAttribute('src');
+    my $label = $node->getAttribute('alt');
+
+    my $path = URI->new( $src, 'https' )->path;
+    my $img  = Kalaclista::Image->new( source => $self->src->child($path) );
+
+    $self->dst->mkpath;
+    $img->resize( $self->dst );
+
+    my $width  = $img->width;
+    my $height = $img->height;
+
+    my $x1 = $src;
+    $x1 =~ s{\.[^\.]+$}{_1x.png};
+
+    my $x2 = $src;
+    $x2 =~ s{\.[^\.+]+$}{_2x.png};
+
+    my $html = <<"...";
+<p class="img">
+  <a href="" title="${label}">
+    <img  alt="${label}"
+          src="${src}"
+          srcset="${x1} 1x, ${x2} 2x"
+          width="${width}"
+          height="${height}" />
+  </a>
+</p>
+...
+
+    my $dom = $parser->parse($html)->at('p.img');
+
+    $node->replace($dom);
+  }
+
+  return $self->dom;
 }
 
 1;

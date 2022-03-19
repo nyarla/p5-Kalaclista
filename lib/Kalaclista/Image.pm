@@ -14,7 +14,7 @@ use Image::Scale;
 use Class::Accessor::Lite (
   new => 1,
   ro  => [qw( source )],
-  rw  => [qw( image width height x1 x2 )],
+  rw  => [qw( image width height )],
 );
 
 sub resize {
@@ -30,8 +30,17 @@ sub resize {
   my $fn = $self->source->basename;
   $fn =~ s{\.[^\.]+$}{};
 
-  $self->x1( $self->_resize( $dst->child("${fn}_1x.png"), $X1RESIZE ) );
-  $self->x2( $self->_resize( $dst->child("${fn}_2x.png"), $X2RESIZE ) );
+  $self->_resize( $dst->child("${fn}_1x.png"), $X1RESIZE );
+  $self->_resize( $dst->child("${fn}_2x.png"), $X2RESIZE );
+
+  if ( $self->width > $X1RESIZE ) {
+    my $c  = $self->width / $X1RESIZE;
+    my $rw = int( $self->width / $c );
+    my $rh = int( $self->height / $c );
+
+    $self->width($rw);
+    $self->height($rh);
+  }
 
   return $self;
 }
