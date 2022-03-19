@@ -38,6 +38,7 @@ cpan2nix-build:
 .PHONY: t xt
 
 t:
+	@rm -f t/Kalaclista-Image/fixture_*.png
 	@prove -Ilib -j$(JOBS) t/*/*.t
 
 xt: build
