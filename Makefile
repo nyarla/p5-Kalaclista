@@ -17,6 +17,13 @@ entries-split:
 entries-sitemap:
 	@perl -Ilib scripts/entries/make-sitemap_xml.pl $(SRC)/resources/_sources dist/sitemap.xml
 
+.PHONY: generate-shopping
+
+generate: 
+
+generate-shopping: entries-split
+	@perl -Ilib scripts/generates/shopping.pl $(SRC)/resources/_sources private/cache/shopping
+
 .PHONY: cpan2nix cpan2nix-dump cpan2nix-makenix cpan2nix-build
 
 cpan2nix: \

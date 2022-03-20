@@ -12,7 +12,7 @@ my $rootdir;
 BEGIN {
   my @path = File::Spec->splitdir($FindBin::Bin);
   while ( defined( my $dir = pop @path ) ) {
-    if ( $dir eq q{t} || $dir eq q{xt} ) {
+    if ( $dir eq q{t} || $dir eq q{xt} || $dir eq q{scripts} ) {
       $rootdir = path( join q{/}, @path );
       last;
     }
