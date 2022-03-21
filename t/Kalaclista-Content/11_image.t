@@ -10,9 +10,9 @@ use HTML5::DOM;
 
 sub main {
   my $content = Kalaclista::Content->new(
-    src  => Kalaclista::Directory->rootdir,
-    dst  => Kalaclista::Directory->rootdir->child('t/Kalaclista-Content'),
-    text => <<'...' );
+    src    => Kalaclista::Directory->rootdir,
+    outdir => Kalaclista::Directory->rootdir->child('t/Kalaclista-Content'),
+    text   => <<'...' );
   <p>
     <img  alt="foo"
           src="https://the.kalaclista.com/t/Kalaclista-Content/fixture.png" />

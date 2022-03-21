@@ -12,8 +12,9 @@ sub main {
   my $fixture =
     Kalaclista::Directory->rootdir->child('t/Kalaclista-Image/fixture.png');
 
-  my $image = Kalaclista::Image->new( source => $fixture );
-  $image->resize( $fixture->parent );
+  my $image =
+    Kalaclista::Image->new( source => $fixture, outdir => $fixture->parent );
+  $image->resize;
 
   ok( -e $fixture->parent->child('fixture_1x.png')->stringify );
   ok( -e $fixture->parent->child('fixture_2x.png')->stringify );

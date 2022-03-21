@@ -13,7 +13,7 @@ use Kalaclista::Image;
 
 use Class::Accessor::Lite (
   new => 1,
-  rw  => [qw( title type date lastmod src dst text )],
+  rw  => [qw( title type date lastmod src outdir text )],
 );
 
 my $parser = HTML5::DOM->new(
@@ -90,33 +90,15 @@ sub expand_block_image {
     my $label = $node->getAttribute('alt');
 
     my $path = URI->new( $src, 'https' )->path;
-    my $img  = Kalaclista::Image->new( source => $self->src->child($path) );
+    my $img  = Kalaclista::Image->new(
+      source => $self->src->child($path),
+      outdir => $self->outdir,
+      label  => $label,
+      href   => $src,
+    );
 
-    $self->dst->mkpath;
-    $img->resize( $self->dst );
-
-    my $width  = $img->width;
-    my $height = $img->height;
-
-    my $x1 = $src;
-    $x1 =~ s{\.[^\.]+$}{_1x.png};
-
-    my $x2 = $src;
-    $x2 =~ s{\.[^\.+]+$}{_2x.png};
-
-    my $html = <<"...";
-<p class="img">
-  <a href="" title="${label}">
-    <img  alt="${label}"
-          src="${src}"
-          srcset="${x1} 1x, ${x2} 2x"
-          width="${width}"
-          height="${height}" />
-  </a>
-</p>
-...
-
-    my $dom = $parser->parse($html)->at('p.img');
+    my $html = $img->as_html5;
+    my $dom  = $parser->parse($html)->at('p.img');
 
     $node->replace($dom);
   }

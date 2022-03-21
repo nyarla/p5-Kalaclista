@@ -13,25 +13,24 @@ use Image::Scale;
 
 use Class::Accessor::Lite (
   new => 1,
-  ro  => [qw( source )],
+  ro  => [qw( source outdir label href )],
   rw  => [qw( image width height )],
 );
 
 sub resize {
   my $self  = shift;
-  my $dst   = shift;
   my $image = Image::Scale->new( $self->source->stringify );
 
   $self->image($image);
   $self->width( $image->width );
   $self->height( $image->height );
 
-  $dst->mkpath;
+  $self->outdir->mkpath;
   my $fn = $self->source->basename;
   $fn =~ s{\.[^\.]+$}{};
 
-  $self->_resize( $dst->child("${fn}_1x.png"), $X1RESIZE );
-  $self->_resize( $dst->child("${fn}_2x.png"), $X2RESIZE );
+  $self->_resize( $self->outdir->child("${fn}_1x.png"), $X1RESIZE );
+  $self->_resize( $self->outdir->child("${fn}_2x.png"), $X2RESIZE );
 
   if ( $self->width > $X1RESIZE ) {
     my $c  = $self->width / $X1RESIZE;
@@ -46,7 +45,7 @@ sub resize {
 }
 
 sub _resize {
-  my ( $self, $dst, $resize ) = @_;
+  my ( $self, $out, $resize ) = @_;
 
   if ( $self->width > $resize ) {
     my $c  = $self->width / $resize;
@@ -62,12 +61,39 @@ sub _resize {
       }
     );
 
-    $dst->spew_raw( $resized->as_png );
+    $out->spew_raw( $resized->as_png );
 
     return $resized;
   }
 
   return undef;
+}
+
+sub as_html5 {
+  my $self = shift;
+
+  $self->resize;
+
+  my $w = $self->width;
+  my $h = $self->height;
+
+  my $href_1x = $self->href;
+  $href_1x =~ s{\.[^\.]+$}{_1x.png};
+
+  my $href_2x = $self->href;
+  $href_2x =~ s{\.[^\.]+$}{_2x.png};
+
+  return <<"...";
+<p class="img">
+  <a href="" title="@{[ $self->label ]}">
+    <img  alt="@{[ $self->label ]}"
+          src="@{[ $self->href ]}"
+          srcset="${href_1x} 1x, ${href_2x} 2x"
+          width="${w}"
+          height="${h}" />
+  </a>
+</p>
+...
 }
 
 1;
