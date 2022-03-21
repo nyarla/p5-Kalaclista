@@ -1,0 +1,14 @@
+  ModuleBuildPluggable = buildPerlModule {
+    pname = "Module-Build-Pluggable";
+    version = "0.10";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/T/TO/TOKUHIROM/Module-Build-Pluggable-0.10.tar.gz";
+      sha256 = "e5bb2acb117792c984628812acb0fec376cb970caee8ede57535e04d762b0e40";
+    };
+    propagatedBuildInputs = [ ClassAccessorLite ClassMethodModifiers DataOptList TestSharedFork ];
+    meta = {
+      homepage = "https://github.com/tokuhirom/Module-Build-Pluggable";
+      description = "Module::Build meets plugins";
+      license = with lib.licenses; [ artistic1 gpl1Plus ];
+    };
+  };

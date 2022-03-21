@@ -137,6 +137,20 @@
       license = with lib.licenses; [ artistic1 gpl1Plus ];
     };
   };
+  ModuleBuildPluggablePPPort = buildPerlModule {
+    pname = "Module-Build-Pluggable-PPPort";
+    version = "0.04";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/T/TO/TOKUHIROM/Module-Build-Pluggable-PPPort-0.04.tar.gz";
+      sha256 = "44084ba3d8815f343bd391585ac5d8339a4807ce5c0dd84c98db8f310b64c0ea";
+    };
+    buildInputs = [ TestRequires ];
+    propagatedBuildInputs = [ ClassAccessorLite ModuleBuildPluggable ];
+    meta = {
+      description = "Generate ppport.h";
+      license = with lib.licenses; [ artistic1 gpl1Plus ];
+    };
+  };
   PathTinyGlob = buildPerlPackage {
     pname = "Path-Tiny-Glob";
     version = "0.2.0";
@@ -203,4 +217,18 @@
       description = "Perl extension for creating asynchronous forking queue processing applications";
     };
   };
-}; in with modules; [  BCOW BHooksOPCheck CaptureTiny Carp ClassAccessorLite ClassMethodModifiers Clone CommonMark DataPerl ExporterTiny ExtUtilsDepends HTML5DOM ImageScale Importer ListLazy ListMoreUtils ListMoreUtilsXS MockConfig ModuleBuild ModulePluggable ModuleRuntime Moo MooXHandlesVia MooXTypesMooseLike ParallelForkBossWorkerAsync PathTiny PathTinyGlob RoleTiny ScopeGuard SubInfo SubQuote SubUplevel TermTable Test2Suite TestDeep TestException TestFatal TestLeakTrace TestNeeds TestNumberDelta TestOutput TestRequires TestWarn TimeMoment TryTiny URI XMLLibXML YAMLTiny barewordfilehandles indirect multidimensional strictures ]
+  ModuleBuildPluggable = buildPerlModule {
+    pname = "Module-Build-Pluggable";
+    version = "0.10";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/T/TO/TOKUHIROM/Module-Build-Pluggable-0.10.tar.gz";
+      sha256 = "e5bb2acb117792c984628812acb0fec376cb970caee8ede57535e04d762b0e40";
+    };
+    propagatedBuildInputs = [ ClassAccessorLite ClassMethodModifiers DataOptList TestSharedFork ];
+    meta = {
+      homepage = "https://github.com/tokuhirom/Module-Build-Pluggable";
+      description = "Module::Build meets plugins";
+      license = with lib.licenses; [ artistic1 gpl1Plus ];
+    };
+  };
+}; in with modules; [  BCOW BHooksOPCheck CaptureTiny Carp ClassAccessorLite ClassMethodModifiers Clone CommonMark DataOptList DataPerl ExporterTiny ExtUtilsDepends HTML5DOM HTMLEscape ImageScale Importer ListLazy ListMoreUtils ListMoreUtilsXS MockConfig ModuleBuild ModuleBuildPluggable ModuleBuildPluggablePPPort ModulePluggable ModuleRuntime Moo MooXHandlesVia MooXTypesMooseLike ParallelForkBossWorkerAsync ParamsUtil PathTiny PathTinyGlob RoleTiny ScopeGuard SubInfo SubInstall SubQuote SubUplevel TermTable Test2Suite TestDeep TestException TestFatal TestLeakTrace TestNeeds TestNumberDelta TestOutput TestRequires TestSharedFork TestWarn TimeMoment TryTiny URI XMLLibXML YAMLTiny barewordfilehandles indirect multidimensional strictures ]
