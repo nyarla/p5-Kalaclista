@@ -46,7 +46,9 @@ cpan2nix-build:
 	@find data/cpan2nix/ -type f -name '*.nix.txt' -exec cat {} \; >>cpanfile.nix
 	@echo "}; in with modules; [ $(shell cat resources/_cpan2nix/modules.txt | sed 's/:://g') ]" >>cpanfile.nix
 
-.PHONY: t xt
+.PHONY: test t xt
+
+test: t xt
 
 t:
 	@rm -f t/Kalaclista-Image/fixture_*.png
