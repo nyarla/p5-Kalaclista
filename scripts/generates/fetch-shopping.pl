@@ -13,6 +13,11 @@ use YAML::Tiny;
 use Image::Scale;
 
 my $ua = 'Mozilla/5.0 (X11; Linux x86_64; rv:98.0) Gecko/20100101 Firefox/98.0';
+my @shops = (
+  qr<item.rakuten.co.jp>,       qr<www.amazon.co.jp>,
+  qr<www.audio-technica.co.jp>, qr<www.hidizs.co>,
+  qr<www.oneplus.com>,          qr<www.yodobashi.com>,
+);
 
 sub extract {
   my ($file) = @_;
@@ -21,11 +26,11 @@ sub extract {
   my $dom     = $content->dom;
 
   my @items;
-  for my $node ( $dom->find('p a:only-child')->@* ) {
+  for my $node ( $dom->find('p > a:only-child')->@* ) {
     my $parent = $node->parent;
     my $href   = $node->getAttribute('href');
     if ( $parent->firstChild->isSameNode( $parent->lastChild )
-      && is_shopping($href) )
+      && is_shop($href) )
     {
       push @items,
         +{
@@ -38,30 +43,9 @@ sub extract {
   return { items => \@items };
 }
 
-sub is_shopping {
+sub is_shop {
   my $href = shift;
-
-  if ( $href =~ m{amazon\.co\.jp} ) {
-    return 1;
-  }
-
-  if ( $href =~ m{amazon\.com} ) {
-    return 1;
-  }
-
-  if ( $href =~ m{rakuten\.co\.jp} ) {
-    return 1;
-  }
-
-  if ( $href =~ m{aliexpress\.com} ) {
-    return 1;
-  }
-
-  if ( $href =~ m{gearbest\.com} ) {
-    return 1;
-  }
-
-  return 0;
+  return grep { $href =~ $_ } @shops;
 }
 
 sub put {
@@ -74,7 +58,6 @@ s{[^\p{InHiragana}\p{InKatakana}\p{InCJKUnifiedIdeographs}a-zA-Z0-9\-_]}{_}g;
   $fn =~ s{_+}{_}g;
 
   my $cache = Kalaclista::Directory->rootdir->child( $dest, "${fn}.yaml" );
-  $cache->parent->mkpath;
 
   my $msg = $item->{'name'};
   utf8::encode($msg);
@@ -115,8 +98,7 @@ s{[^\p{InHiragana}\p{InKatakana}\p{InCJKUnifiedIdeographs}a-zA-Z0-9\-_]}{_}g;
       }
     );
   }
-
-  if ( $item->{'href'} =~ m{rakuten\.co\.jp} ) {
+  elsif ( $item->{'href'} =~ m{rakuten\.co\.jp} ) {
     $out = YAML::Tiny::Dump(
       {
         name => $item->{'name'},
@@ -131,8 +113,17 @@ s{[^\p{InHiragana}\p{InKatakana}\p{InCJKUnifiedIdeographs}a-zA-Z0-9\-_]}{_}g;
       }
     );
   }
+  else {
+    $out = YAML::Tiny::Dump(
+      {
+        name => $item->{'name'},
+        data => [],
+      }
+    );
+  }
 
   if ( !$cache->exists ) {
+    $cache->parent->mkpath;
     $cache->spew_utf8($out);
   }
 
@@ -145,8 +136,12 @@ sub fetch_image_size {
 
   sleep( 2 + rand(3) );
 
-  chomp($result);
-  return $result;
+  if ( defined $result && $result ne q{} ) {
+    chomp($result);
+    return $result;
+  }
+
+  return q{};
 }
 
 sub main {

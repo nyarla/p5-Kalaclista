@@ -17,12 +17,16 @@ entries-split:
 entries-sitemap:
 	@perl -Ilib scripts/entries/make-sitemap_xml.pl $(SRC)/resources/_sources dist/sitemap.xml
 
-.PHONY: generate-shopping
+.PHONY: fetch-shopping
 
-generate: 
+fetch: 
 
-generate-shopping: entries-split
-	@perl -Ilib scripts/generates/shopping.pl $(SRC)/resources/_sources private/cache/shopping
+fetch-shopping: entries-split
+	@perl -Ilib scripts/generates/fetch-shopping.pl $(SRC)/resources/_sources private/cache/shopping
+	@prettier -w private/cache/shopping/*.yaml
+
+fetch-shopping-domains:
+	@pt -e '^\[[^\]]+\]\([^)]+\)$$' private/content | sed 's!./[^:]\+:[0-9]\+:!!' | sed 's![^]]\+](!!' | cut -d/ -f3 | sort -u | xargs -I{} echo 'qr<{}>,'
 
 .PHONY: cpan2nix cpan2nix-dump cpan2nix-makenix cpan2nix-build
 
@@ -49,7 +53,7 @@ t:
 	@prove -Ilib -j$(JOBS) t/*/*.t
 
 xt: build
-	@prove -Ilib -j$(JOBS) xt/*.t
+	@prove -Ilib -j$(JOBS) xt/*/*.t
 
 .PHONY: shell
 shell:
