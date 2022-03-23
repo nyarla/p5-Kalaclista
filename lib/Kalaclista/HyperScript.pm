@@ -110,9 +110,9 @@ BEGIN {
     wbr
   );
 
-  for my $tag (@EXPORT) {
-    next if ( $tag eq 'h' );
-    my $method = $tag;
+  for my $method (@EXPORT) {
+    next if ( $method eq 'h' );
+    my $tag = $method;
     $tag =~ s{_}{}g;
 
     no strict 'refs';
