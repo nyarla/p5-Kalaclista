@@ -10,6 +10,7 @@ use Path::Tiny;
 use URI;
 
 use Kalaclista::Image;
+use Kalaclista::HyperScript qw(ruby rp rt);
 
 use Class::Accessor::Lite (
   new => 1,
@@ -63,23 +64,17 @@ sub _expand_inline_ruby {
 
   if ( @seg == 2 ) {
     my ( $txt, $rt ) = @seg;
-    return qq{<ruby>${txt}<rp>（</rp><rt>${rt}</rt><rp>）</rp></ruby>};
+    return ruby( [ $txt, rp("（"), rt($rt), rp("）") ] );
   }
 
   my @text = split q{}, ( shift @seg );
-  my $out  = '<ruby>';
-
+  my @out;
   while ( defined( my $txt = shift @text ) ) {
-    my $rt = shift @seg;
-
-    if ( defined $rt ) {
-      $out .= "${txt}<rt>${rt}</rt>";
+    if ( defined( my $rt = shift @seg ) ) {
+      push @out, ( $txt, rt($rt) );
     }
   }
-
-  $out .= '</ruby>';
-
-  return $out;
+  return ruby( \@out );
 }
 
 sub expand_block_image {
