@@ -7,10 +7,9 @@ use utf8;
 use Kalaclista::Directory;
 use Kalaclista::Sequential::Files;
 use Kalaclista::Content;
+use Kalaclista::Shop::Amazon;
 
-use Path::Tiny;
 use YAML::Tiny;
-use Image::Scale;
 
 my $ua = 'Mozilla/5.0 (X11; Linux x86_64; rv:98.0) Gecko/20100101 Firefox/98.0';
 my @shops = (
@@ -72,11 +71,13 @@ s{[^\p{InHiragana}\p{InKatakana}\p{InCJKUnifiedIdeographs}a-zA-Z0-9\-_]}{_}g;
   my $out;
 
   if ( $item->{'href'} =~ m{([A-Z0-9]{10})} ) {
-    my $ASIN = $1;
-    my $TAG  = 'nyarla-22';
-    my $image =
-"https://ws-fe.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=${ASIN}&Format=_SL160_&ID=AsinImage&MarketPlace=JP&ServiceVersion=20070822&WS=1&tag=${TAG}&language=ja_JP";
-    my $size = fetch_image_size($image);
+    my $shop = Kalaclista::Shop::Amazon->new(
+      asin => $1,
+      tag  => 'nyarla-22',
+    );
+
+    my $image = $shop->image;
+    my $size  = fetch_image_size($image);
 
     $out = YAML::Tiny::Dump(
       {
@@ -84,15 +85,13 @@ s{[^\p{InHiragana}\p{InKatakana}\p{InCJKUnifiedIdeographs}a-zA-Z0-9\-_]}{_}g;
         data => [
           {
             provider => 'amazon',
-            asin     => $ASIN,
-            tag      => $TAG,
+            asin     => $shop->asin,
+            tag      => $shop->tag,
             size     => $size,
           },
           {
             provider => 'rakuten',
             search   => $item->{'name'},
-            image    => '',
-            size     => '',
           }
         ],
       }
@@ -105,9 +104,9 @@ s{[^\p{InHiragana}\p{InKatakana}\p{InCJKUnifiedIdeographs}a-zA-Z0-9\-_]}{_}g;
         data => [
           {
             provider => 'rakuten',
-            search   => $item->{'name'},
+            shop     => '',
             image    => '',
-            size     => '',
+            size     => '240x240',
           }
         ]
       }
