@@ -51,7 +51,7 @@ cpan2nix-build:
 test: t xt
 
 t:
-	@rm -f t/Kalaclista-Image/fixture_*.png
+	@rm -f t/Kalaclista-*/fixture_*.png
 	@prove -Ilib -j$(JOBS) t/*/*.t
 
 xt: build

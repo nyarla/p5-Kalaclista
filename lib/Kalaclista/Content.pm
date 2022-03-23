@@ -97,7 +97,7 @@ sub expand_block_image {
       href   => $src,
     );
 
-    my $html = $img->as_html5;
+    my $html = $img->to_html;
     my $dom  = $parser->parse($html)->at('p.img');
 
     $node->replace($dom);
