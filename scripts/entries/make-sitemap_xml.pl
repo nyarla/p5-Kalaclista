@@ -5,6 +5,7 @@ use warnings;
 
 use Kalaclista::Constants qw(linkify);
 use Kalaclista::Sequential::Files;
+use Kalaclista::HyperScript qw(h);
 
 use Path::Tiny;
 use Path::Tiny::Glob;
@@ -13,7 +14,7 @@ use Time::Moment;
 
 sub loc {
   my ( $link, $datetime ) = @_;
-  return "<url><loc>${link}</loc><lastmod>${datetime}</lastmod></url>";
+  return h( 'url', [ h( 'loc', $link ), h( 'lastmod', $datetime ) ] );
 }
 
 sub xmlize {
@@ -47,10 +48,7 @@ sub main {
   my $dest   = path(shift);
   my $fh     = $dest->openw;
 
-  print $fh '<?xml version="1.0" encoding="utf-8" ?>';
-  print $fh "\n";
-  print $fh '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
-
+  my @out       = ();
   my $processor = Kalaclista::Sequential::Files->new(
     process => sub {
       my ( $self, $file ) = @_;
@@ -62,14 +60,8 @@ sub main {
 
       print $fh '<?xml version="1.0" encoding="utf-8" ?>';
       print $fh "\n";
-      print $fh '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
-
-      for my $xml ( sort { $b cmp $a } @_ ) {
-        print $fh $xml;
-      }
-
-      print $fh '</urlset>';
-
+      print $fh h( 'urlset',
+        { xmlns => 'http://www.sitemaps.org/schemas/sitemap/0.9' }, \@_ );
       $fh->close;
     },
   );
