@@ -17,9 +17,7 @@ entries-split:
 entries-sitemap:
 	@perl -Ilib scripts/entries/make-sitemap_xml.pl $(SRC)/resources/_sources dist/sitemap.xml
 
-.PHONY: fetch-shopping
-
-fetch: 
+.PHONY: fetch-shopping fetch-shopping-domains fetch-website
 
 fetch-shopping: entries-split
 	@perl -Ilib scripts/generates/fetch-shopping.pl $(SRC)/resources/_sources private/cache/shopping
@@ -27,6 +25,9 @@ fetch-shopping: entries-split
 
 fetch-shopping-domains:
 	@pt -e '^\[[^\]]+\]\([^)]+\)$$' private/content | sed 's!./[^:]\+:[0-9]\+:!!' | sed 's![^]]\+](!!' | cut -d/ -f3 | sort -u | xargs -I{} echo 'qr<{}>,'
+
+fetch-website: entries-split
+	@perl -Ilib scripts/generates/fetch-website.pl $(SRC)/resources/_sources private/cache/website $(JOBS)
 
 .PHONY: cpan2nix cpan2nix-dump cpan2nix-makenix cpan2nix-build
 

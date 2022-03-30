@@ -1,8 +1,12 @@
 requires 'Carp',                            0;
 requires 'Class::Accessor::Lite',           0;
 requires 'CommonMark',                      0;
+requires 'Encode',                          0;
+requires 'Encode::Detect::Detector',        0;
+requires 'Encode::Guess',                   0;
 requires 'HTML5::DOM',                      0;
 requires 'HTML::Escape',                    0;
+requires 'HTTP::Tinyish',                   0;
 requires 'Image::Scale',                    0;
 requires 'Parallel::Fork::BossWorkerAsync', 0;
 requires 'Path::Tiny',                      0;
