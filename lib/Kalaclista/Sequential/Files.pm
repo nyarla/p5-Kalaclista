@@ -22,12 +22,10 @@ sub new {
     confess q{argument `result` is not subroutine.};
   }
 
-  my $self = bless {}, $class;
-
-  $self->{'handle'} = $handle;
-  $self->{'result'} = $result;
-
-  return $self;
+  return bless {
+    handle => $handle,
+    result => $result,
+  }, $class;
 }
 
 sub run {
