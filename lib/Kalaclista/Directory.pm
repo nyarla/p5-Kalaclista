@@ -5,11 +5,11 @@ use warnings;
 
 use FindBin;
 use File::Spec;
-use Path::Tiny;
+use Path::Tiny qw(path tempdir);
 
 use Class::Accessor::Lite (
   new => 1,
-  ro  => [qw( dist data assets content )],
+  ro  => [qw( dist data assets content build )],
 );
 
 my $rootdir;
@@ -17,7 +17,7 @@ my $instance;
 
 BEGIN {
   my @path = File::Spec->splitdir($FindBin::Bin);
-  my @dirs = qw( t xt scripts lib );
+  my @dirs = qw( t xt scripts lib bin );
 
   while ( defined( my $dir = pop @path ) ) {
     if ( grep { $_ eq $dir } @dirs ) {
@@ -43,19 +43,27 @@ sub rootdir {
 }
 
 sub distdir {
-  return $rootdir->child( (shift)->dist // 'dist' );
+  return $rootdir->child( (shift)->dist // 'dist' )->realpath;
 }
 
 sub datadir {
-  return $rootdir->child( (shift)->data // 'data' );
+  return $rootdir->child( (shift)->data // 'data' )->realpath;
 }
 
 sub assets_dir {
-  return $rootdir->child( (shift)->assets // 'assets' );
+  return $rootdir->child( (shift)->assets // 'assets' )->realpath;
 }
 
 sub content_dir {
-  return $rootdir->child( (shift)->content // 'content' );
+  return $rootdir->child( (shift)->content // 'content' )->realpath;
+}
+
+sub build_dir {
+  my $dir = shift->build;
+  if ( defined $dir ) {
+    return $rootdir->child($dir)->realpath;
+  }
+  return tempdir( 'kalaclista_XXXXXX', CLEANUP => 1 )->realpath;
 }
 
 1;
