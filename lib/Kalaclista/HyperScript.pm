@@ -9,7 +9,7 @@ use Carp qw(confess);
 
 BEGIN {
   our @EXPORT = qw(
-    h
+    h text
 
     a
     abbr
@@ -164,4 +164,10 @@ sub h {
 
   return qq{<${tag}${attr}>@{[ join q{}, $contents->@* ]}</${tag}>};
 }
+
+sub text {
+  my $text = shift;
+  return escape_html($text);
+}
+
 1;
