@@ -5,9 +5,8 @@ use warnings;
 
 use Test2::V0;
 
-use Kalaclista::Constants;
+use Kalaclista::Utils;
 
 ok(1);
 
 done_testing;
-

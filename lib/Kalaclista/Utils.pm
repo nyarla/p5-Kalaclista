@@ -5,7 +5,7 @@ use warnings;
 
 use Exporter 'import';
 
-our @EXPORT_OK = qw(split_md);
+our @EXPORT_OK = qw(split_md make_fn make_href);
 
 sub split_md ($) {
   my $file = shift;
@@ -35,6 +35,28 @@ sub split_md ($) {
   $md //= q{};
 
   return ( $yaml, $md );
+}
+
+sub make_fn ($$) {
+  my ( $path, $prefix ) = @_;
+
+  $path =~ s<$prefix/><>;
+  $path =~ s<\..+$><>;
+  $path =~ s<_index><index>;
+
+  return $path;
+}
+
+sub make_href ($$) {
+  my ( $path, $baseURI ) = @_;
+
+  $path =~ s{index}{};
+  $path =~ s{([^/])$}{$1/};
+
+  my $uri = $baseURI->clone;
+  $uri->path($path);
+
+  return $uri->as_string;
 }
 
 1;
