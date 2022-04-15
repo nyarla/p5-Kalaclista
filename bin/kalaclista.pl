@@ -54,11 +54,11 @@ sub _gen_sitemap_xml {
 
   my $sitemap = Kalaclista::Page::SitemapXML->new(
     baseURI => $baseURI,
-    basedir => $build->child('_content'),
+    srcdir  => $build->child('_content'),
   );
 
   $dirs->distdir->mkpath;
-  $sitemap->output( $dirs->distdir->child('sitemap.xml') );
+  $sitemap->emit( $dirs->distdir->child('sitemap.xml') );
 
   return 0;
 }

@@ -5,7 +5,7 @@ use warnings;
 
 use Class::Accessor::Lite (
   new => 1,
-  ro  => [qw(baseURI basedir)],
+  ro  => [qw(baseURI srcdir)],
 );
 
 use Kalaclista::Entry::Meta;
@@ -14,7 +14,7 @@ use Kalaclista::Sequential::Files;
 use Kalaclista::HyperScript qw(h);
 use Kalaclista::Utils qw( make_fn make_href );
 
-sub output {
+sub emit {
   my $self = shift;
   my $xml  = shift;
 
@@ -22,7 +22,7 @@ sub output {
     handle => sub {
       my $file = shift;
 
-      my $path = make_fn $file,   $self->basedir;
+      my $path = make_fn $file,   $self->srcdir;
       my $href = make_href $path, $self->baseURI;
 
       my $meta = Kalaclista::Entry::Meta->load(
@@ -56,7 +56,7 @@ sub output {
     },
   );
 
-  return $runner->run( $self->basedir->stringify, '**', '*.yaml' );
+  return $runner->run( $self->srcdir->stringify, '**', '*.yaml' );
 }
 
 1;

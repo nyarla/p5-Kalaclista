@@ -21,6 +21,7 @@ sub main {
     icon-512.png
     icon.svg
     manifest.webmanifest
+    robots.txt
   );
 
   for my $fn (@tests) {
