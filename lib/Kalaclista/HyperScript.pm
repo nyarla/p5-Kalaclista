@@ -111,7 +111,7 @@ BEGIN {
   );
 
   for my $method (@EXPORT) {
-    next if ( $method eq 'h' );
+    next if ( $method eq 'h' || $method eq 'text' );
     my $tag = $method;
     $tag =~ s{_}{}g;
 
