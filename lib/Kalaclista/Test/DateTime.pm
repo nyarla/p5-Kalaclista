@@ -11,8 +11,10 @@ our @EXPORT_OK = qw(
 );
 
 sub match_datetime {
-  like( shift,
-    qr{^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:[\-+]\d{2}:\d{2}|Z)$} );
+  my $datetime = shift;
+  my $msg      = shift;
+  like( $datetime,
+    qr{^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:[\-+]\d{2}:\d{2}|Z)$}, $msg );
 }
 
 1;

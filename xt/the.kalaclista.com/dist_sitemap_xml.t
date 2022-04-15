@@ -20,9 +20,13 @@ use XML::LibXML;
 
 use URI;
 
+my $dirs =
+  Kalaclista::Directory->instance( dist => 'dist/the.kalaclista.com', );
+
 sub main {
-  my $xml = XML::LibXML->load_xml(
-    string => Kalaclista::Directory->distdir->child('sitemap.xml')->slurp );
+  my $xml =
+    XML::LibXML->load_xml(
+    string => $dirs->distdir->child('sitemap.xml')->slurp );
 
   my $xc = XML::LibXML::XPathContext->new($xml);
   $xc->registerNs( 'm', 'http://www.sitemaps.org/schemas/sitemap/0.9' );
@@ -31,7 +35,7 @@ sub main {
     my $loc = URI->new( $xc->findnodes( 'm:loc', $node )->pop->textContent );
     my $lastmod = $xc->findnodes( 'm:lastmod', $node )->pop->textContent;
 
-    match_datetime($lastmod);
+    match_datetime( $lastmod, $loc->path );
 
     is( $loc->scheme, 'https' );
     is( $loc->host,   'the.kalaclista.com' );

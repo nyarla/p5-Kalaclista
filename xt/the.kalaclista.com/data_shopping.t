@@ -108,13 +108,16 @@ sub testing {
 }
 
 sub main {
-  my $src =
-    Kalaclista::Directory->rootdir->child('private/cache/shopping')->realpath;
+  my $dirs = Kalaclista::Directory->instance(
+    data => 'private/the.kalaclista.com/cache',
+    dist => 'dist/the.kalaclista.com',
+  );
+
+  my $src = $dirs->datadir->child('shopping')->realpath;
 
   my $processor = Kalaclista::Sequential::Files->new(
-    process => sub {
-      my $file = $_[1];
-      return testing($file);
+    handle => sub {
+      return testing(shift);
     },
     result => sub { done_testing },
   );
