@@ -2,26 +2,34 @@ JOBS = $(shell cat /proc/cpuinfo | grep processor | tail -n1 | cut -d\  -f2)
 CWD = $(shell pwd)
 SRC = /tmp/the-kalaclista-com-v5
 
-.PHONY: \
-	entries-split \
-	entries-sitemap
+.PHONY: build clean
 
-build: entries-split
-	$(MAKE) -j $(JOBS) ENV=production \
-		entries-sitemap
+_build_distdir:
+	@test -d dist/the.kalaclista.com || mkdir -p dist/the.kalaclista.com
 
-entries-split:
-	@rm -rf $(SRC)/resources/_sources
-	@perl -Ilib scripts/entries/split-frontmatter.pl $(SRC)/resources/_sources private/content
+_build_distdir_static: _build_distdir
+	@cp -R private/the.kalaclista.com/assets/static/* dist/the.kalaclista.com/
 
-entries-sitemap:
-	@perl -Ilib scripts/entries/make-sitemap_xml.pl $(SRC)/resources/_sources dist/sitemap.xml
+_build_source_split:
+	@perl -Ilib bin/kalaclista.pl production split
+
+_build_dist_sitemap_xml:
+	@perl -Ilib bin/kalaclista.pl production sitemap
+
+build: clean \
+	_build_distdir \
+	_build_distdir_static \
+	_build_source_split \
+	_build_dist_sitemap_xml
+
+clean:
+	@rm -rf dist/the.kalaclista.com
 
 .PHONY: fetch-shopping fetch-shopping-domains fetch-website
 
 fetch-shopping: entries-split
-	@perl -Ilib scripts/generates/fetch-shopping.pl $(SRC)/resources/_sources private/cache/shopping
-	@prettier -w private/cache/shopping/*.yaml
+	@perl -Ilib scripts/generates/fetch-shopping.pl $(SRC)/resources/_sources private/the.kalaclista.com/cache/shopping
+	@prettier -w private/the.kalaclista.com/cache/shopping/*.yaml
 
 fetch-shopping-domains:
 	@pt -e '^\[[^\]]+\]\([^)]+\)$$' private/content | sed 's!./[^:]\+:[0-9]\+:!!' | sed 's![^]]\+](!!' | cut -d/ -f3 | sort -u | xargs -I{} echo 'qr<{}>,'
@@ -61,3 +69,8 @@ xt: build
 .PHONY: shell
 shell:
 	@nix develop -c env SHELL=zsh zsh
+
+.PHONY: migrate-shopping
+
+migrate-shopping:
+	@perl -Ilib scripts/migrate/affiliate.pl private/the.kalaclista.com/cache/shopping > private/the.kalaclista.com/data/affiliate.yaml
