@@ -22,16 +22,6 @@ sub main {
     is( make_href( $test->[0], $baseURI ), $test->[1] );
   }
 
-  my @tests = (
-
-    [ 'path/to/file.md', 'path/to', 'file' ],
-    [ 'path/to/_index',  'path',    'to/index' ],
-  );
-
-  for my $test (@tests) {
-    is( make_fn( $test->[0], $test->[1] ), $test->[2] );
-  }
-
   done_testing;
 }
 
