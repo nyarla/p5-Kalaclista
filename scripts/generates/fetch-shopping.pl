@@ -148,8 +148,8 @@ sub main {
   my $dest = shift;
 
   my $processor = Kalaclista::Sequential::Files->new(
-    process => sub {
-      my ( $processor, $file ) = @_;
+    handle => sub {
+      my ($file) = @_;
 
       for my $item ( extract($file)->{'items'}->@* ) {
         put( $item, $dest );
