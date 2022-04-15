@@ -65,12 +65,12 @@ sub main {
   my $src = path(shift)->realpath->stringify;
 
   my $processor = Kalaclista::Sequential::Files->new(
-    process => sub {
-      my ( $processor, $file ) = @_;
+    handle => sub {
+      my ($file) = @_;
       return process($file);
     },
     result => sub {
-      my ( $processor, @results ) = @_;
+      my (@results) = @_;
 
       my $out = {};
       for my $result (@results) {
