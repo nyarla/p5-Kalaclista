@@ -6,7 +6,7 @@ use utf8;
 
 use Class::Accessor::Lite (
   new => 1,
-  rw  => [qw( title summary href gone lastmod lastupdate redirected out )],
+  rw  => [qw( fn title summary href gone lastmod lastupdate redirected )],
 );
 
 use HTTP::Tinyish;
@@ -16,50 +16,61 @@ use Encode;
 use Encode::Guess;
 use Encode::Detect::Detector;
 
-use Time::Moment;
 use HTML5::DOM;
-use URI;
+use Time::Moment;
 use URI::Escape qw( uri_unescape );
+use URI;
 use YAML::Tiny;
 
-my $ua = 'Mozilla/5.0 (X11; Linux x86_64; rv:98.0) Gecko/20100101 Firefox/98.0';
+use Kalaclista::HyperScript qw(aside a h1 blockquote p cite text);
+
+my $ua = 'Mozilla/5.0 (X11; Linux x86_64; rv:99.0) Gecko/20100101 Firefox/99.0';
 my $client =
   HTTP::Tinyish->new( agent => $ua, timeout => 5, max_redirect => 3 );
-my $parser = HTML5::DOM->new;
 
-sub emit {
-  my $self = shift;
-  $self->out->parent->mkpath;
-  $self->out->spew_utf8(
-    YAML::Tiny::Dump(
-      {
-        title      => $self->title   // q{},
-        summary    => $self->summary // q{},
-        href       => $self->href    // q{},
-        lastmod    => int( $self->lastmod    // 0 ),
-        lastupdate => int( $self->lastupdate // 0 ),
-        redirected => int( $self->is_redirected ),
-        gone       => int( $self->gone // 0 ),
-      }
-    )
-  );
-}
+my $parser = HTML5::DOM->new;
 
 sub load {
   my $class = shift;
   my %args  = @_;
 
-  my ( $title, $href, $outdir ) = @args{qw( title href outdir )};
+  my $title = delete $args{'title'} // q{};
+  my $href  = delete $args{'href'}  // q{};
+  my $src   = delete $args{'srcdir'};
 
-  my $fn  = _filename($href);
-  my $out = $outdir->child($fn);
+  my $fn = _filename($href);
 
-  if ( $out->is_file ) {
-    my $data = YAML::Tiny::Load( $out->slurp_utf8 );
-    return $class->new( $data->%*, out => $out );
+  if ( defined $src && $src->child($fn)->is_file ) {
+    my $data = YAML::Tiny::Load( $src->child($fn)->slurp_utf8 );
+    return $class->new( $data->%*, title => $title, href => $href, fn => $fn );
   }
 
-  return $class->new( title => $title, href => $href, out => $out );
+  return $class->new( title => $title, href => $href, fn => $fn );
+}
+
+sub emit {
+  my $self = shift;
+  my $dir  = shift;
+
+  my $fn   = $self->fn;
+  my $file = $dir->child($fn);
+
+  $file->parent->mkpath;
+
+  my $fh = $file->openw_utf8;
+  print $fh YAML::Tiny::Dump(
+    {
+      title      => $self->title   // q{},
+      summary    => $self->summary // q{},
+      href       => $self->href    // q{},
+      lastmod    => int( $self->lastmod    // 0 ),
+      lastupdate => int( $self->lastupdate // 0 ),
+      redirected => int( $self->is_redirected ),
+      gone       => int( $self->gone // 0 ),
+    }
+  );
+
+  $fh->close;
 }
 
 sub _filename {
@@ -73,6 +84,10 @@ s{[^\p{InHiragana}\p{InKatakana}\p{InCJKUnifiedIdeographs}a-zA-Z0-9\-_/]}{_}g;
 
   if ( $fn =~ m{/$} ) {
     $fn =~ s{/$}{};
+  }
+
+  if ( $fn eq q{} ) {
+    $fn = "index";
   }
 
   return $fn . ".yaml";
@@ -105,7 +120,7 @@ sub fetch {
   eval { $res = $client->get( $self->href, { headers => $headers } ); };
   if ($@) {
     $self->gone(1);
-    $self->lastupdated($time);
+    $self->lastupdate($time);
     return 1;
   }
 
@@ -315,6 +330,21 @@ DECODE:
   }
 
   return $decoder->decode($content);
+}
+
+sub to_html {
+  my $self = shift;
+  return aside(
+    { class => 'content__card--website' },
+    a(
+      { href => $self->href },
+      [
+        h1( { class => 'content__card--title' }, text( $self->title ) ),
+        p( cite( text( uri_unescape( $self->href ) ) ) ),
+        blockquote( p( text( $self->summary // $self->title ) ) )
+      ]
+    )
+  );
 }
 
 1;

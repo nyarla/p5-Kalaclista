@@ -1,6 +1,6 @@
 JOBS = $(shell cat /proc/cpuinfo | grep processor | tail -n1 | cut -d\  -f2)
 CWD = $(shell pwd)
-SRC = /tmp/the-kalaclista-com-v5
+SRC = $(shell pwd)
 
 .PHONY: build clean
 
@@ -34,8 +34,8 @@ fetch-shopping: entries-split
 fetch-shopping-domains:
 	@pt -e '^\[[^\]]+\]\([^)]+\)$$' private/content | sed 's!./[^:]\+:[0-9]\+:!!' | sed 's![^]]\+](!!' | cut -d/ -f3 | sort -u | xargs -I{} echo 'qr<{}>,'
 
-fetch-website: entries-split
-	@perl -Ilib scripts/generates/fetch-website.pl $(SRC)/resources/_sources private/cache/website $(JOBS)
+fetch-website: _build_source_split
+	@perl -Ilib scripts/generates/fetch-website.pl $(SRC)/resources/_content private/the.kalaclista.com/cache/website $(JOBS)
 
 .PHONY: cpan2nix cpan2nix-dump cpan2nix-makenix cpan2nix-build
 

@@ -3,6 +3,7 @@
 use strict;
 use warnings;
 
+use Kalaclista::Config::Kalaclista qw(config);
 use Kalaclista::Directory;
 use Kalaclista::Sequential::Files;
 use Kalaclista::Utils qw( split_md make_fn );
@@ -11,14 +12,7 @@ use Kalaclista::Page::SitemapXML;
 
 use URI;
 
-my $dirs = Kalaclista::Directory->instance(
-  dist    => 'dist/the.kalaclista.com',
-  data    => 'private/the.kalaclista.com/cache',
-  assets  => 'private/the.kalaclista.com/assets',
-  content => 'private/the.kalaclista.com/content',
-  build   => 'resources',
-);
-
+my $dirs  = config->dirs;
 my $build = $dirs->build_dir;
 
 my $actions = { split => \&_split_content, sitemap => \&_gen_sitemap_xml };
@@ -29,7 +23,7 @@ sub msg ($) {
 }
 
 sub _split_content {
-  msg 'split files to `md` and `yaml`';
+  msg q|split .md -> .md and .yaml |;
 
   my $runner = Kalaclista::Sequential::Files->new(
     handle => sub {

@@ -3,29 +3,23 @@ package Kalaclista::Config::Kalaclista;
 use strict;
 use warnings;
 
+use Kalaclista::Config;
 use Kalaclista::Directory;
 
 use Exporter 'import';
 
-our @EXPORT_OK = qw(dirs);
+our @EXPORT_OK = qw(config);
 
 my $dirs = Kalaclista::Directory->instance(
-  assets  => 'private/assets',
-  content => 'private/content',
-  data    => 'private/cache',
-  dist    => 'dist',
+  dist    => 'dist/the.kalaclista.com',
+  data    => 'private/the.kalaclista.com/cache',
+  assets  => 'private/the.kalaclista.com/assets',
+  content => 'private/the.kalaclista.com/content',
+  build   => 'resources',
 );
 
-sub dirs {
-  return $dirs;
-}
+my $config = Kalaclista::Config->new( dirs => $dirs, );
+
+sub config { $config }
 
 1;
-
-=pod
-
-=head1 NAME
-
-Kalaclista::Config::Kalaclista - Configuration file for L<https://the.kalaclista.com/>
-
-=cut

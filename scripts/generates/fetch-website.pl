@@ -6,7 +6,7 @@ use utf8;
 
 use Kalaclista::Directory;
 use Kalaclista::Sequential::Files;
-use Kalaclista::Content;
+use Kalaclista::Entry::Content;
 use Kalaclista::WebSite;
 
 use Parallel::Fork::BossWorkerAsync;
@@ -17,7 +17,7 @@ my $ua = 'Mozilla/5.0 (X11; Linux x86_64; rv:98.0) Gecko/20100101 Firefox/98.0';
 
 sub extract {
   my $file    = shift;
-  my $content = Kalaclista::Content->new( text => $file->slurp_utf8 );
+  my $content = Kalaclista::Entry::Content->new( $file->slurp_utf8 );
   my $dom     = $content->dom;
 
   my @out = ();
@@ -39,33 +39,33 @@ sub extract {
 }
 
 sub worker {
-  eval {
-    my ( $domain, $websites, $dest ) = $_[0]->@*;
+  my ( $domain, $websites, $dest ) = $_[0]->@*;
 
-    my $max = $websites->@*;
-    my $idx = 0;
-    for my $data ( $websites->@* ) {
-      $idx++;
+  my $max    = $websites->@*;
+  my $idx    = 0;
+  my $srcdir = $dest->child($domain);
+  $srcdir->mkpath;
+  for my $data ( $websites->@* ) {
+    $idx++;
 
-      my $website = Kalaclista::WebSite->load(
-        title  => $data->{'title'},
-        href   => $data->{'href'},
-        outdir => $dest->child($domain),
-      );
+    my $website = Kalaclista::WebSite->load(
+      title  => $data->{'title'},
+      href   => $data->{'href'},
+      srcdir => $srcdir,
+    );
 
-      if ( $website->fetch ) {
-        print "Fetch: ${domain}: ${idx} (${max}): @{[ $website->href ]}\n";
-        $website->emit;
-        sleep( 3 + rand(3) );
-        next;
-      }
-
-      $website->emit;
-      print "Skip: ${domain}: ${idx} (${max}): @{[ $website->href ]}\n";
+    if ( $website->fetch ) {
+      print "Fetch: ${domain}: ${idx} (${max}): @{[ $website->href ]}\n";
+      $website->emit($srcdir);
+      sleep( 3 + rand(3) );
+      next;
     }
 
-    return { domain => $domain };
-  };
+    $website->emit($srcdir);
+    print "Skip: ${domain}: ${idx} (${max}): @{[ $website->href ]}\n";
+  }
+
+  return { domain => $domain };
 }
 
 sub main {
@@ -75,13 +75,12 @@ sub main {
 
   my $domains = {};
   my $loader  = Kalaclista::Sequential::Files->new(
-    process => sub {
-      my ( $processor, $file ) = @_;
+    handle => sub {
+      my $file = shift;
       return extract($file);
     },
     result => sub {
-      my ( $processor, @results ) = @_;
-      for my $website (@results) {
+      for my $website (@_) {
         unless ( defined $website->{'domain'}
           && defined $website->{'title'}
           && defined $website->{'href'} )
