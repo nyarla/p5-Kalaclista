@@ -14,7 +14,7 @@ my $config = Kalaclista::Config->instance(
     assets   => 'private/the.kalaclista.com/assets',
     content  => 'private/the.kalaclista.com/content',
     template => 'templates/the.kalaclista.com',
-    cache    => 'resources',
+    build    => 'resources/_build',
   },
 
   data => {
