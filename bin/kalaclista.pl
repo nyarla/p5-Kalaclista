@@ -2,75 +2,93 @@
 
 use strict;
 use warnings;
+use utf8;
 
-use Kalaclista::Config::Kalaclista qw(config);
-use Kalaclista::Directory;
-use Kalaclista::Sequential::Files;
-use Kalaclista::Utils qw( split_md make_fn );
+use Kalaclista::Application;
+use Kalaclista::Config;
 
-use Kalaclista::Page::SitemapXML;
+my $config = Kalaclista::Config->instance(
+  directory => {
+    dist     => 'dist/the.kalaclista.com',
+    data     => 'private/the.kalaclista.com/cache',
+    assets   => 'private/the.kalaclista.com/assets',
+    content  => 'private/the.kalaclista.com/content',
+    template => 'templates/the.kalaclista.com',
+    cache    => 'resources',
+  },
 
-use URI;
+  data => {
+    global => {
+      title   => 'カラクリスタ',
+      summary => '『輝かしい青春』なんて失かった人の Web サイトです',
+      links   => {
+        internals => [
+          { label => '運営方針', href => '/policies/' },
+          { label => '権利情報', href => '/licenses/' },
+          {
+            label => '検索',
+            href  =>
+'https://cse.google.com/cse?cx=018101178788962105892:toz3mvb2bhr#gsc.tab=0'
+          },
+        ],
+        externals => [
+          { label => 'GitHub',   href => 'https://github.com/nyarla/' },
+          { label => 'Zenn.dev', href => 'https://zenn.dev/nyarla' },
+          { label => 'Twitter',  href => 'https://twitter.com/kalaclista' },
+          { label => 'note',     href => 'https://note.com/kalaclista' },
+          { label => 'Lapras',   href => 'https://laspras.com/public/nyarla' },
+          { label => 'トピア',      href => 'https://user.topia.tv/5R9Y' },
+        ],
+      },
+    },
 
-my $dirs  = config->dirs;
-my $build = $dirs->build_dir;
+    posts => {
+      label   => 'ブログ',
+      title   => 'カラクリスタ・ブログ',
+      summary => '『輝かしい青春』なんて失かった人のブログです',
+    },
 
-my $actions = { split => \&_split_content, sitemap => \&_gen_sitemap_xml };
+    echos => {
+      label   => '日記',
+      title   => 'カラクリスタ・エコーズ',
+      summary => '『輝かしい青春』なんて失かった人の日記です',
+    },
 
-sub msg ($) {
-  my $msg = shift;
-  print $msg, "\n";
-}
+    notes => {
+      label   => 'メモ帳',
+      title   => 'カラクリスタ・ノート',
+      summary => '『輝かしい青春』なんて失かった人のメモ帳です',
+    },
+  },
+);
 
-sub _split_content {
-  msg q|split .md -> .md and .yaml |;
+my $app = Kalaclista::Application->new( config => $config );
 
-  my $runner = Kalaclista::Sequential::Files->new(
-    handle => sub {
-      my $file = shift;
-      my ( $yaml, $md ) = split_md $file;
+$app->run(@ARGV);
 
-      my $path = make_fn $file->stringify, $dirs->content_dir->stringify;
+=encoding utf-8
 
-      $build->child( '_content', $path )->parent->mkpath;
-      $build->child( '_content', "${path}.md" )->spew($md);
-      $build->child( '_content', "${path}.yaml" )->spew($yaml);
-    }
-  );
+=head1 NAME
 
-  $runner->run( $dirs->content_dir->stringify, '**', '*.md' );
+Kalaclista::Application - The static website generator for nyarla
 
-  return 0;
-}
+=head1 SYNOPSIS
 
-sub _gen_sitemap_xml {
-  my $baseURI = shift;
+  # kalaclista.pl - configuration script for website
+  $ kalaclista.pl -u 'http://nixos:1313' -a split-content
 
-  my $sitemap = Kalaclista::Page::SitemapXML->new(
-    baseURI => $baseURI,
-    srcdir  => $build->child('_content'),
-  );
+=head1 OPTIONS
 
-  $dirs->distdir->mkpath;
-  $sitemap->emit( $dirs->distdir->child('sitemap.xml') );
+=head2 --url,-u 
 
-  return 0;
-}
+The baseURI of generate website
 
-sub main {
-  my $production = (shift) eq 'production';
-  my $action     = shift;
+=head2 --action,-a 
 
-  my $domain   = ($production) ? 'the.kalaclista.com' : 'nixos:1313';
-  my $protocol = ($production) ? 'https'              : 'http';
-  my $baseURI  = URI->new("${protocol}://${domain}");
+The action name of running task.
 
-  if ( exists $actions->{$action} ) {
-    exit $actions->{$action}->($baseURI);
-  }
+=head1 AUTHOR
 
-  print STDERR "this action is not found: ${action}", "\n";
-  exit 1;
-}
+OKAMURA Naoki aka nyarla.
 
-main(@ARGV);
+=cut
