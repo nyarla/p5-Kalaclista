@@ -11,10 +11,9 @@ use Pod::Usage qw( pod2usage );
 use Module::Load qw(load);
 use URI;
 
-use Class::Accessor::Lite (
-  new => 1,
-  ro  => [qw( config )],
-);
+use Class::Accessor::Lite ( new => 1, rw => [qw(config)] );
+
+use Kalaclista::Config;
 
 sub action {
   my ( $self, $action, $baseURI ) = @_;
@@ -39,10 +38,12 @@ sub run {
 
   my $baseURI = q{};
   my $action  = q{};
+  my $config  = q{};
 
   GetOptions(
     "url|u=s"    => \$baseURI,
     "action|a=s" => \$action,
+    "config|c=s" => \$config,
     "version|v"  => sub {
       print "Kalaclista::Application - ${VERSION}", "\n";
       exit 0;
@@ -50,7 +51,13 @@ sub run {
     "help|h" => sub { pod2usage( -exitval => 1, -verbose => 1 ); },
   ) or pod2usage( -exitval => 1, -verbose => 1 );
 
+  if ( $baseURI eq {} || $action eq q{} || $config eq q{} ) {
+    pod2usage( -exitval => 1, -verbose => 1 );
+  }
+
+  $self->config( Kalaclista::Config->instance( ( do $config )->%* ) );
   $self->config->baseURI( URI->new($baseURI) );
+
   return $self->action($action);
 }
 

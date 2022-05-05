@@ -39,6 +39,10 @@ sub instance {
 }
 
 sub rootdir {
+  if ( @_ == 2 ) {
+    $rootdir = $_[1];
+  }
+
   return $rootdir;
 }
 
