@@ -2,13 +2,15 @@ package Kalaclista::Entry::Meta;
 
 use strict;
 use warnings;
+use utf8;
 
 use Carp qw(confess);
 use YAML::Tiny;
+use URI;
 
 use Class::Accessor::Lite (
   new => 1,
-  rw  => [qw( href title summary type date lastmod )],
+  rw  => [qw( href title summary type slug date lastmod )],
 );
 
 sub load {
@@ -29,26 +31,16 @@ sub load {
   my $data    = YAML::Tiny::Load( $file->slurp );
   my $title   = $data->{'title'};
   my $type    = $data->{'type'}    // q{pages};
+  my $slug    = $data->{'slug'}    // q{};
   my $date    = $data->{'date'}    // q{};
   my $lastmod = $data->{'lastmod'} // $date;
-
-  if ( exists $data->{'slug'} ) {
-    $href =~ s!notes/[^/]+!notes/$data->{'slug'}/!;
-  }
-
-  if ( $href =~ m{index} ) {
-    $href =~ s<(\d{4})/index><$1/>;
-  }
-
-  if ( $href =~ m{(posts|echos|notes)} ) {
-    $type = $1;
-  }
 
   return $class->new(
     title   => $title,
     summary => q{},
     type    => $type,
-    href    => $href,
+    slug    => $slug,
+    href    => URI->new($href),
     date    => $date,
     lastmod => $lastmod,
   );
