@@ -3,7 +3,7 @@ package Kalaclista::Actions::SplitContent;
 use strict;
 use warnings;
 
-use Kalaclista::Sequential::Files;
+use Kalaclista::Parallel::Files;
 use Kalaclista::Utils qw( split_md make_fn );
 
 sub action {
@@ -12,7 +12,7 @@ sub action {
   my $dir   = $app->config->dirs->content_dir->realpath;
   my $out   = $app->config->dirs->build_dir->realpath;
 
-  my $runner = Kalaclista::Sequential::Files->new(
+  my $runner = Kalaclista::Parallel::Files->new(
     handle => sub {
       my $file = shift;
 
@@ -23,6 +23,7 @@ sub action {
       $out->child("${fn}.md")->spew($md);
       $out->child("${fn}.yaml")->spew($yaml);
     },
+    worker_count => $app->config->threads,
   );
 
   $runner->run( $dir->stringify, '**', '*.md' );

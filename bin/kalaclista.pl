@@ -36,6 +36,10 @@ The action name of running task.
 
 The configuration file written by perl.
 
+=head2 --threads,-t
+
+The number of parallel threads.
+
 =head1 AUTHOR
 
 OKAMURA Naoki aka nyarla.

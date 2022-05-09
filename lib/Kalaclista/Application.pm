@@ -39,12 +39,14 @@ sub run {
   my $baseURI = q{};
   my $action  = q{};
   my $config  = q{};
+  my $threads = q{};
 
   GetOptions(
-    "url|u=s"    => \$baseURI,
-    "action|a=s" => \$action,
-    "config|c=s" => \$config,
-    "version|v"  => sub {
+    "url|u=s"     => \$baseURI,
+    "action|a=s"  => \$action,
+    "config|c=s"  => \$config,
+    "threads|t=i" => \$threads,
+    "version|v"   => sub {
       print "Kalaclista::Application - ${VERSION}", "\n";
       exit 0;
     },
@@ -57,6 +59,7 @@ sub run {
 
   $self->config( Kalaclista::Config->instance( ( do $config )->%* ) );
   $self->config->baseURI( URI->new($baseURI) );
+  $self->config->threads($threads);
 
   return $self->action($action);
 }
