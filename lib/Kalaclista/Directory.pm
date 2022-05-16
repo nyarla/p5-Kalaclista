@@ -6,25 +6,15 @@ use warnings;
 use FindBin;
 use File::Spec;
 use Path::Tiny qw(path tempdir);
+use Carp qw( confess );
 
 use Class::Accessor::Lite (
   new => 1,
-  ro  => [qw( dist data assets content build )],
+  ro  => [qw( dist data assets content build templates )],
+  rw  => [qw( root )],
 );
 
-my $rootdir;
 my $instance;
-
-BEGIN {
-  my @path = File::Spec->splitdir($FindBin::Bin);
-  my @dirs = qw( t xt scripts lib bin );
-
-  while ( defined( my $dir = pop @path ) ) {
-    if ( grep { $_ eq $dir } @dirs ) {
-      $rootdir = path( File::Spec->catdir(@path) )->realpath;
-    }
-  }
-}
 
 sub instance {
   my $proto = shift;
@@ -39,33 +29,69 @@ sub instance {
 }
 
 sub rootdir {
-  if ( @_ == 2 ) {
-    $rootdir = $_[1];
+  my $self = shift;
+
+  if ( ref( $self->root ) eq 'Path::Tiny' ) {
+    return $self->root;
   }
 
-  return $rootdir;
+  my $path = path($FindBin::Bin)->realpath;
+  my @dirs = (
+    qw( bin lib t xt ),
+    ( $self->dist      // 'dist' ),
+    ( $self->data      // 'data' ),
+    ( $self->assets    // 'assets' ),
+    ( $self->content   // 'content' ),
+    ( $self->templates // 'templates' ),
+  );
+
+  do {
+    for my $dir (@dirs) {
+      if ( $path->child($dir)->is_dir ) {
+        $self->root($path);
+        return $self->root;
+      }
+    }
+  } while ( defined( $path = $path->parent ) );
+
+  confess "cannot find root directory.";
 }
 
 sub distdir {
-  return $rootdir->child( (shift)->dist // 'dist' )->realpath;
+  my $self = shift;
+  return $self->rootdir->child( $self->dist // 'dist' )->realpath;
 }
 
 sub datadir {
-  return $rootdir->child( (shift)->data // 'data' )->realpath;
+  my $self = shift;
+  return $self->rootdir->child( $self->data // 'data' )->realpath;
 }
 
-sub assets_dir {
-  return $rootdir->child( (shift)->assets // 'assets' )->realpath;
+sub asests_dir {
+  my $self = shift;
+  return $self->rootdir->child( $self->assets // 'assets' )->realpath;
 }
 
 sub content_dir {
-  return $rootdir->child( (shift)->content // 'content' )->realpath;
+  my $self = shift;
+  return $self->rootdir->child( $self->content // 'content' )->realpath;
+}
+
+sub templates_dir {
+  my $self = shift;
+  return $self->rootdir->child( $self->templates // 'templates' )->realpath;
+}
+
+sub assets_dir {
+  my $self = shift;
+  return $self->rootdir->child( $self->assets // 'assets' )->realpath;
 }
 
 sub build_dir {
-  my $dir = shift->build;
+  my $self = shift;
+  my $dir  = $self->build;
   if ( defined $dir ) {
-    return $rootdir->child($dir)->realpath;
+    return $self->rootdir->child($dir)->realpath;
   }
   return tempdir( 'kalaclista_XXXXXX', CLEANUP => 1 )->realpath;
 }
