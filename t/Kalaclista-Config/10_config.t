@@ -7,8 +7,7 @@ use Test2::V0;
 use Kalaclista::Config;
 
 Kalaclista::Config->instance(
-  directory => {},
-  data      => {
+  data => {
     test => {
       hello => 'world',
     },
@@ -18,8 +17,7 @@ Kalaclista::Config->instance(
 sub main {
   my $config = Kalaclista::Config->instance;
 
-  isa_ok( $config,       'Kalaclista::Config' );
-  isa_ok( $config->dirs, 'Kalaclista::Directory' );
+  isa_ok( $config, 'Kalaclista::Config' );
 
   is( $config->section('test')->{'hello'}, 'world' );
 

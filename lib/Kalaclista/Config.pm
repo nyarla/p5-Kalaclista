@@ -26,7 +26,12 @@ sub instance {
 
 sub section {
   my ( $self, $section ) = @_;
-  return ( $self->data // {} )->{$section};
+
+  if ( exists $self->data->{$section} ) {
+    return $self->data->{$section};
+  }
+
+  return undef;
 }
 
 sub call {
