@@ -54,7 +54,7 @@ sub action {
         href => $href,
       );
 
-      $app->config->call( 'postprocess.entry.meta', $meta );
+      $app->config->call( 'entry.postprocess.meta', $meta );
 
       return $meta;
     },
