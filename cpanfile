@@ -8,6 +8,7 @@ requires 'HTML5::DOM',                      0;
 requires 'HTML::Escape',                    0;
 requires 'HTTP::Tinyish',                   0;
 requires 'Image::Scale',                    0;
+requires 'Module::CPANfile',                0;
 requires 'Parallel::Fork::BossWorkerAsync', 0;
 requires 'Path::Tiny',                      0;
 requires 'Path::Tiny::Glob',                0;
