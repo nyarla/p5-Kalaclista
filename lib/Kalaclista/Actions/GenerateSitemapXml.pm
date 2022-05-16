@@ -9,14 +9,22 @@ use Kalaclista::Utils qw( make_fn make_href );
 use Kalaclista::HyperScript qw(h);
 
 sub sitemap_xml {
-  my @urls = @_;
+  my @urls = sort { $b->href->as_string cmp $a->href->as_string } @_;
   my $out  = qq{<?xml version="1.0" encoding="UTF-8"?>\n};
   my @loc  = ();
 
-  for my $url (@urls) {
+  my $latest;
+  while ( defined( my $url = shift @urls ) ) {
+    my $modified = $url->lastmod;
+    if ( $modified eq q{} ) {
+      $modified = $latest->lastmod;
+    }
+
     push @loc,
       h( 'url',
-      [ h( 'loc', $url->href->as_string ), h( 'lastmod', $url->lastmod ) ] );
+      [ h( 'loc', $url->href->as_string ), h( 'lastmod', $modified ), ] );
+
+    $latest = $url;
   }
 
   return $out
