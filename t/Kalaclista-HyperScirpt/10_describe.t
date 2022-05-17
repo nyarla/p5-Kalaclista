@@ -5,24 +5,26 @@ use warnings;
 
 use Test2::V0;
 
-use Kalaclista::HyperScript qw(h p hr img);
+use Kalaclista::HyperScript qw(p hr link true false);
 
 sub main {
-  is( h('hr'), '<hr />' );
 
-  is( h( 'p',   'hi' ),             '<p>hi</p>' );
-  is( h( 'p',   [ 'hello', "!" ] ), '<p>hello!</p>' );
-  is( h( 'img', { src => 'foo', alt => "bar" } ),
-    '<img alt="bar" src="foo" />' );
+  # black element
+  is( hr, "<hr />" );
 
-  is( h( 'p', { class => 'foo' }, 'hi' ),          '<p class="foo">hi</p>' );
-  is( h( 'p', { class => 'foo' }, [ 'hi', "!" ] ), '<p class="foo">hi!</p>' );
-  is( h( 'p', [ 'hi', "!" ], { class => 'foo' } ), '<p class="foo">hi!</p>' );
+  # element attribute
+  is( hr( { class => [qw(foo bar')] } ), qq(<hr class="bar&#39; foo" />) );
+  is(
+    hr( { data => { foo => 'bar', bar => 'baz' } } ),
+    qq(<hr data-bar="baz" data-foo="bar" />)
+  );
+  is( link( { crossorigin => true } ), qq(<link crossorigin />) );
+  is( link( { crossorigin => true }, { crossorigin => false } ), qq(<link />) );
+  is( hr( { class => 'foo bar' } ), qq(<hr class="foo bar" />) );
 
-  is( hr,                                    '<hr />' );
-  is( p('hi'),                               '<p>hi</p>' );
-  is( p( { id => 'hey' }, 'hi' ),            '<p id="hey">hi</p>' );
-  is( img( { alt => "foo", src => "bar" } ), '<img alt="foo" src="bar" />' );
+  # element with child content
+  is( p(qw( foo bar baz )),                 qq(<p>foobarbaz</p>) );
+  is( p( { class => 'foo' }, qw(bar baz) ), qq(<p class="foo">barbaz</p>) );
 
   done_testing;
 }

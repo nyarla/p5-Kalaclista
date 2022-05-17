@@ -3,10 +3,7 @@
 use strict;
 use warnings;
 
-use Test2::V0;
-
 use Kalaclista::HyperScript;
 
-ok(1);
-
-done_testing;
+print "ok 1", "\n";
+print "1..1", "\n";
