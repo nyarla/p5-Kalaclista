@@ -1,0 +1,15 @@
+  DataValidator = buildPerlModule {
+    pname = "Data-Validator";
+    version = "1.07";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/G/GF/GFUJI/Data-Validator-1.07.tar.gz";
+      sha256 = "a1f96420e93c0f77c1faeb1954701580288a5bffed57a1e434e5811965500ff1";
+    };
+    buildInputs = [ TestRequires ];
+    propagatedBuildInputs = [ Mouse ];
+    meta = {
+      homepage = "https://github.com/gfx/p5-Data-Validator";
+      description = "Rule based validator on type constraint system";
+      license = with lib.licenses; [ artistic1 gpl1Plus ];
+    };
+  };

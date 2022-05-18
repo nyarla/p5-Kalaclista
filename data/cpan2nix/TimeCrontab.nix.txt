@@ -1,0 +1,14 @@
+  TimeCrontab = buildPerlModule {
+    pname = "Time-Crontab";
+    version = "0.04";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/K/KA/KAZEBURO/Time-Crontab-0.04.tar.gz";
+      sha256 = "b5dc7bb2c30424b41144523bdc8c90b904efedb12c736624c0c749a36395ba6f";
+    };
+    propagatedBuildInputs = [ ListMoreUtils SetCrontab ];
+    meta = {
+      homepage = "https://github.com/kazeburo/Time-Crontab";
+      description = "Parser for crontab date and time field";
+      license = with lib.licenses; [ artistic1 gpl1Plus ];
+    };
+  };

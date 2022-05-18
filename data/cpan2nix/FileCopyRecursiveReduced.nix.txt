@@ -1,0 +1,14 @@
+  FileCopyRecursiveReduced = buildPerlPackage {
+    pname = "File-Copy-Recursive-Reduced";
+    version = "0.006";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/J/JK/JKEENAN/File-Copy-Recursive-Reduced-0.006.tar.gz";
+      sha256 = "e618f993a69f4355205c58fffff6982609f28b47f646ec6e244e41b5c6707e2c";
+    };
+    buildInputs = [ CaptureTiny PathTiny ];
+    meta = {
+      homepage = "http://thenceforward.net/perl/modules/File-Copy-Recursive-Reduced/";
+      description = "Recursive copying of files and directories within Perl 5 toolchain";
+      license = with lib.licenses; [ artistic1 gpl1Plus ];
+    };
+  };
