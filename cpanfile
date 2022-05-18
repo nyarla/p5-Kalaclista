@@ -14,6 +14,7 @@ requires( 'Parallel::Fork::BossWorkerAsync', 0 );
 requires( 'Path::Tiny',                      0 );
 requires( 'Path::Tiny::Glob',                0 );
 requires( 'Plack',                           0 );
+requires( 'Plack::Middleware::DirIndex',     0 );
 requires( 'Proclet',                         0 );
 requires( 'Sub::Uplevel',                    0 );
 requires( 'Test2::V0',                       0 );
