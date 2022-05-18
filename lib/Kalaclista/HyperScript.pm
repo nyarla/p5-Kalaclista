@@ -8,7 +8,7 @@ use HTML::Escape;
 use Carp qw(confess);
 
 BEGIN {
-  our @EXPORT_OK = qw(
+  our @EXPORT = qw(
     a
     abbr
     address
@@ -64,7 +64,7 @@ BEGIN {
     label
     legend
     li
-    link
+    link_
     main
     map
     mark
@@ -115,7 +115,7 @@ BEGIN {
     wbr
   );
 
-  for my $method (@EXPORT_OK) {
+  for my $method (@EXPORT) {
     my $tag = $method;
     $tag =~ s{_}{}g;
 
@@ -125,7 +125,7 @@ BEGIN {
     };
   }
 
-  push @EXPORT_OK, qw( h text true false );
+  push @EXPORT, qw( h text true false );
 }
 
 sub true {
