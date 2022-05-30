@@ -35,8 +35,8 @@ sub section {
 }
 
 sub call {
-  my ( $self, $method, $href ) = @_;
-  return ( $self->functions->{$method} // sub { } )->($href);
+  my ( $self, $method, @args ) = @_;
+  return ( $self->functions->{$method} // sub { } )->(@args);
 }
 
 1;
