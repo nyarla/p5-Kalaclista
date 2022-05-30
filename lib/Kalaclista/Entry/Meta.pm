@@ -28,7 +28,7 @@ sub load {
     confess 'argument `href` is empty.';
   }
 
-  my $data    = YAML::Tiny::Load( $file->slurp );
+  my $data    = YAML::Tiny::Load( $file->slurp_utf8 );
   my $title   = $data->{'title'};
   my $type    = $data->{'type'}    // q{pages};
   my $slug    = $data->{'slug'}    // q{};
