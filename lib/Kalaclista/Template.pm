@@ -23,6 +23,7 @@ sub load {
 
   use Kalaclista::HyperScript;
   use Kalaclista::HyperScript::HTMLUtils;
+  use Kalaclista::HyperStyle;
   use Kalaclista::Template;
 
   @{[ path($path)->slurp_utf8 ]}
