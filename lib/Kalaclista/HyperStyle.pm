@@ -5,7 +5,7 @@ use warnings;
 
 use Exporter 'import';
 
-our @EXPORT_OK = qw(
+our @EXPORT = qw(
   css
 );
 
@@ -13,7 +13,7 @@ sub key {
   my $key    = shift;
   my $parent = shift // '';
 
-  $key =~ s{([A-Z])}{'-' . lc($1)}es;
+  $key =~ s{([A-Z])}{'-' . lc($1)}eg;
 
   return $key;
 }
@@ -61,7 +61,7 @@ sub __css {
       }
 
       if ( ref $data eq 'ARRAY' ) {
-        push $rules->@*, $name, $data;
+        unshift $rules->@*, $name, $data;
         push $parents->@*, selector( $key, $parent );
       }
     }
