@@ -93,6 +93,7 @@ BEGIN {
     section
     select_
     small
+    style
     source
     span
     strong
