@@ -9,7 +9,7 @@ our @EXPORT = qw(
   css
 );
 
-sub key {
+sub prop {
   my $key    = shift;
   my $parent = shift // '';
 
@@ -20,88 +20,88 @@ sub key {
 
 sub selector {
   my $sel    = shift;
-  my $parent = shift;
+  my $prefix = shift;
 
-  return $sel if ( $parent eq q{} );
+  return $sel if ( !defined $prefix || ( !ref $prefix && $prefix eq q{} ) );
 
-  if ( $sel =~ m{&} ) {
-    $sel =~ s{&}{$parent}g;
+  $prefix = [$prefix] if ( !ref $prefix );
+
+  my @out;
+  for my $parent ( $prefix->@* ) {
+    my $item = $sel;
+    if ( $item =~ m{&} ) {
+      $item =~ s{&}{$parent}g;
+    }
+    else {
+      $item = "${parent} ${sel}";
+    }
+
+    push @out, $item;
   }
-  else {
-    $sel = "${parent} ${sel}";
-  }
 
-  return $sel;
+  return join q{, }, @out;
 }
 
-sub __css {
-  my $rules   = shift;
-  my $parents = shift;
-  my @out;
+sub _css {
+  my $rules = shift;
+  my $data  = [];
 
-  return @out if ( $rules->@* == 0 );
+  my $rule = [];
 
-  my $parent = pop $parents->@* // '';
+  while ( $rules->@* > 0 ) {
+    my $key   = shift $rules->@*;
+    my $value = shift $rules->@*;
 
-  my ( $key, $val );
-  $key = shift $rules->@*;
-  $val = shift $rules->@*;
+    if ( !ref $value ) {
+      push $rule->@*, $key, $value;
+    }
 
-  return if ( !defined $key || !defined $val );
+    if ( ref $value ) {
+      while ( $value->@* ) {
+        my $name = shift $value->@*;
+        my $prop = shift $value->@*;
 
-  if ( ref $val eq 'ARRAY' ) {
-    my ( $name, $data );
-    while ( $val->@* ) {
-      $name = shift $val->@*;
-      $data = shift $val->@*;
-
-      if ( !ref $data ) {
-        push @out, [ selector( $key, $parent ), key($name), $data ];
-        next;
-      }
-
-      if ( ref $data eq 'ARRAY' ) {
-        unshift $rules->@*, $name, $data;
-        push $parents->@*, selector( $key, $parent );
+        if ( !ref $prop ) {
+          push $rule->@*, $key, prop($name), $prop;
+          push $data->@*, $rule;
+          $rule = [];
+        }
+        elsif ( ref $prop eq 'ARRAY' ) {
+          unshift $rules->@*, selector( $name, $key ), $prop;
+        }
       }
     }
   }
 
-  return @out;
-}
-
-sub _css {
-  my $rules   = shift;
-  my $parents = [];
-  my @out;
-
-  while ( $rules->@* > 0 ) {
-    push @out, __css( $rules, $parents, @out );
-  }
-
-  return @out;
+  return $data;
 }
 
 sub _as_string {
-  my @css = @_;
-
-  my @order;
-  my %out;
-
-  for my $data (@css) {
-    my ( $sel, $prop, $val ) = $data->@*;
-
-    push @order, $sel if ( !exists $out{$sel} );
-    $out{$sel} //= {};
-    $out{$sel}->{$prop} = $val;
-  }
+  my ($payload) = @_;
 
   my $out;
-  for my $sel (@order) {
-    $out .= $sel . '{';
-    $out .= $_ . ':' . $out{$sel}->{$_} . ';' for ( sort keys $out{$sel}->%* );
-    $out .= '}';
-  }
+  my $prev;
+  do {
+    my $data = shift $payload->@*;
+    my ( $sel, $key, $value ) = $data->@*;
+
+    if ( !defined $prev || $prev ne $sel ) {
+      if ( defined $prev ) {
+        $out .= '}';
+      }
+
+      $out .= $sel . '{';
+    }
+
+    if ( !defined $prev || $prev ne $sel ) {
+    }
+
+    $out .= $key . ':' . $value . ";";
+
+    $prev = $sel;
+  } while ( $payload->@* > 0 );
+
+  $out .= '}';
 
   return $out;
 }

@@ -33,6 +33,15 @@ sub main {
     "p{font-size:1em;font-weight:bold;}p p{font-size:1em;}"
   );
 
+  is(
+    css(
+      [
+        [qw( p li )] => [ em => [ fontSize => '1em' ] ],
+      ]
+    ),
+    "p em, li em{font-size:1em;}",
+  );
+
   done_testing;
 }
 
