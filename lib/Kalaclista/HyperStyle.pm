@@ -97,10 +97,24 @@ sub _as_selector_string {
   for my $selectors ( $data->@* ) {
     $selectors = [$selectors] if ( !ref $selectors );
 
-    my $sel = shift $selectors->@*;
-    for my $parent ( $selectors->@* ) {
-      $sel = replace( $sel, $parent );
+    my $sel;
+    for ( my $idx = scalar( $selectors->@* ) ; $idx > -1 ; $idx-- ) {
+      my $el = $selectors->[$idx];
+      if ( !defined $sel ) {
+        $sel = $el;
+        next;
+      }
+
+      if ( $el =~ m{&} ) {
+        $el =~ s{&}{$sel}g;
+      }
+      else {
+        $el = $sel . ' ' . $el;
+      }
+
+      $sel = $el;
     }
+
     push @out, $sel;
   }
 
@@ -124,9 +138,6 @@ sub _as_string {
       }
 
       $out .= $sel . '{';
-    }
-
-    if ( !defined $prev || $prev ne $sel ) {
     }
 
     $out .= $key . ':' . $value . ";";

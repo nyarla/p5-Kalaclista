@@ -45,11 +45,25 @@ sub main {
   is(
     css(
       [
-        [qw(p li)] => [ em => [ [qw(a img)] => [ backgroundColor => 'blue' ] ] ]
+        [qw(p li)] => [
+          em => [ [qw(a img)] => [ backgroundColor => 'blue', color => 'red' ] ]
+        ]
       ],
     ),
 
-    "p em a,p em img,li em a,li em img{background-color:blue;}"
+    "p em a,p em img,li em a,li em img{background-color:blue;color:red;}"
+  );
+
+  is(
+    css(
+      [
+        ul => [
+          li           => [ listStyle  => 'none' ],
+          '& a,& span' => [ fontWeight => 'bold' ],
+        ],
+      ]
+    ),
+    "ul a,ul span{font-weight:bold;}ul li{list-style:none;}"
   );
 
   done_testing;
