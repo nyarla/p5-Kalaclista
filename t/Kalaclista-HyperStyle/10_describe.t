@@ -39,7 +39,17 @@ sub main {
         [qw( p li )] => [ em => [ fontSize => '1em' ] ],
       ]
     ),
-    "p em, li em{font-size:1em;}",
+    "p em,li em{font-size:1em;}",
+  );
+
+  is(
+    css(
+      [
+        [qw(p li)] => [ em => [ [qw(a img)] => [ backgroundColor => 'blue' ] ] ]
+      ],
+    ),
+
+    "p em a,p em img,li em a,li em img{background-color:blue;}"
   );
 
   done_testing;

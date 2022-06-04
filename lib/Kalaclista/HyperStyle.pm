@@ -18,28 +18,41 @@ sub prop {
   return $key;
 }
 
-sub selector {
+sub replace {
   my $sel    = shift;
   my $prefix = shift;
 
-  return $sel if ( !defined $prefix || ( !ref $prefix && $prefix eq q{} ) );
-
-  $prefix = [$prefix] if ( !ref $prefix );
-
-  my @out;
-  for my $parent ( $prefix->@* ) {
-    my $item = $sel;
-    if ( $item =~ m{&} ) {
-      $item =~ s{&}{$parent}g;
-    }
-    else {
-      $item = "${parent} ${sel}";
-    }
-
-    push @out, $item;
+  if ( $sel =~ m{&} ) {
+    $sel =~ s{&}{$prefix}g;
+  }
+  else {
+    $sel = "${prefix} ${sel}";
   }
 
-  return join q{, }, @out;
+  return $sel;
+}
+
+sub selector {
+  my $selectors = shift;
+  my $prefixes  = shift // [];
+
+  $prefixes  = [$prefixes]  if ( !ref $prefixes );
+  $selectors = [$selectors] if ( !ref $selectors );
+
+  if ( $prefixes->@* == 0 ) {
+    return [ map { [$_] } $selectors->@* ];
+  }
+
+  my $out = [];
+  for ( my $idx = 0 ; $idx < scalar( $prefixes->@* ) ; $idx++ ) {
+    my $prefix = $prefixes->[$idx];
+    $prefix = [$prefix] if ( !ref $prefix );
+    for my $s ( $selectors->@* ) {
+      push $out->@*, [ $s, $prefix->@* ];
+    }
+  }
+
+  return $out;
 }
 
 sub _css {
@@ -76,6 +89,24 @@ sub _css {
   return $data;
 }
 
+sub _as_selector_string {
+  my $data = shift;
+  $data = [$data] if ( !ref $data );
+
+  my @out;
+  for my $selectors ( $data->@* ) {
+    $selectors = [$selectors] if ( !ref $selectors );
+
+    my $sel = shift $selectors->@*;
+    for my $parent ( $selectors->@* ) {
+      $sel = replace( $sel, $parent );
+    }
+    push @out, $sel;
+  }
+
+  return join q{,}, @out;
+}
+
 sub _as_string {
   my ($payload) = @_;
 
@@ -84,6 +115,8 @@ sub _as_string {
   do {
     my $data = shift $payload->@*;
     my ( $sel, $key, $value ) = $data->@*;
+
+    $sel = _as_selector_string($sel);
 
     if ( !defined $prev || $prev ne $sel ) {
       if ( defined $prev ) {
