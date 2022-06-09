@@ -1,23 +1,4 @@
-JOBS = $(shell cat /proc/cpuinfo | grep processor | tail -n1 | cut -d\  -f2)
-CWD = $(shell pwd)
-SRC = $(shell pwd)
-
-#	.PHONY: fetch-shopping fetch-shopping-domains fetch-website
-
-#	fetch-shopping: entries-split
-#		@perl -Ilib scripts/generates/fetch-shopping.pl $(SRC)/resources/_sources private/the.kalaclista.com/cache/shopping
-#		@prettier -w private/the.kalaclista.com/cache/shopping/*.yaml
-
-#	fetch-shopping-domains:
-#		@pt -e '^\[[^\]]+\]\([^)]+\)$$' private/content | sed 's!./[^:]\+:[0-9]\+:!!' | sed 's![^]]\+](!!' | cut -d/ -f3 | sort -u | xargs -I{} echo 'qr<{}>,'
-
-#	fetch-website: _build_source_split
-#		@perl -Ilib scripts/generates/fetch-website.pl $(SRC)/resources/_content private/the.kalaclista.com/cache/website $(JOBS)
-
-#	.PHONY: migrate-shopping
-
-# 	migrate-shopping:
-# 		@perl -Ilib scripts/migrate/affiliate.pl private/the.kalaclista.com/cache/shopping > private/the.kalaclista.com/data/affiliate.yaml
+JOBS = $(shell nproc --all --ignore 1)
 
 .PHONY: cpan2nix cpan2nix-dump cpan2nix-makenix cpan2nix-build
 
