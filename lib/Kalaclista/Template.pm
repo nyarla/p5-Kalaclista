@@ -20,6 +20,7 @@ sub load {
 
   use strict;
   use warnings;
+  use utf8;
 
   use Kalaclista::HyperScript;
   use Kalaclista::HyperScript::HTMLUtils;
