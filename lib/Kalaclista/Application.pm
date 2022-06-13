@@ -16,7 +16,7 @@ use Class::Accessor::Lite ( new => 1, rw => [qw(config)] );
 use Kalaclista::Config;
 
 sub action {
-  my ( $self, $action, $baseURI ) = @_;
+  my ( $self, $action ) = @_;
 
   my $module = join q{}, ( map { ucfirst $_ } ( split qr{-}, $action ) );
   $module = "Kalaclista::Actions::${module}";
@@ -55,6 +55,11 @@ sub run {
 
   if ( $baseURI eq {} || $action eq q{} || $config eq q{} ) {
     pod2usage( -exitval => 1, -verbose => 1 );
+  }
+
+  if ( !-e $config ) {
+    print STDERR "configuraton file is not found: ${config}\n";
+    exit 1;
   }
 
   $self->config( Kalaclista::Config->instance( ( do $config )->%* ) );
