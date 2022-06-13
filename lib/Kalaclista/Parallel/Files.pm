@@ -45,7 +45,10 @@ sub run {
 
   $bw->add_work(@files);
   while ( $bw->pending ) {
-    $bw->get_result;
+    my $result = $bw->get_result;
+    if ( exists $result->{'ERROR'} ) {
+      print STDERR $result->{'ERROR'} . "\n";
+    }
   }
 
   $bw->shut_down();
