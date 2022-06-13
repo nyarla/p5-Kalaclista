@@ -67,11 +67,6 @@ sub datadir {
   return $self->rootdir->child( $self->data // 'data' )->realpath;
 }
 
-sub asests_dir {
-  my $self = shift;
-  return $self->rootdir->child( $self->assets // 'assets' )->realpath;
-}
-
 sub content_dir {
   my $self = shift;
   return $self->rootdir->child( $self->content // 'content' )->realpath;
