@@ -11,14 +11,14 @@ use Kalaclista::Directory;
 my $dirs = Kalaclista::Directory->instance;
 
 sub main {
+  my $config = $dirs->rootdir->child('t/fixtures/config.pl')->stringify;
+
   my @argv = (
-    '--config'  => $dirs->rootdir->child('t/fixtures/config.pl')->realpath,
+    '--config'  => $config,
     '--url'     => 'https://example.com',
     '--threads' => 3,
     '--action'  => 'running-test',
   );
-
-  print $argv[1], "\n";
 
   my $app = Kalaclista::Application->new;
   $app->run(@argv);

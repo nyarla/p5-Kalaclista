@@ -4,6 +4,8 @@ use strict;
 use warnings;
 
 use Test2::V0;
+use URI;
+
 use Kalaclista::Config;
 use Kalaclista::Directory;
 use Kalaclista::Entry::Meta;
@@ -21,6 +23,8 @@ Kalaclista::Config->instance(
       is( \@args, [ 1, 2, 3 ] );
     },
   ],
+  baseURI => URI->new('https://example.com'),
+  threads => 3,
 );
 
 sub main {
