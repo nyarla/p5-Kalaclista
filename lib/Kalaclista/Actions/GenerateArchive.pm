@@ -31,7 +31,7 @@ sub action {
         href => $href,
       );
 
-      $app->config->call( 'entry.postprocess.meta', $meta );
+      $app->config->call( 'postprocess', $meta );
 
       return $meta;
     },
@@ -40,10 +40,11 @@ sub action {
     },
   );
 
-  my @entries = $runner->run( $build->stringify, "**", '*.yaml' );
+  my @files = $runner->run( $build->stringify, "**", '*.yaml' );
+  my @entries;
+  $app->config->call( 'pages', \@entries, \@files );
 
-  my @pages = map { $_->baseURI( $app->config->baseURI ); $_ }
-    $app->config->call( 'entries.archives.pages', @entries );
+  my @pages = map { $_->baseURI( $app->config->baseURI ); $_ } @entries;
 
   my $bw = Parallel::Fork::BossWorkerAsync->new(
     work_handler => sub {

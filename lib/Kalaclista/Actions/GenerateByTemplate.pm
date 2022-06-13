@@ -10,7 +10,8 @@ sub action {
   my $app   = shift;
 
   my $out   = $app->config->dirs->distdir->realpath;
-  my $files = $app->config->call('file.generate.templates');
+  my $files = [];
+  $app->config->call( 'find.templates', $files );
 
   while ( $files->@* > 0 ) {
     my $path = shift $files->@*;
