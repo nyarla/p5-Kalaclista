@@ -23,7 +23,7 @@ sub action {
       $out->child("${fn}.md")->spew($md);
       $out->child("${fn}.yaml")->spew($yaml);
     },
-    worker_count => $app->config->threads,
+    threads => $app->config->threads,
   );
 
   $runner->run( $dir->stringify, '**', '*.md' );
