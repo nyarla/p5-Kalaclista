@@ -5,7 +5,7 @@ use warnings;
 
 use Test2::V0;
 
-use Kalaclista::HyperScript qw(p hr link true false);
+use Kalaclista::HyperScript qw(p hr link_ true false);
 
 sub main {
 
@@ -18,8 +18,9 @@ sub main {
     hr( { data => { foo => 'bar', bar => 'baz' } } ),
     qq(<hr data-bar="baz" data-foo="bar" />)
   );
-  is( link( { crossorigin => true } ), qq(<link crossorigin />) );
-  is( link( { crossorigin => true }, { crossorigin => false } ), qq(<link />) );
+  is( link_( { crossorigin => true } ), qq(<link crossorigin />) );
+  is( link_( { crossorigin => true }, { crossorigin => false } ),
+    qq(<link />) );
   is( hr( { class => 'foo bar' } ), qq(<hr class="foo bar" />) );
 
   # element with child content
