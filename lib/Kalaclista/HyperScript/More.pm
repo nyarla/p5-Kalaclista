@@ -1,4 +1,4 @@
-package Kalaclista::HyperScript::HTMLUtils;
+package Kalaclista::HyperScript::More;
 
 use strict;
 use warnings;
