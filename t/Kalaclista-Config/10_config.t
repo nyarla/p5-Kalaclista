@@ -5,13 +5,22 @@ use warnings;
 
 use Test2::V0;
 use Kalaclista::Config;
+use Kalaclista::Directory;
+use Kalaclista::Entry::Meta;
 
 Kalaclista::Config->instance(
+  dirs => Kalaclista::Directory->instance,
   data => {
-    test => {
-      hello => 'world',
+    test => { msg => 'hello' },
+  },
+  hooks => [
+    [ 'Kalaclista::Entry::Meta', 'postprocess' ] => sub {
+      my ( $meta, @args ) = @_;
+
+      isa_ok( $meta, 'Kalaclista::Entry::Meta' );
+      is( \@args, [ 1, 2, 3 ] );
     },
-  }
+  ],
 );
 
 sub main {
@@ -19,7 +28,9 @@ sub main {
 
   isa_ok( $config, 'Kalaclista::Config' );
 
-  is( $config->section('test')->{'hello'}, 'world' );
+  is( $config->section('test')->{'msg'}, 'hello' );
+
+  $config->call( Kalaclista::Entry::Meta->new, 1, 2, 3 );
 
   done_testing;
 }
