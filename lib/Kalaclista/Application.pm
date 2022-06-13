@@ -62,9 +62,13 @@ sub run {
     exit 1;
   }
 
-  $self->config( Kalaclista::Config->instance( ( do $config )->%* ) );
-  $self->config->baseURI( URI->new($baseURI) );
-  $self->config->threads($threads);
+  $self->config(
+    Kalaclista::Config->instance(
+      ( do $config )->%*,
+      baseURI => URI->new($baseURI),
+      threads => $threads,
+    )
+  );
 
   return $self->action($action);
 }

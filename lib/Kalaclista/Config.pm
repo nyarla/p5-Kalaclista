@@ -25,10 +25,20 @@ sub new {
     confess '`hooks` must be a ARRAY reference.';
   }
 
+  if ( ref( $args->{'baseURI'} ) !~ m{^URI::} ) {
+    confess '`baseURI` must be a URI-ish classes';
+  }
+
+  if ( $args->{'threads'} !~ m{^\d+$} ) {
+    confess '`threads` must be a positive number';
+  }
+
   return bless {
-    dirs  => $args->{'dirs'},
-    data  => $args->{'data'},
-    hooks => $args->{'hooks'},
+    dirs    => $args->{'dirs'},
+    data    => $args->{'data'},
+    hooks   => $args->{'hooks'},
+    baseURI => $args->{'baseURI'},
+    threads => $args->{'threads'},
   }, $class;
 }
 
@@ -55,18 +65,18 @@ sub section {
 }
 
 sub call {
-  my ( $self, $hook, $object, @args ) = @_;
+  my ( $self, $hook, @args ) = @_;
 
   for ( my $idx = 0 ; $idx < $self->hooks->@* ; $idx++ ) {
     my $matcher = $self->hooks->[$idx];
     my $action  = $self->hooks->[ ++$idx ];
 
-    if ( $matcher->[0] eq ref($object) && $matcher->[1] eq $action ) {
-      $object = $action->( $object, @args );
+    if ( $matcher->[0] eq ref( $args[0] ) && $matcher->[1] eq $hook ) {
+      $action->(@args);
     }
   }
 
-  return $object;
+  return 1;
 }
 
 1;
