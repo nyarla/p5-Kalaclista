@@ -11,7 +11,7 @@ use Carp qw( confess );
 use Class::Accessor::Lite (
   new => 1,
   ro  => [qw( dist data assets content build templates )],
-  rw  => [qw( root )],
+  rw  => [qw( root tmp )],
 );
 
 my $instance;
@@ -98,7 +98,12 @@ sub assets_dir {
 }
 
 sub build_dir {
-  my $self  = shift;
+  my $self = shift;
+
+  if ( defined $self->tmp ) {
+    return $self->tmp;
+  }
+
   my $build = $self->build;
 
   my $dir =
@@ -107,7 +112,11 @@ sub build_dir {
     : tempdir( 'kalaclista_XXXXXX', CLEANUP => 1 );
 
   $dir->mkpath if ( !$dir->is_dir );
-  return $dir->realpath;
+  $dir->realpath;
+
+  $self->tmp($dir);
+
+  return $self->tmp;
 }
 
 1;
