@@ -59,36 +59,55 @@ sub rootdir {
 
 sub distdir {
   my $self = shift;
-  return $self->rootdir->child( $self->dist // 'dist' )->realpath;
+  my $dir  = $self->rootdir->child( $self->dist // 'dist' );
+
+  $dir->mkpath if ( !$dir->is_dir );
+  return $dir->realpath;
 }
 
 sub datadir {
   my $self = shift;
-  return $self->rootdir->child( $self->data // 'data' )->realpath;
+  my $dir  = $self->rootdir->child( $self->data // 'data' );
+
+  $dir->mkpath if ( !$dir->is_dir );
+  return $dir->realpath;
 }
 
 sub content_dir {
   my $self = shift;
-  return $self->rootdir->child( $self->content // 'content' )->realpath;
+  my $dir  = $self->rootdir->child( $self->content // 'content' );
+
+  $dir->mkpath if ( !$dir->is_dir );
+  return $dir->realpath;
 }
 
 sub templates_dir {
   my $self = shift;
-  return $self->rootdir->child( $self->templates // 'templates' )->realpath;
+  my $dir  = $self->rootdir->child( $self->templates // 'templates' );
+
+  $dir->mkpath if ( !$dir->is_dir );
+  return $dir->realpath;
 }
 
 sub assets_dir {
   my $self = shift;
-  return $self->rootdir->child( $self->assets // 'assets' )->realpath;
+  my $dir  = $self->rootdir->child( $self->assets // 'assets' );
+
+  $dir->mkpath if ( !$dir->is_dir );
+  return $dir->realpath;
 }
 
 sub build_dir {
-  my $self = shift;
-  my $dir  = $self->build;
-  if ( defined $dir ) {
-    return $self->rootdir->child($dir)->realpath;
-  }
-  return tempdir( 'kalaclista_XXXXXX', CLEANUP => 1 )->realpath;
+  my $self  = shift;
+  my $build = $self->build;
+
+  my $dir =
+    defined $build
+    ? $self->rootdir->child($build)
+    : tempdir( 'kalaclista_XXXXXX', CLEANUP => 1 );
+
+  $dir->mkpath if ( !$dir->is_dir );
+  return $dir->realpath;
 }
 
 1;

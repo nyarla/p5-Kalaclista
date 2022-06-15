@@ -9,6 +9,8 @@ use Kalaclista::Directory;
 
 sub main {
   my $dirs = Kalaclista::Directory->instance;
+  $dirs->root( $dirs->build_dir );
+
   my $root = $dirs->rootdir;
 
   is( $dirs->distdir->stringify,       $root->child('dist')->stringify );
@@ -18,6 +20,7 @@ sub main {
   is( $dirs->templates_dir->stringify, $root->child('templates')->stringify );
   like( $dirs->build_dir->stringify, qr<kalaclista_\w{6}> );
 
+  done_testing;
 }
 
 main;
