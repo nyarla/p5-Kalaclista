@@ -5,15 +5,14 @@ use warnings;
 
 our $VERSION = "v0.0.1";
 
-use Getopt::Long
-  qw( :config posix_default no_ignore_case bundling auto_help auto_version );
+use Getopt::Long qw( :config posix_default no_ignore_case bundling );
 use Pod::Usage qw( pod2usage );
 use Module::Load qw(load);
 use URI;
 
-use Class::Accessor::Lite ( new => 1, rw => [qw(config)] );
+use Class::Accessor::Lite ( new => 1, rw => [qw(context)] );
 
-use Kalaclista::Config;
+use Kalaclista::Context;
 
 sub action {
   my ( $self, $action ) = @_;
@@ -29,7 +28,7 @@ sub action {
     exit 1;
   }
 
-  return $module->action($self);
+  return $module->action( $self->context );
 }
 
 sub run {
@@ -62,8 +61,8 @@ sub run {
     exit 1;
   }
 
-  $self->config(
-    Kalaclista::Config->instance(
+  $self->context(
+    Kalaclista::Context->instance(
       ( do $config )->%*,
       baseURI => URI->new($baseURI),
       threads => $threads,

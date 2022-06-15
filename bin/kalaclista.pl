@@ -5,7 +5,6 @@ use warnings;
 use utf8;
 
 use Kalaclista::Application;
-use Kalaclista::Config;
 
 my $app = Kalaclista::Application->new;
 

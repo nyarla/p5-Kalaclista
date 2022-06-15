@@ -6,11 +6,11 @@ use warnings;
 use Test2::V0;
 use URI;
 
-use Kalaclista::Config;
+use Kalaclista::Context;
 use Kalaclista::Directory;
 use Kalaclista::Entry::Meta;
 
-Kalaclista::Config->instance(
+Kalaclista::Context->instance(
   dirs => Kalaclista::Directory->instance,
   data => {
     test => { msg => 'hello' },
@@ -28,9 +28,9 @@ Kalaclista::Config->instance(
 );
 
 sub main {
-  my $config = Kalaclista::Config->instance;
+  my $config = Kalaclista::Context->instance;
 
-  isa_ok( $config, 'Kalaclista::Config' );
+  isa_ok( $config, 'Kalaclista::Context' );
 
   is( $config->section('test')->{'msg'}, 'hello' );
 

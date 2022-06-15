@@ -1,4 +1,4 @@
-package Kalaclista::Config;
+package Kalaclista::Context;
 
 use strict;
 use warnings;
