@@ -8,13 +8,12 @@ use Test2::V0;
 
 sub action {
   my $class = shift;
-  my $app   = shift;
+  my $ctx   = shift;
 
-  isa_ok( $app,                  'Kalaclista::Application' );
-  isa_ok( $app->config,          'Kalaclista::Config' );
-  isa_ok( $app->config->baseURI, 'URI' );
+  isa_ok( $ctx,          'Kalaclista::Context' );
+  isa_ok( $ctx->baseURI, 'URI' );
 
-  is( $app->config->threads, 3 );
+  is( $ctx->threads, 3 );
 }
 
 1;
