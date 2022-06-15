@@ -8,14 +8,14 @@ use URI;
 
 use Kalaclista::Actions::GenerateSitemapXml;
 
-use Kalaclista::Config;
+use Kalaclista::Context;
 use Kalaclista::Directory;
 
 use URI;
 
 sub main {
-  my $dirs   = Kalaclista::Directory->instance;
-  my $config = Kalaclista::Config->new(
+  my $dirs    = Kalaclista::Directory->instance;
+  my $context = Kalaclista::Context->new(
     dirs  => $dirs,
     data  => {},
     hooks => [
@@ -28,7 +28,7 @@ sub main {
     threads => 1,
   );
 
-  my $handle = Kalaclista::Actions::GenerateSitemapXml::makeHandle($config);
+  my $handle = Kalaclista::Actions::GenerateSitemapXml::makeHandle($context);
   my $file   = $dirs->rootdir->child('t/fixtures/build/test.yaml');
 
   my $meta = $handle->($file);

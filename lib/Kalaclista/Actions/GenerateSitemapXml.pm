@@ -10,7 +10,7 @@ use Kalaclista::HyperScript qw(h);
 
 sub xmlize {
   my @links = sort { $b->href->as_string cmp $a->href->as_string } @_;
-  my $xml   = qq|<?xml version="1.0" encoding="UTF-8"?>|;
+  my $xml   = qq|<?xml version="1.0" encoding="UTF-8" ?>|;
 
   my @loc;
   my $latest;
@@ -31,11 +31,11 @@ sub xmlize {
 }
 
 sub makeHandle {
-  my $config  = shift;
-  my $dir     = $config->dirs->content_dir->realpath;
-  my $build   = $config->dirs->build_dir->realpath;
-  my $dist    = $config->dirs->distdir->realpath;
-  my $baseURI = $config->baseURI;
+  my $context = shift;
+  my $dir     = $context->dirs->content_dir->realpath;
+  my $build   = $context->dirs->build_dir->realpath;
+  my $dist    = $context->dirs->distdir->realpath;
+  my $baseURI = $context->baseURI;
 
   return sub {
     my $file = shift;
@@ -48,7 +48,7 @@ sub makeHandle {
       href => $href,
     );
 
-    $config->call( 'postprocess', $meta );
+    $context->call( 'postprocess', $meta );
 
     return $meta;
   };
@@ -63,17 +63,17 @@ sub makeSitemapXML {
 }
 
 sub action {
-  my $class = shift;
-  my $app   = shift;
+  my $class   = shift;
+  my $context = shift;
 
-  my $dist = $app->config->dirs->distdir->child('sitemap.xml');
+  my $dist = $context->dirs->distdir->child('sitemap.xml');
 
   my $runner = Kalaclista::Sequential::Files->new(
-    handle => makeHandle( $app->config ),
+    handle => makeHandle($context),
     result => makeSitemapXML($dist),
   );
 
-  return $runner->run( $app->build->stringify, '**', '*.yaml' );
+  return $runner->run( $context->dirs->build_dir->stringify, '**', '*.yaml' );
 }
 
 1;

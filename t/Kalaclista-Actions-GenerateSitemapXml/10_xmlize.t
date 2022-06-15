@@ -23,7 +23,7 @@ sub main {
 
   my $xml = Kalaclista::Actions::GenerateSitemapXml::xmlize(@meta);
 
-  my $result = q|<?xml version="1.0" encoding="UTF-8"?>|
+  my $result = q|<?xml version="1.0" encoding="UTF-8" ?>|
     . h(
     'urlset',
     { xmlns => 'http://www.sitemaps.org/schemas/sitemap/0.9' },
