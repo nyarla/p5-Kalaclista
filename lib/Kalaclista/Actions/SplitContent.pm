@@ -6,27 +6,36 @@ use warnings;
 use Kalaclista::Parallel::Files;
 use Kalaclista::Utils qw( split_md make_fn );
 
+sub makeHandle {
+  my ( $content, $dest ) = @_;
+
+  return sub {
+    my $file = shift;
+
+    my ( $yaml, $md ) = split_md $file;
+    my $fn = make_fn $file->stringify, $content->stringify;
+
+    $dest->child($fn)->parent->mkpath;
+    $dest->child("${fn}.md")->spew($md);
+    $dest->child("${fn}.yaml")->spew($yaml);
+
+    print $dest->child("${fn}.yaml")->stringify, "\n";
+  };
+}
+
 sub action {
   my $class = shift;
-  my $app   = shift;
-  my $dir   = $app->config->dirs->content_dir->realpath;
-  my $out   = $app->config->dirs->build_dir->realpath;
+  my $ctx   = shift;
+
+  my $content = $ctx->dirs->content_dir;
+  my $dest    = $ctx->dirs->build_dir;
 
   my $runner = Kalaclista::Parallel::Files->new(
-    handle => sub {
-      my $file = shift;
-
-      my ( $yaml, $md ) = split_md $file;
-      my $fn = make_fn $file->stringify, $dir->stringify;
-
-      $out->child($fn)->parent->mkpath;
-      $out->child("${fn}.md")->spew($md);
-      $out->child("${fn}.yaml")->spew($yaml);
-    },
-    threads => $app->config->threads,
+    handle  => makeHandle( $content, $dest ),
+    threads => $ctx->threads,
   );
 
-  $runner->run( $dir->stringify, '**', '*.md' );
+  return $runner->run( $content->stringify, '**', '*.md' );
 }
 
 1;
