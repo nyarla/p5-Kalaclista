@@ -5,7 +5,6 @@ use warnings;
 
 use Test2::V0;
 
-use Kalaclista::Directory;
 use Kalaclista::Utils qw( make_href );
 
 use URI;

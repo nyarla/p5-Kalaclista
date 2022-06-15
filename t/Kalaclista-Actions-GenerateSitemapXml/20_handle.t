@@ -5,6 +5,7 @@ use warnings;
 
 use Test2::V0;
 use URI;
+use Path::Tiny qw(tempdir);
 
 use Kalaclista::Actions::GenerateSitemapXml;
 
@@ -13,8 +14,11 @@ use Kalaclista::Directory;
 
 use URI;
 
+my $dirs = Kalaclista::Directory->instance;
+
 sub main {
-  my $dirs    = Kalaclista::Directory->instance;
+  my $file = $dirs->rootdir->child('t/fixtures/build/test.yaml');
+  $dirs->root( tempdir( 'kalaclista_test_XXXXXX', CLEANUP => 1 ) );
   my $context = Kalaclista::Context->new(
     dirs  => $dirs,
     data  => {},
@@ -29,7 +33,6 @@ sub main {
   );
 
   my $handle = Kalaclista::Actions::GenerateSitemapXml::makeHandle($context);
-  my $file   = $dirs->rootdir->child('t/fixtures/build/test.yaml');
 
   my $meta = $handle->($file);
 

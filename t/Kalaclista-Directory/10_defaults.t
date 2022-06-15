@@ -6,12 +6,11 @@ use warnings;
 use Test2::V0;
 
 use Kalaclista::Directory;
+use Path::Tiny qw(tempdir);
 
 sub main {
-  my $dirs = Kalaclista::Directory->instance;
-  $dirs->root( $dirs->build_dir );
-
-  my $root = $dirs->rootdir;
+  my $root = tempdir( 'kalaclista_test_XXXXXX', CLEANUP => 1 );
+  my $dirs = Kalaclista::Directory->instance( root => $root );
 
   is( $dirs->distdir->stringify,       $root->child('dist')->stringify );
   is( $dirs->datadir->stringify,       $root->child('data')->stringify );

@@ -4,13 +4,15 @@ use strict;
 use warnings;
 
 use Test2::V0;
+use Path::Tiny qw(tempdir);
 
 use Kalaclista::Directory;
 use Kalaclista::Actions::GenerateSitemapXml;
 use Kalaclista::HyperScript qw(h);
 
 sub main {
-  my $dirs = Kalaclista::Directory->instance;
+  my $dirs = Kalaclista::Directory->instance(
+    root => tempdir( 'kalaclista_test_XXXXXX', CLEANUP => 1 ) );
   my $dist = $dirs->build_dir->child('sitemap.xml');
   $dist->parent->mkpath;
 
