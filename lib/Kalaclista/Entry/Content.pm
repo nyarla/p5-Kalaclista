@@ -4,10 +4,15 @@ use strict;
 use warnings;
 use utf8;
 
+use Carp qw(confess);
+use Path::Tiny;
 use CommonMark;
 use HTML5::DOM;
 
-use Class::Accessor::Lite ( rw => [qw( src html md dom )], );
+use Class::Accessor::Lite(
+  new => 1,
+  ro  => [qw(dom)],
+);
 
 my $parser = HTML5::DOM->new(
   {
@@ -15,21 +20,35 @@ my $parser = HTML5::DOM->new(
   }
 );
 
-sub new {
+sub load {
   my $class = shift;
-  my $src   = shift;
+  my $args  = ref $_[0] ? $_[0] : {@_};
 
-  my $self = bless {}, $class;
-  my $md   = CommonMark->parse( string => $src );
-  my $html = $md->render( format => 'html', unsafe => 1 );
-  my $dom  = $parser->parse($html);
+  my $src = delete $args->{'src'};
 
-  $self->src($src);
-  $self->md($md);
-  $self->html($html);
-  $self->dom($dom);
+  if ( !defined $src ) {
+    confess 'argument `src` does not specified';
+  }
 
-  return $self;
+  $src = path("${src}") if ( ref $src eq 'Path::Tiny' );
+
+  my $commonmark = $src->slurp_utf8;
+  my $node       = CommonMark->parse( string => $commonmark );
+  my $html       = $node->render( format => 'html', unsafe => 1 );
+  my $dom        = $parser->parse($html);
+
+  return $class->new( dom => $dom->body );
+}
+
+sub transform {
+  my $self        = shift;
+  my $transformer = shift;
+
+  if ( !ref $transformer eq 'CODE' ) {
+    confess 'transformer is not CODE reference';
+  }
+
+  return $transformer->( $self->dom );
 }
 
 1;
