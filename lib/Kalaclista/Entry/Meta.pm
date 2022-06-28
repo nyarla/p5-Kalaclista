@@ -7,43 +7,39 @@ use utf8;
 use Carp qw(confess);
 use YAML::Tiny;
 use URI;
+use Path::Tiny;
 
 use Class::Accessor::Lite (
   new => 1,
-  rw  => [qw( href title summary type slug date lastmod )],
+  rw  => [qw( href title type slug date lastmod )],
 );
 
 sub load {
   my $class = shift;
-  my %args  = @_;
+  my $args  = ref $_[0] ? $_[0] : {@_};
 
-  my $file = delete $args{'src'};
-  my $href = delete $args{'href'};
+  my $file = delete $args->{'src'};
+  my $href = delete $args->{'href'};
 
-  if ( !defined($file) || ref $file ne 'Path::Tiny' ) {
-    confess 'argument `src` is not Path::Tiny object';
+  if ( !defined $file ) {
+    confess 'argument `src` is empty';
   }
 
-  if ( !defined($href) || $href eq q{} ) {
+  $file = path("${file}") if ( ref $file ne 'Path::Tiny' );
+
+  if ( !defined $href ) {
     confess 'argument `href` is empty.';
   }
 
-  my $data    = YAML::Tiny::Load( $file->slurp_utf8 );
-  my $title   = $data->{'title'};
-  my $type    = $data->{'type'}    // q{pages};
-  my $slug    = $data->{'slug'}    // q{};
-  my $date    = $data->{'date'}    // q{};
-  my $lastmod = $data->{'lastmod'} // $date;
+  $href = URI->new("${href}") if ( ref $href ne 'URI' );
 
-  return $class->new(
-    title   => $title,
-    summary => q{},
-    type    => $type,
-    slug    => $slug,
-    href    => URI->new($href),
-    date    => $date,
-    lastmod => $lastmod,
-  );
+  my $data = YAML::Tiny::Load( $file->slurp_utf8 );
+  $data->{'type'}    //= 'pages';
+  $data->{'slug'}    //= q{};
+  $data->{'date'}    //= q{};
+  $data->{'lastmod'} //= $data->{'date'};
+
+  return $class->new( $data->%*, href => $href );
 }
 
 1;
