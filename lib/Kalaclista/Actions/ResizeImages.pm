@@ -5,84 +5,39 @@ use warnings;
 use utf8;
 
 use Kalaclista::Parallel::Files;
-use Kalaclista::Utils qw(make_fn);
 use Image::Scale;
 use YAML::Tiny;
 
-my $x1 = 720;
-my $x2 = 1440;
+# TODO
+my $x1 = 700;
+my $x2 = 1400;
 
-sub action {
-  my $class = shift;
-  my $app   = shift;
+sub is_resized {
+  my $fn = shift;
+  return $fn =~ m{_thumb_\dx\.png$};
+}
 
-  my $dir   = $app->config->dirs->assets_dir->realpath;
-  my $build = $app->config->dirs->build_dir->realpath;
-  my $out   = $app->config->dirs->distdir->realpath;
+sub is_supported {
+  my $fn = shift;
+  return $fn !~ m{\.gif$};
+}
 
-  my $runner = Kalaclista::Parallel::Files->new(
-    handle => sub {
-      my $file = shift;
+sub basedir {
+  my ( $path, $prefix ) = @_;
 
-      if ( $file->stringify =~ m{_thumb_\dx\.png$} ) {
-        return {};
-      }
+  utf8::decode($path);
+  utf8::decode($prefix);
 
-      if ( $file->stringify =~ m{\.gif$} ) {
-        return {};
-      }
+  $path =~ s{$prefix}{};
+  $path =~ s{/([^/]+)$}{};
 
-      my $path   = $file->stringify;
-      my $prefix = $dir->stringify;
-
-      $path =~ s{$prefix}{};
-      utf8::decode($path);
-
-      my $data = { origin => $path };
-
-      my $image = Image::Scale->new( $file->stringify );
-      my $fn    = $file->basename(qr<\.[^.]+$>);
-
-      if ( $image->width <= $x1 ) {
-        goto YAML;
-      }
-
-      if ( $image->width > $x1 ) {
-        my $resized = $file->parent->child("${fn}_thumb_1x.png");
-        resize( $resized, $image, $x1 );
-        my $rp = $path;
-        $rp =~ s{\.([^.]+)$}{_thumb_1x.png};
-        $data->{'1x'} = $rp;
-      }
-
-      if ( $image->width > $x2 ) {
-        my $resized = $file->parent->child("${fn}_thumb_2x.png");
-        resize( $resized, $image, $x2 );
-        my $rp = $path;
-        $rp =~ s{\.([^.]+)$}{_thumb_2x.png};
-        $data->{'2x'} = $rp;
-      }
-
-    YAML:
-
-      my $yaml = YAML::Tiny::Dump($data);
-
-      my $info = $build->child("${path}.yaml");
-      $info->parent->mkpath;
-      $info->spew($yaml);
-
-      return {};
-    },
-    threads => $app->config->threads,
-  );
-
-  $runner->run( $dir->stringify, 'images', '**', '*.*' );
+  return $path;
 }
 
 sub resize {
-  my ( $out, $image, $size ) = @_;
+  my ( $dist, $image, $width ) = @_;
 
-  my $c  = $image->width / $size;
+  my $c  = $image->width / $width;
   my $rw = int( $image->width / $c );
   my $rh = int( $image->height / $c );
 
@@ -94,9 +49,84 @@ sub resize {
     }
   );
 
-  $out->spew_raw( $image->as_png );
+  $dist->parent->mkpath;
+  $dist->spew_raw( $image->as_png );
 
-  return 1;
+  return {
+    path   => $dist->stringify,
+    width  => $rw,
+    height => $rh,
+  };
+}
+
+sub makeHandle {
+  my ( $assets, $build, $dist ) = @_;
+  return sub {
+    my $file = shift;
+
+    if ( is_resized( $file->stringify ) ) {
+      return {};
+    }
+
+    if ( !is_supported( $file->stringify ) ) {
+      return {};
+    }
+
+    my $base = basedir( $file->stringify, $assets->stringify );
+
+    my $fn    = $file->basename(qr<\.[^.]+$>);
+    my $image = Image::Scale->new( $file->stringify );
+
+    my $data = {
+      origin => {
+        root   => $dist->stringify,
+        path   => $dist->child("${base}/@{[ $file->basename ]}")->stringify,
+        width  => $image->width,
+        height => $image->height,
+      },
+    };
+
+    if ( $image->width <= $x1 ) {
+      goto YAML;
+    }
+
+    if ( $image->width > $x1 ) {
+      $data->{'1x'} = resize( $dist->child("${base}/${fn}_thumb_1x.png"),
+        Image::Scale->new( $file->stringify ), $x1 );
+    }
+
+    if ( $image->width > $x2 ) {
+      $data->{'2x'} = resize( $dist->child("${base}/${fn}_thumb_2x.png"),
+        Image::Scale->new( $file->stringify ), $x2 );
+    }
+
+  YAML:
+
+    my $yaml = $build->child("${base}/${fn}.yaml");
+    $yaml->parent->mkpath;
+    $yaml->spew( YAML::Tiny::Dump($data) );
+
+    print $yaml->stringify, "\n";
+
+    return {};
+  };
+}
+
+sub action {
+  my $class   = shift;
+  my $context = shift;
+
+  my $assets = $context->dirs->assets_dir;
+  my $build  = $context->dirs->build_dir;
+  my $dist   = $context->dirs->distdir;
+
+  my $runner = Kalaclista::Parallel::Files->new(
+    handle  => makeHandle( $assets, $build, $dist ),
+    result  => sub { return +{} },
+    threads => $context->threads,
+  );
+
+  return $runner->run( $assets->stringify, 'images', '**', '*.*' );
 }
 
 1;
