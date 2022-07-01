@@ -25,7 +25,8 @@ sub main {
   my $context = Kalaclista::Context->new(
     dirs    => $dirs,
     data    => {},
-    hooks   => [],
+    call    => {},
+    query   => {},
     baseURI => URI->new('https://example.com'),
     threads => 1,
   );
