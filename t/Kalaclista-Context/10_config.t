@@ -15,14 +15,19 @@ Kalaclista::Context->instance(
   data => {
     test => { msg => 'hello' },
   },
-  hooks => [
-    [ 'Kalaclista::Entry::Meta', 'postprocess' ] => sub {
-      my ( $meta, @args ) = @_;
-
-      isa_ok( $meta, 'Kalaclista::Entry::Meta' );
-      is( \@args, [ 1, 2, 3 ] );
+  call => {
+    test => sub {
+      my ( $val, $ok ) = @_;
+      is( $val, $ok );
     },
-  ],
+  },
+  query => {
+    test => sub {
+      my @args = @_;
+      return ( qw{foo}, @args );
+    },
+  },
+
   baseURI => URI->new('https://example.com'),
   threads => 3,
 );
@@ -34,7 +39,9 @@ sub main {
 
   is( $config->section('test')->{'msg'}, 'hello' );
 
-  $config->call( Kalaclista::Entry::Meta->new, 1, 2, 3 );
+  $config->call( 'test', qw(ok ok) );
+
+  is( [ $config->query( 'test', 'bar' ) ], [qw(foo bar)] );
 
   done_testing;
 }
