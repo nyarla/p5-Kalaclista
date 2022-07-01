@@ -16,7 +16,8 @@ sub main {
   my $ctx = Kalaclista::Context->instance(
     dirs    => $dirs,
     data    => {},
-    hooks   => [],
+    query   => {},
+    call    => {},
     baseURI => URI->new('https://example.com'),
     threads => 1,
   );
