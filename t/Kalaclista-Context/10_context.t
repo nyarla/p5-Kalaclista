@@ -33,15 +33,15 @@ Kalaclista::Context->instance(
 );
 
 sub main {
-  my $config = Kalaclista::Context->instance;
+  my $context = Kalaclista::Context->instance;
 
-  isa_ok( $config, 'Kalaclista::Context' );
+  isa_ok( $context, 'Kalaclista::Context' );
 
-  is( $config->section('test')->{'msg'}, 'hello' );
+  is( $context->section('test')->{'msg'}, 'hello' );
 
-  $config->call( 'test', qw(ok ok) );
+  $context->call( 'test', qw(ok ok) );
 
-  is( [ $config->query( 'test', 'bar' ) ], [qw(foo bar)] );
+  is( [ $context->query( 'test', 'bar' ) ], [qw(foo bar)] );
 
   done_testing;
 }
