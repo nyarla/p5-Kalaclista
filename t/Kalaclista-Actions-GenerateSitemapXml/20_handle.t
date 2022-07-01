@@ -20,14 +20,15 @@ sub main {
   my $file = $dirs->rootdir->child('t/fixtures/build/test.yaml');
   $dirs->root( tempdir( 'kalaclista_test_XXXXXX', CLEANUP => 1 ) );
   my $context = Kalaclista::Context->new(
-    dirs  => $dirs,
-    data  => {},
-    hooks => [
-      [ 'Kalaclista::Entry::Meta', 'postprocess' ] => sub {
+    dirs => $dirs,
+    data => {},
+    call => {
+      fixup => sub {
         my $meta = shift;
         $meta->title('hello, world!');
       },
-    ],
+    },
+    query   => {},
     baseURI => URI->new('https://example.com'),
     threads => 1,
   );

@@ -48,7 +48,7 @@ sub makeHandle {
       href => $href,
     );
 
-    $context->call( 'postprocess', $meta );
+    $context->call( fixup => $meta );
 
     return $meta;
   };
