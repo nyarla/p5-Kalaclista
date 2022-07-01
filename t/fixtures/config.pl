@@ -7,6 +7,6 @@ use Kalaclista::Directory;
 my $dirs = Kalaclista::Directory->instance;
 
 my $config =
-  { dirs => $dirs, hooks => [], data => {} };
+  { dirs => $dirs, call => {}, query => {}, data => {} };
 
 $config;
