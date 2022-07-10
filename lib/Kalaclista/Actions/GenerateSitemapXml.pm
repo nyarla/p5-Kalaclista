@@ -32,9 +32,7 @@ sub xmlize {
 
 sub makeHandle {
   my $context = shift;
-  my $dir     = $context->dirs->content_dir->realpath;
   my $build   = $context->dirs->build_dir->realpath;
-  my $dist    = $context->dirs->distdir->realpath;
   my $baseURI = $context->baseURI;
 
   return sub {
