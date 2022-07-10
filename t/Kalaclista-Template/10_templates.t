@@ -13,7 +13,7 @@ my $dirs = Kalaclista::Directory->instance;
 $dirs->root( path('t/fixtures') );
 
 sub main {
-  is( Kalaclista::Template::className("foo/bar.pl"), "Foo::Bar" );
+  is( Kalaclista::Template::className("foo.../2020bar.pl"), "Foo::Bar" );
 
   my $tmpl = load( $dirs->templates_dir->child('test.pl')->stringify );
 

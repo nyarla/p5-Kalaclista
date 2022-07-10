@@ -17,6 +17,8 @@ sub className {
 
   $class =~ s{$dir/}{};
   $class =~ s{\.pl$}{};
+  $class =~ s{[^a-zA-Z0-9/]+}{}g;
+  $class =~ s{/[0-9]+}{/}g;
   $class =~ s{(?:/)([a-z])}{'::' . uc($1)}eg;
   $class =~ s{^([a-z])}{uc($1)}e;
 
