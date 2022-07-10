@@ -21,3 +21,5 @@ my $tmpl = sub {
 
   is( expand( "expand.pl", { foo => 'bar' }, $baseURI ), 'ok' );
 };
+
+$tmpl;

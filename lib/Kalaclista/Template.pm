@@ -17,7 +17,7 @@ sub className {
 
   $class =~ s{$dir/}{};
   $class =~ s{\.pl$}{};
-  $class =~ s{(?:/|\.)([a-z])}{'::' . uc($1)}eg;
+  $class =~ s{(?:/)([a-z])}{'::' . uc($1)}eg;
   $class =~ s{^([a-z])}{uc($1)}e;
 
   return $class;
@@ -79,7 +79,7 @@ sub load {
 
   if ($@) {
     my $err = $@;
-    return $err;
+    return sub { return $err };
   }
 
   return $template;
