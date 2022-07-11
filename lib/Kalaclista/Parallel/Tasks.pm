@@ -11,9 +11,9 @@ sub new {
   my $class = shift;
   my $args  = ref $_[0] ? $_[0] : {@_};
 
-  my $handle  = delete $args->{'handle'} // sub { };
-  my $result  = delete $args->{'result'} // sub { };
-  my $threads = delete $args->{'result'} // 3;
+  my $handle  = delete $args->{'handle'}  // sub { };
+  my $result  = delete $args->{'result'}  // sub { };
+  my $threads = delete $args->{'threads'} // 3;
 
   confess q|`handle` must be a CODE reference|   if ( ref $handle ne 'CODE' );
   confess q|`result` must be a CODE reference|   if ( ref $handle ne 'CODE' );
