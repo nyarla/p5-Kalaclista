@@ -117,7 +117,7 @@ sub action {
   my $context = shift;
 
   my $assets = $context->dirs->assets_dir;
-  my $build  = $context->dirs->build_dir;
+  my $build  = $context->dirs->datadir;
   my $dist   = $context->dirs->distdir;
 
   my $runner = Kalaclista::Parallel::Files->new(
