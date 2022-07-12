@@ -39,7 +39,7 @@ sub run {
   $bw->add_work(@tasks);
   while ( $bw->pending ) {
     my $result = $bw->get_result;
-    if ( exists $result->{'ERROR'} ) {
+    if ( ref $result eq 'HASH' && exists $result->{'ERROR'} ) {
       print STDERR $result->{'ERROR'} . "\n";
     }
   }

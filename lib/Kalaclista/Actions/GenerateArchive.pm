@@ -51,8 +51,17 @@ sub action {
   my @pages =
     map { $_->baseURI($baseURI); $_ } $context->query( archives => @entries );
 
-  my $generator =
-    Kalaclista::Parallel::Tasks->new( handle => sub { shift->emit; } );
+  my $generator = Kalaclista::Parallel::Tasks->new(
+    handle => sub { shift->emit; {} },
+    result => sub {
+      my $result = shift;
+      if ( exists $result->{'ERROR'} ) {
+        print STDERR $result->{'ERROR'};
+      }
+
+      return $result;
+    }
+  );
 
   return $generator->run(@pages);
 }

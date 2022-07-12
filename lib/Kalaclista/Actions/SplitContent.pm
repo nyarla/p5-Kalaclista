@@ -20,6 +20,8 @@ sub makeHandle {
     $dest->child("${fn}.yaml")->spew($yaml);
 
     print $dest->child("${fn}.yaml")->stringify, "\n";
+
+    return {};
   };
 }
 
@@ -31,7 +33,15 @@ sub action {
   my $dest    = $ctx->dirs->build_dir;
 
   my $runner = Kalaclista::Parallel::Files->new(
-    handle  => makeHandle( $content, $dest ),
+    handle => makeHandle( $content, $dest ),
+    result => sub {
+      my $result = shift;
+      if ( exists $result->{'ERROR'} ) {
+        print STDERR $result->{'ERROR'};
+      }
+
+      return $result;
+    },
     threads => $ctx->threads,
   );
 

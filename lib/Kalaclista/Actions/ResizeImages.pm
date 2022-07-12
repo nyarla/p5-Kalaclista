@@ -121,8 +121,15 @@ sub action {
   my $dist   = $context->dirs->distdir;
 
   my $runner = Kalaclista::Parallel::Files->new(
-    handle  => makeHandle( $assets, $build, $dist ),
-    result  => sub { return +{} },
+    handle => makeHandle( $assets, $build, $dist ),
+    result => sub {
+      my $result = shift;
+      if ( exists $result->{'ERROR'} ) {
+        print STDERR $result->{'ERROR'};
+      }
+
+      return $result;
+    },
     threads => $context->threads,
   );
 

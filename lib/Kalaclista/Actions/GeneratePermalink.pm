@@ -52,8 +52,15 @@ sub action {
   )->run( $build->stringify, '**', '*.md' );
 
   my $builder = Kalaclista::Parallel::Tasks->new(
-    handle  => sub { shift->emit; {} },
-    result  => sub { shift },
+    handle => sub { shift->emit; {} },
+    result => sub {
+      my $result = shift;
+      if ( exists $result->{'ERROR'} ) {
+        print STDERR $result->{'ERROR'};
+      }
+
+      return $result;
+    },
     threads => $context->threads,
   );
 
