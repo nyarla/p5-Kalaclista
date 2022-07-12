@@ -46,6 +46,8 @@ sub load {
   use Kalaclista::HyperStyle;
   use Kalaclista::Template;
 
+  no warnings 'redefine';
+
   sub href {
     my ( \$path, \$baseURI ) = \@_;
     my \$link = \$baseURI->clone;
@@ -75,6 +77,8 @@ sub load {
   sub date {
     return (split qr{T}, \$_[0])[0];
   }
+
+  use warnings 'redefine';
   
   @{[ path($path)->slurp_utf8 ]}
 };
