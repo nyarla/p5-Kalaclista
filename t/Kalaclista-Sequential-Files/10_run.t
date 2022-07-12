@@ -29,7 +29,7 @@ sub main {
     },
   );
 
-  $runner->run( $testdir->stringify, '**', '*.t' );
+  $runner->run( $testdir->stringify, 'Kalaclista-*', '**', '*.t' );
 
   done_testing;
 }

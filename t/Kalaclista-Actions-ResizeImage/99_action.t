@@ -33,9 +33,9 @@ sub main {
 
   Kalaclista::Actions::ResizeImages->action($context);
 
-  ok( $dirs->build_dir->child("images/test.yaml")->is_file );
+  ok( $dirs->datadir->child("images/test.yaml")->is_file );
   is(
-    YAML::Tiny::Load( $dirs->build_dir->child("images/test.yaml")->slurp ),
+    YAML::Tiny::Load( $dirs->datadir->child("images/test.yaml")->slurp ),
     {
       origin => {
         root   => $dirs->distdir->stringify,
