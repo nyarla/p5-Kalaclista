@@ -19,8 +19,6 @@ sub makeHandle {
     $dest->child("${fn}.md")->spew($md);
     $dest->child("${fn}.yaml")->spew($yaml);
 
-    print $dest->child("${fn}.yaml")->stringify, "\n";
-
     return {};
   };
 }

@@ -104,9 +104,7 @@ sub makeHandle {
 
     my $yaml = $build->child("${base}/${fn}.yaml");
     $yaml->parent->mkpath;
-    $yaml->spew( YAML::Tiny::Dump($data) );
-
-    print $yaml->stringify, "\n";
+    $yaml->spew_utf8( YAML::Tiny::Dump($data) );
 
     return {};
   };
