@@ -5,7 +5,7 @@ use warnings;
 
 use Test2::V0;
 
-use Kalaclista::HyperScript qw(p hr link_ true false);
+use Kalaclista::HyperScript qw(p hr link_ true false raw);
 
 sub main {
 
@@ -26,6 +26,12 @@ sub main {
   # element with child content
   is( p(qw( foo bar baz )),                 qq(<p>foobarbaz</p>) );
   is( p( { class => 'foo' }, qw(bar baz) ), qq(<p class="foo">barbaz</p>) );
+
+  # auto escaped text
+  is( p("I'm bot"), qq(<p>I&#39;m bot</p>) );
+
+  # raw text
+  is( p( raw("I'm bot") ), qq(<p>I'm bot</p>) );
 
   done_testing;
 }

@@ -126,7 +126,7 @@ BEGIN {
     };
   }
 
-  push @EXPORT, qw( h text true false );
+  push @EXPORT, qw( h text true false raw );
 }
 
 sub true {
@@ -151,8 +151,14 @@ sub h {
     elsif ( ref $data eq 'ARRAY' ) {
       push @contents, $data->@*;
     }
+    elsif ( ref $data eq 'Kalaclista::HyperScirpt::HTML' ) {
+      push @contents, $data->$*;
+    }
+    elsif ( ref $data eq 'Kalaclista::HyperScirpt::Raw' ) {
+      push @contents, $data->$*;
+    }
     else {
-      push @contents, $data;
+      push @contents, text($data);
     }
   }
 
@@ -183,10 +189,11 @@ sub h {
   }
 
   if ( @contents == 0 ) {
-    return qq(<${tag}${attr} />);
+    return bless \qq(<${tag}${attr} />), 'Kalaclista::HyperScirpt::HTML';
   }
   else {
-    return qq(<${tag}${attr}>@{[ join q{}, @contents ]}</${tag}>);
+    return bless \qq(<${tag}${attr}>@{[ join q{}, @contents ]}</${tag}>),
+      'Kalaclista::HyperScirpt::HTML';
   }
 }
 
@@ -194,5 +201,20 @@ sub text {
   my $text = shift;
   return escape_html($text);
 }
+
+sub raw {
+  my $text = shift;
+  return bless \$text, "Kalaclista::HyperScirpt::Raw";
+}
+
+package Kalaclista::HyperScirpt::HTML;
+
+use overload q("") => sub { ${ $_[0] } };
+
+package Kalaclista::HyperScirpt::Raw;
+
+use overload q("") => sub { ${ $_[0] } };
+
+package Kalaclista::HyperScirpt;
 
 1;
