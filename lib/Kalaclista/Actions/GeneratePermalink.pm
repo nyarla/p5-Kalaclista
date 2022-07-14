@@ -34,7 +34,9 @@ sub makeHandle {
     $context->call( fixup => $meta );
     $context->call( fixup => $content, $meta );
 
-    return $context->query( page => $content, $meta );
+    return
+      map { $_->baseURI( $context->baseURI ); $_ }
+      ( $context->query( page => $content, $meta ) );
   };
 }
 
