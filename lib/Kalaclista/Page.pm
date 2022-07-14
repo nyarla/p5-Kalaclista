@@ -17,7 +17,7 @@ sub emit {
   my $out  = $tmpl->( $self->vars, $self->baseURI );
 
   $self->dist->parent->mkpath;
-  return $self->dist->spew($out);
+  return $self->dist->spew_utf8($out);
 }
 
 1;
