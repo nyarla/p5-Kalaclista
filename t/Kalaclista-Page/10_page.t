@@ -17,7 +17,7 @@ sub main {
   $dirs->root( tempdir( 'kalaclista_test_XXXXXX', CLEANUP => 1 ) );
 
   my $page = Kalaclista::Page->new(
-    dist     => $dirs->build_dir->child('test.out'),
+    dist     => $dirs->build_dir->child('contents')->child('test.out'),
     baseURI  => URI->new('https://example.com/foo/bar'),
     template => $tmpl,
     vars     => {
@@ -27,7 +27,8 @@ sub main {
 
   $page->emit;
 
-  is( $dirs->build_dir->child('test.out')->slurp, q{hello, world!} );
+  is( $dirs->build_dir->child('contents')->child('test.out')->slurp,
+    q{hello, world!} );
 
   done_testing;
 }

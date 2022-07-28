@@ -24,7 +24,7 @@ sub main {
 
   Kalaclista::Actions::SplitContent->action($ctx);
 
-  my $dest = $dirs->build_dir;
+  my $dest = $dirs->build_dir->child('contents');
 
   is( $dest->child('test.yaml')->slurp, "title: hello\n" );
   is( $dest->child('test.md')->slurp,   "\nhello, world!\n" );

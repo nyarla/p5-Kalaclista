@@ -45,7 +45,7 @@ sub main {
     threads => 1,
   );
 
-  testfile( $dirs->build_dir );
+  testfile( $dirs->build_dir->child('contents') );
 
   Kalaclista::Actions::GenerateSitemapXml->action($context);
 

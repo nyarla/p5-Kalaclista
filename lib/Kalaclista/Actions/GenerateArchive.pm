@@ -11,7 +11,7 @@ use Kalaclista::Utils qw( make_fn make_href );
 sub makeHandle {
   my ($context) = @_;
 
-  my $build   = $context->dirs->build_dir;
+  my $build   = $context->dirs->build_dir->child('contents');
   my $baseURI = $context->baseURI;
 
   return sub {
@@ -35,7 +35,7 @@ sub action {
   my $context = shift;
 
   my $content = $context->dirs->content_dir;
-  my $build   = $context->dirs->build_dir;
+  my $build   = $context->dirs->build_dir->child('contents');
   my $dist    = $context->dirs->distdir;
 
   my $baseURI = $context->baseURI;

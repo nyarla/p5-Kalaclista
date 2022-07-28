@@ -22,11 +22,11 @@ sub testfile {
     date  => "2021-06-01T10:50:35+09:00"
   };
 
-  my $yaml = $dirs->build_dir->child('test/test.yaml');
+  my $yaml = $dirs->build_dir->child('contents')->child('test/test.yaml');
   $yaml->parent->mkpath;
   $yaml->spew( YAML::Tiny::Dump($data) );
 
-  my $md = $dirs->build_dir->child('test/test.md');
+  my $md = $dirs->build_dir->child('contents')->child('test/test.md');
   $md->parent->mkpath;
   $md->spew('hello, world!');
 

@@ -32,7 +32,7 @@ sub xmlize {
 
 sub makeHandle {
   my $context = shift;
-  my $build   = $context->dirs->build_dir->realpath;
+  my $build   = $context->dirs->build_dir->child('contents');
   my $baseURI = $context->baseURI;
 
   return sub {
@@ -71,7 +71,8 @@ sub action {
     result => makeSitemapXML($dist),
   );
 
-  return $runner->run( $context->dirs->build_dir->stringify, '**', '*.yaml' );
+  return $runner->run( $context->dirs->build_dir->child('contents')->stringify,
+    '**', '*.yaml' );
 }
 
 1;

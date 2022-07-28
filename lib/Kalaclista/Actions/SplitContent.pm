@@ -28,7 +28,7 @@ sub action {
   my $ctx   = shift;
 
   my $content = $ctx->dirs->content_dir;
-  my $dest    = $ctx->dirs->build_dir;
+  my $dest    = $ctx->dirs->build_dir->child('contents');
 
   my $runner = Kalaclista::Parallel::Files->new(
     handle => makeHandle( $content, $dest ),

@@ -23,7 +23,8 @@ sub makeHandle {
     my $path = $file->stringify;
     $path =~ s{\.md$}{.yaml};
 
-    my $fn   = make_fn $path, $context->dirs->build_dir->stringify;
+    my $fn = make_fn $path,
+      $context->dirs->build_dir->child('contents')->stringify;
     my $href = make_href $fn, $context->baseURI;
 
     my $meta = Kalaclista::Entry::Meta->load(
@@ -44,7 +45,7 @@ sub action {
   my $class   = shift;
   my $context = shift;
 
-  my $build = $context->dirs->build_dir;
+  my $build = $context->dirs->build_dir->child('contents');
   my $dist  = $context->dirs->distdir;
 
   my $baseURI = $context->baseURI;
