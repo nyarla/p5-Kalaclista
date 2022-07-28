@@ -30,7 +30,7 @@ sub load {
     confess 'argument `src` does not specified';
   }
 
-  $src = path("${src}") if ( ref $src eq 'Path::Tiny' );
+  $src = path("${src}") if ( ref $src ne 'Path::Tiny' );
 
   my $commonmark = $src->slurp_utf8;
   my $node       = CommonMark->parse( string => $commonmark );
