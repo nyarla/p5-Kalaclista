@@ -3,9 +3,12 @@ package Kalaclista::Utils;
 use strict;
 use warnings;
 
+use URI;
+use URI::Escape qw( uri_unescape );
+
 use Exporter 'import';
 
-our @EXPORT_OK = qw(split_md make_fn make_href);
+our @EXPORT_OK = qw(split_md make_fn make_href make_path);
 
 sub split_md ($) {
   my $file = shift;
@@ -57,6 +60,25 @@ sub make_href ($$) {
   $uri->path($path);
 
   return $uri->as_string;
+}
+
+sub make_path ($) {
+  my $href = shift;
+  my $link = URI->new($href);
+  my $path = uri_unescape( $link->host . $link->path );
+  utf8::decode($path);
+
+  $path =~
+s{[^\p{InHiragana}\p{InKatakana}\p{InCJKUnifiedIdeographs}a-zA-Z0-9\-_/]}{_}g;
+
+  $path =~ s{_+}{_}g;
+  $path =~ s{/$}{};
+
+  if ( $path !~ m{/$} ) {
+    $path .= "/index";
+  }
+
+  return $path;
 }
 
 1;
