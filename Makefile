@@ -4,8 +4,7 @@ JOBS = $(shell nproc --all --ignore 1)
 
 cpan2nix: \
 	cpan2nix-dump \
-	cpan2nix-makenix \
-	cpan2nix-build
+	cpan2nix-makenix
 
 cpan2nix-dump:
 	@perl scripts/cpan2nix/find-deps.pl
@@ -18,7 +17,7 @@ cpan2nix-build:
 	@echo '{ pkgs, ... }: with pkgs; with perlPackages; let modules = rec {' >cpanfile.nix
 	@find data/cpan2nix/ -type f -name '*.nix.txt' -exec cat {} \; >>cpanfile.nix
 	@echo "}; in with modules; [ $(shell cat resources/_cpan2nix/modules.txt | sed 's/:://g') ]" >>cpanfile.nix
-	@nixfmt cpanfile.nix 
+	@nixfmt cpanfile.nix
 
 test:
 	@rm -f t/Kalaclista-*/fixture_*.png

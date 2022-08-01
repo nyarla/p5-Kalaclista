@@ -1,9 +1,9 @@
   ListLazy = buildPerlPackage {
     pname = "List-Lazy";
-    version = "0.3.2";
+    version = "0.3.3";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/Y/YA/YANICK/List-Lazy-0.3.2.tar.gz";
-      sha256 = "52b53709be0dfb7feae7edf212b8e1843bce72f02afd8dc74fb879305d982832";
+      url = "mirror://cpan/authors/id/Y/YA/YANICK/List-Lazy-0.3.3.tar.gz";
+      sha256 = "cb00f5c6f0329af46fde82f688775a0b6a3fe0ceecfff390b4814a11f3b2fad7";
     };
     buildInputs = [ TestWarn ];
     propagatedBuildInputs = [ Clone ExporterTiny ListMoreUtils Moo MooXHandlesVia ];
