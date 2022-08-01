@@ -5,7 +5,7 @@ use warnings;
 
 use Test2::V0;
 
-use Kalaclista::WebSite;
+use Kalaclista::UserAgent;
 
 ok(1);
 
