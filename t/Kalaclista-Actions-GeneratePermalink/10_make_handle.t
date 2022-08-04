@@ -9,6 +9,7 @@ use URI;
 
 use Kalaclista::Context;
 use Kalaclista::Directory;
+use Kalaclista::Page;
 use Kalaclista::Actions::GeneratePermalink;
 
 my $dirs = Kalaclista::Directory->instance;
@@ -36,17 +37,21 @@ sub main {
         isa_ok( shift, 'Kalaclista::Entry::Content' );
         isa_ok( shift, 'Kalaclista::Entry::Meta' );
 
-        return 'ok';
+        return Kalaclista::Page->new(
+          dist     => $dirs->distdir->child('test/test.html'),
+          template => $dirs->templates_dir->child('test.pl')->stringify,
+          vars     => { foo => 'bar' },
+        );
       },
     },
     baseURI => URI->new('https://example.com'),
     threads => 1,
   );
 
-  my $result =
+  my ($result) =
     Kalaclista::Actions::GeneratePermalink::makeHandle($context)->($file);
 
-  is( $result, 'ok' );
+  is( $result->vars->{'foo'}, 'bar' );
 
   done_testing;
 }
