@@ -61,9 +61,15 @@ sub run {
     exit 1;
   }
 
+  my $settings = do $config;
+  if ($@) {
+    print STDERR "failed to eval configiration file: ${config}: ${@}\n";
+    exit 1;
+  }
+
   $self->context(
     Kalaclista::Context->instance(
-      ( do $config )->%*,
+      $settings->%*,
       baseURI => URI->new($baseURI),
       threads => $threads,
     )
