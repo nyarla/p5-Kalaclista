@@ -75,6 +75,8 @@ sub run {
     )
   );
 
+  $ENV{'URL'} = $baseURI;
+
   return $self->action($action);
 }
 
