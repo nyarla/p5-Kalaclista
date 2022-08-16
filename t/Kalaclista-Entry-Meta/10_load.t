@@ -18,11 +18,12 @@ sub main {
   is( ref $meta->href,        'URI::https' );
   is( $meta->href->as_string, 'https://example.com/test' );
 
-  is( $meta->title,   'test' );
-  is( $meta->type,    'home' );
-  is( $meta->slug,    '' );
-  is( $meta->date,    '2021-06-01T10:50:35+09:00' );
-  is( $meta->lastmod, '2021-06-01T10:50:35+09:00' );
+  is( $meta->title,     'test' );
+  is( $meta->type,      'home' );
+  is( $meta->slug,      '' );
+  is( $meta->date,      '2021-06-01T10:50:35+09:00' );
+  is( $meta->lastmod,   '2021-06-01T10:50:35+09:00' );
+  is( ref $meta->addon, 'HASH' );
 
   done_testing;
 }

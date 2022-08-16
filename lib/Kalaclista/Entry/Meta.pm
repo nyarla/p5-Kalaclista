@@ -11,7 +11,7 @@ use Path::Tiny;
 
 use Class::Accessor::Lite (
   new => 1,
-  rw  => [qw( href title type slug date lastmod )],
+  rw  => [qw( href title type slug date lastmod addon )],
 );
 
 sub load {
@@ -38,6 +38,7 @@ sub load {
   $data->{'slug'}    //= q{};
   $data->{'date'}    //= q{};
   $data->{'lastmod'} //= $data->{'date'};
+  $data->{'addon'}   //= {};
 
   return $class->new( $data->%*, href => $href );
 }
