@@ -24,6 +24,7 @@ sub main {
   is( $meta->date,      '2021-06-01T10:50:35+09:00' );
   is( $meta->lastmod,   '2021-06-01T10:50:35+09:00' );
   is( ref $meta->addon, 'HASH' );
+  ok( !$meta->content );
 
   done_testing;
 }

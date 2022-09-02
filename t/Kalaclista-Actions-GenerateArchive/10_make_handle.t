@@ -22,8 +22,15 @@ sub main {
     data => {},
     call => {
       fixup => sub {
-        my $meta = shift;
-        $meta->title('hello, world!');
+        if ( @_ == 1 ) {
+          my $meta = shift;
+          $meta->title('hello, world!');
+        }
+
+        if ( @_ == 2 ) {
+          isa_ok( $_[0], 'Kalaclista::Entry::Content' );
+          isa_ok( $_[1], 'Kalaclista::Entry::Meta' );
+        }
       },
     },
     query   => {},
