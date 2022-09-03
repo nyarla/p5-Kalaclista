@@ -6,7 +6,6 @@ use warnings;
 use Kalaclista::Sequential::Files;
 use Kalaclista::Parallel::Tasks;
 use Kalaclista::Entry::Meta;
-use Kalaclista::Entry::Content;
 use Kalaclista::Utils qw( make_fn make_href );
 
 sub makeHandle {
@@ -25,13 +24,7 @@ sub makeHandle {
       href => $href,
     );
 
-    my $md      = $file->parent->child("${fn}.md");
-    my $content = Kalaclista::Entry::Content->load( src => $file );
-
     $context->call( fixup => $meta );
-    $context->call( fixup => $content, $meta );
-
-    $meta->content($content);
 
     return $meta;
   };

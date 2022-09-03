@@ -11,7 +11,7 @@ use Path::Tiny;
 
 use Class::Accessor::Lite (
   new => 1,
-  rw  => [qw( href title type slug date lastmod addon content )],
+  rw  => [qw( href title type slug date lastmod addon )],
 );
 
 sub load {
