@@ -33,7 +33,7 @@ sub run {
   my $bw = Parallel::Fork::BossWorkerAsync->new(
     work_handler   => sub { $self->handle->(@_); },
     result_handler => sub { $self->result->(@_); },
-    worker_config  => $self->threads,
+    worker_count   => $self->threads,
   );
 
   $bw->add_work(@tasks);
