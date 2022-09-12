@@ -20,7 +20,7 @@ sub testfile {
     date  => "2021-06-01T10:50:35+09:00"
   };
 
-  my $yaml = $dirs->build_dir->child('test/test.yaml');
+  my $yaml = $dirs->build_dir->child('contents/test/test.yaml');
   $yaml->parent->mkpath;
   $yaml->spew( YAML::Tiny::Dump($data) );
 

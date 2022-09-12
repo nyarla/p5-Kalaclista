@@ -4,8 +4,12 @@ use strict;
 use warnings;
 use utf8;
 
+use Kalaclista::Files;
 use Kalaclista::Parallel::Files;
+
+use File::Spec;
 use Image::Scale;
+use Path::Tiny;
 use YAML::Tiny;
 
 # TODO
@@ -110,6 +114,15 @@ sub makeHandle {
   };
 }
 
+sub files {
+  my ( $self, $rootdir ) = @_;
+
+  $rootdir = File::Spec->join( $rootdir, 'images' );
+  my @files = map { path($_) } Kalaclista::Files->find($rootdir);
+
+  return @files;
+}
+
 sub action {
   my $class   = shift;
   my $context = shift;
@@ -131,7 +144,7 @@ sub action {
     threads => $context->threads,
   );
 
-  return $runner->run( $assets->stringify, 'images', '**', '*.*' );
+  return $runner->run( $class->files( $assets->stringify ) );
 }
 
 1;

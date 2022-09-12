@@ -8,6 +8,7 @@ use Kalaclista::Parallel::Tasks;
 use Kalaclista::Entry::Meta;
 use Kalaclista::Entry::Content;
 use Kalaclista::Page;
+use Kalaclista::Files;
 
 use Kalaclista::Utils qw(make_fn make_href);
 
@@ -41,6 +42,13 @@ sub makeHandle {
   };
 }
 
+sub files {
+  my ( $class, $rootdir ) = @_;
+
+  return
+    map { path($_) } grep { $_ =~ m{\.md$} } Kalaclista::Files->find($rootdir);
+}
+
 sub action {
   my $class   = shift;
   my $context = shift;
@@ -52,7 +60,7 @@ sub action {
   my @pages   = Kalaclista::Sequential::Files->new(
     handle => makeHandle($context),
     result => sub { return @_ },
-  )->run( $build->stringify, '**', '*.md' );
+  )->run( $class->files( $build->stringify ) );
 
   my $builder = Kalaclista::Parallel::Tasks->new(
     handle => sub { shift->emit; {} },

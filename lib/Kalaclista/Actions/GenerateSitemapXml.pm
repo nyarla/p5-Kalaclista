@@ -7,6 +7,8 @@ use Kalaclista::Sequential::Files;
 use Kalaclista::Entry::Meta;
 use Kalaclista::Utils qw( make_fn make_href );
 use Kalaclista::HyperScript qw(h);
+use Kalaclista::Files;
+use Path::Tiny;
 
 sub xmlize {
   my @links = sort { $b->href->as_string cmp $a->href->as_string } @_;
@@ -60,6 +62,13 @@ sub makeSitemapXML {
   }
 }
 
+sub files {
+  my ( $class, $rootdir ) = @_;
+
+  return map { path($_) }
+    grep { $_ =~ m{\.yaml$} } Kalaclista::Files->find($rootdir);
+}
+
 sub action {
   my $class   = shift;
   my $context = shift;
@@ -71,8 +80,7 @@ sub action {
     result => makeSitemapXML($dist),
   );
 
-  return $runner->run( $context->dirs->build_dir->child('contents')->stringify,
-    '**', '*.yaml' );
+  return $runner->run( $class->files( $context->dirs->build_dir->stringify ) );
 }
 
 1;

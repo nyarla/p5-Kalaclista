@@ -3,8 +3,11 @@ package Kalaclista::Actions::SplitContent;
 use strict;
 use warnings;
 
+use Kalaclista::Files;
 use Kalaclista::Parallel::Files;
 use Kalaclista::Utils qw( split_md make_fn );
+
+use Path::Tiny;
 
 sub makeHandle {
   my ( $content, $dest ) = @_;
@@ -21,6 +24,13 @@ sub makeHandle {
 
     return {};
   };
+}
+
+sub files {
+  my ( $class, $rootdir ) = @_;
+
+  return
+    map { path($_) } grep { $_ =~ m{\.md$} } Kalaclista::Files->find($rootdir);
 }
 
 sub action {
@@ -43,7 +53,7 @@ sub action {
     threads => $ctx->threads,
   );
 
-  return $runner->run( $content->stringify, '**', '*.md' );
+  return $runner->run( $class->files( $content->stringify ) );
 }
 
 1;

@@ -6,7 +6,9 @@ use warnings;
 use Kalaclista::Sequential::Files;
 use Kalaclista::Parallel::Tasks;
 use Kalaclista::Entry::Meta;
+use Kalaclista::Files;
 use Kalaclista::Utils qw( make_fn make_href );
+use Path::Tiny;
 
 sub makeHandle {
   my ($context) = @_;
@@ -30,6 +32,12 @@ sub makeHandle {
   };
 }
 
+sub files {
+  my ( $class, $rootdir ) = @_;
+  return map { path($_) }
+    grep { $_ =~ m{\.yaml$} } Kalaclista::Files->find($rootdir);
+}
+
 sub action {
   my $class   = shift;
   my $context = shift;
@@ -47,7 +55,7 @@ sub action {
     }
   );
 
-  my @entries = $loader->run( $build->stringify, '**', '*.yaml' );
+  my @entries = $loader->run( $class->files( $build->stringify ) );
   my @pages =
     map { $_->baseURI($baseURI); $_ } $context->query( archives => @entries );
 

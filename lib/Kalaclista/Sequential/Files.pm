@@ -3,10 +3,11 @@ package Kalaclista::Sequential::Files;
 use strict;
 use warnings;
 
-use Carp qw(confess);
-use Path::Tiny::Glob;
+use Kalaclista::Files;
 
-use Class::Accessor::Lite ( ro => [qw( handle result )], );
+use Carp qw(confess);
+
+use Class::Accessor::Lite ( ro => [qw( handle result )] );
 
 sub new {
   my ( $class, %args ) = @_;
@@ -29,12 +30,10 @@ sub new {
 }
 
 sub run {
-  my $self  = shift;
-  my @globs = @_;
+  my ( $self, @files ) = @_;
 
-  my $files = pathglob( \@globs );
   my @results;
-  while ( defined( my $file = $files->next ) ) {
+  for my $file (@files) {
     push @results, $self->handle->($file);
   }
 

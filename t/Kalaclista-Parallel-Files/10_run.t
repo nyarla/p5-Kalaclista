@@ -11,7 +11,7 @@ my $dirs = Kalaclista::Directory->instance;
 sub main {
   my $testdir = $dirs->rootdir->child('t');
 
-  my $runner = Kalaclista::Parallel::Files->new;
+  my $runner = Kalaclista::Parallel::Files->new( threads => 5 );
 
   $runner->run( $testdir->stringify, '**', '*.t' );
 

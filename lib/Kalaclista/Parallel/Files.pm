@@ -3,7 +3,6 @@ package Kalaclista::Parallel::Files;
 use strict;
 use warnings;
 
-use Path::Tiny::Glob pathglob => { all => 1 };
 use Parallel::Fork::BossWorkerAsync;
 
 use Class::Accessor::Lite ( rw => [qw( threads handle result )], );
@@ -33,11 +32,9 @@ sub new {
 }
 
 sub run {
-  my $self  = shift;
-  my @globs = @_;
+  my ( $self, @files ) = @_;
 
-  my @files = pathglob( [@globs] );
-  my $bw    = Parallel::Fork::BossWorkerAsync->new(
+  my $bw = Parallel::Fork::BossWorkerAsync->new(
     work_handler   => sub { $self->handle->(@_); },
     result_handler => sub { $self->result->(@_); },
     worker_count   => $self->threads,
