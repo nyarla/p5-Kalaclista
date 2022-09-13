@@ -65,18 +65,20 @@ sub make_href ($$) {
 sub make_path ($) {
   my $href = shift;
   my $link = URI->new($href);
-  my $path = uri_unescape( $link->host . $link->path );
+
+  if ( $link->path eq q{} ) {
+    $link->path('/');
+  }
+
+  my $path = uri_unescape( $link->as_string );
   utf8::decode($path);
 
+  $path =~ s{^https?://}{};
   $path =~
 s{[^\p{InHiragana}\p{InKatakana}\p{InCJKUnifiedIdeographs}a-zA-Z0-9\-_/]}{_}g;
 
   $path =~ s{_+}{_}g;
-  $path =~ s{/$}{};
-
-  if ( $path !~ m{/$} ) {
-    $path .= "/index";
-  }
+  $path =~ s{/$}{/index};
 
   return $path;
 }

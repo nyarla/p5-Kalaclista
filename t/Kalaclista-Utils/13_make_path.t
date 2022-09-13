@@ -9,8 +9,7 @@ use Test2::V0;
 use Kalaclista::Utils qw(make_path);
 
 sub main {
-  is( make_path('https://the.kalaclista.com/posts/'),
-    'the_kalaclista_com/posts/index' );
+  is( make_path('https://the.kalaclista.com'), 'the_kalaclista_com/index' );
 
   is(
     make_path(
@@ -18,6 +17,9 @@ sub main {
     ),
     'the_kalaclista_com/notes/自作キーボード/index'
   );
+
+  is( make_path('https://example.com/foo?bar#hoge'),
+    'example_com/foo_bar_hoge', );
 
   done_testing;
 }
