@@ -1,0 +1,12 @@
+  ModuleLoad = buildPerlPackage {
+    pname = "Module-Load";
+    version = "0.36";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/B/BI/BINGOS/Module-Load-0.36.tar.gz";
+      sha256 = "d825020ac00b220e89f9524e24d838f9438b072fcae8c91938e4026677bef6e0";
+    };
+    meta = {
+      description = "Load modules in a DWIM style";
+      license = with lib.licenses; [ artistic1 gpl1Plus ];
+    };
+  };

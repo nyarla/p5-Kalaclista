@@ -25,4 +25,4 @@ test:
 
 .PHONY: shell
 shell:
-	@nix develop -c env SHELL=zsh sh -c 'env PERL5LIB=$(shell pwd)/lib:$$PERL5LIB zsh'
+	@nix develop -c env SHELL=zsh sh -c 'env PERL5LIB=$(shell pwd)/lib:$(shell pwd)/xlib:$$PERL5LIB zsh'

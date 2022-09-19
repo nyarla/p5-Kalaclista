@@ -9,6 +9,7 @@ use Exporter 'import';
 our @EXPORT = qw(load);
 
 use Path::Tiny;
+use Module::Load ();
 use Kalaclista::Directory;
 
 sub className {
@@ -26,12 +27,19 @@ sub className {
 }
 
 sub load {
+  my $template = shift;
+
+  if ( $template !~ m{^/} ) {
+    Module::Load::load($template);
+    return $template->can('render');
+  }
+
   my $dir   = Kalaclista::Directory->instance->templates_dir->stringify;
-  my $path  = shift;
+  my $path  = $template;
   my $class = className($path);
 
   local $@;
-  my $template = eval qq{
+  my $renderer = eval qq{
   package Kalaclista::Template::_${class};
 
   use strict;
@@ -88,7 +96,7 @@ sub load {
     return sub { return $err };
   }
 
-  return $template;
+  return $renderer;
 }
 
 1;
