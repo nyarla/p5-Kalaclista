@@ -12,6 +12,7 @@ requires( 'HTTP::Tinyish',                   0 );
 requires( 'Image::Scale',                    0 );
 requires( 'JSON::Tiny',                      0 );
 requires( 'Module::CPANfile',                0 );
+requires( 'Module::Load',                    0 );
 requires( 'Parallel::Fork::BossWorkerAsync', 0 );
 requires( 'Path::Tiny',                      0 );
 requires( 'Plack',                           0 );
