@@ -60,7 +60,17 @@ sub action {
     map { $_->baseURI($baseURI); $_ } $context->query( archives => @entries );
 
   my $generator = Kalaclista::Parallel::Tasks->new(
-    handle => sub { shift->emit; {} },
+    threads => $context->threads,
+    handle  => sub {
+      local $@;
+      eval { shift->emit; };
+
+      if ($@) {
+        return { ERROR => $@ };
+      }
+
+      return {};
+    },
     result => sub {
       my $result = shift;
       if ( exists $result->{'ERROR'} ) {
