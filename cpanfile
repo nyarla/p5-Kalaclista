@@ -2,6 +2,7 @@ requires( 'App::watcher',                    0 );
 requires( 'Carp',                            0 );
 requires( 'Class::Accessor::Lite',           0 );
 requires( 'CommonMark',                      0 );
+requires( 'Devel::NYTProf',                  0 );
 requires( 'Encode',                          0 );
 requires( 'Encode::Detect::Detector',        0 );
 requires( 'Encode::Guess',                   0 );
