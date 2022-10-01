@@ -1,0 +1,18 @@
+  ApacheLogFormatCompiler = buildPerlModule {
+    pname = "Apache-LogFormat-Compiler";
+    version = "0.36";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/K/KA/KAZEBURO/Apache-LogFormat-Compiler-0.36.tar.gz";
+      sha256 = "94509503ee74ea820183d070c11630ee5bc0fd8c12cb74fae953ed62e4a1ac17";
+    };
+    buildInputs = [ HTTPMessage ModuleBuildTiny TestMockTime TestRequires TryTiny URI ];
+    propagatedBuildInputs = [ POSIXstrftimeCompiler ];
+    preCheck =''
+      rm t/04_tz.t
+    '';
+    meta = {
+      homepage = "https://github.com/kazeburo/Apache-LogFormat-Compiler";
+      description = "Compile a log format string to perl-code";
+      license = with lib.licenses; [ artistic1 gpl1Plus ];
+    };
+  };

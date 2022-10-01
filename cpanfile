@@ -21,6 +21,7 @@ requires( 'Plack::Middleware::DirIndex',     0 );
 requires( 'Proclet',                         0 );
 requires( 'Sub::Uplevel',                    0 );
 requires( 'Test2::V0',                       0 );
+requires( 'Text::HyperScript',               0 );
 requires( 'Time::Moment',                    0 );
 requires( 'URI',                             0 );
 requires( 'XML::LibXML',                     0 );
