@@ -8,7 +8,7 @@ use Test2::V0;
 use Kalaclista::Entry::Meta;
 use Kalaclista::Actions::GenerateSitemapXml;
 
-use Kalaclista::HyperScript qw(h);
+use Text::HyperScript q(h);
 
 sub main {
   my @meta = (

@@ -1,0 +1,13 @@
+  FileShareDirInstall = buildPerlPackage {
+    pname = "File-ShareDir-Install";
+    version = "0.14";
+    src = fetchurl {
+      url = "mirror://cpan/authors/id/E/ET/ETHER/File-ShareDir-Install-0.14.tar.gz";
+      sha256 = "8f9533b198f2d4a9a5288cbc7d224f7679ad05a7a8573745599789428bc5aea0";
+    };
+    meta = {
+      homepage = "https://github.com/Perl-Toolchain-Gang/File-ShareDir-Install";
+      description = "Install shared files";
+      license = with lib.licenses; [ artistic1 gpl1Plus ];
+    };
+  };

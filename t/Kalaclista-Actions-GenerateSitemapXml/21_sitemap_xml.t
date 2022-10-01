@@ -8,7 +8,7 @@ use Path::Tiny qw(tempdir);
 
 use Kalaclista::Directory;
 use Kalaclista::Actions::GenerateSitemapXml;
-use Kalaclista::HyperScript qw(h);
+use Text::HyperScript q(h);
 
 sub main {
   my $dirs = Kalaclista::Directory->instance(

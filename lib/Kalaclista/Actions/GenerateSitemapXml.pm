@@ -3,10 +3,11 @@ package Kalaclista::Actions::GenerateSitemapXml;
 use strict;
 use warnings;
 
+use Text::HyperScript qw(h);
+
 use Kalaclista::Sequential::Files;
 use Kalaclista::Entry::Meta;
 use Kalaclista::Utils qw( make_fn make_href );
-use Kalaclista::HyperScript qw(h);
 use Kalaclista::Files;
 use Path::Tiny;
 

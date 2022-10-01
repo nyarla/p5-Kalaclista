@@ -5,7 +5,7 @@ use warnings;
 
 use Test2::V0;
 use Kalaclista::HyperScript::More;
-use Kalaclista::HyperScript qw( head body );
+use Text::HyperScript::HTML5 qw( head body );
 
 use JSON::Tiny qw( encode_json );
 
