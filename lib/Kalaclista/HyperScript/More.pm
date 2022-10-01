@@ -3,10 +3,12 @@ package Kalaclista::HyperScript::More;
 use strict;
 use warnings;
 
-use Kalaclista::HyperScript qw( html link_ meta true );
+use Text::HyperScript qw(true);
+use Text::HyperScript::HTML5 qw(html link_ meta);
 
-use Exporter 'import';
 use JSON::Tiny qw(encode_json);
+
+use Exporter::Lite;
 
 our @EXPORT = qw(
   document

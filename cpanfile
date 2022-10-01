@@ -6,6 +6,7 @@ requires( 'Devel::NYTProf',                  0 );
 requires( 'Encode',                          0 );
 requires( 'Encode::Detect::Detector',        0 );
 requires( 'Encode::Guess',                   0 );
+requires( 'Exporter::Lite',                  0 );
 requires( 'HTML5::DOM',                      0 );
 requires( 'HTML::Escape',                    0 );
 requires( 'HTTP::Tiny',                      0 );

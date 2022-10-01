@@ -13,7 +13,7 @@ use Kalaclista::Context;
 use Kalaclista::Directory;
 use Kalaclista::Actions::GenerateSitemapXml;
 
-use Kalaclista::HyperScript qw(h);
+use Text::HyperScript qw(h);
 
 sub testfile {
   my $build = shift;

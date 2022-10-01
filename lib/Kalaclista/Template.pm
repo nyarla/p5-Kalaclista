@@ -48,8 +48,10 @@ sub load {
 
   use YAML::Tiny;
   use URI::Escape qw(uri_unescape);
-  
-  use Kalaclista::HyperScript;
+ 
+  use Text::HyperScript;
+  use Text::HyperScript::HTML5;
+
   use Kalaclista::HyperScript::More;
   use Kalaclista::HyperStyle;
   use Kalaclista::Template;
