@@ -12,14 +12,18 @@ my $tmpl = sub {
     { className( 'block', 'element', "modifier" ) },
     { class => 'block__element--modifier' }
   );
-  is( { className( 'block', '', 'modifier' ) },
-    { class => 'block--modifier' } );
+  is(
+    { className( 'block', '', 'modifier' ) },
+    { class => 'block--modifier' }
+  );
 
   is( date('2022-01-01T00:00:00'), '2022-01-01' );
 
   is( __PACKAGE__, 'Kalaclista::Template::_Test' );
 
   is( expand( "expand.pl", { foo => 'bar' }, $baseURI ), 'ok' );
+
+  done_testing;
 };
 
 $tmpl;

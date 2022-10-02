@@ -17,18 +17,15 @@ my $dirs = Kalaclista::Directory->instance;
 sub testfile {
   my $dirs = shift;
 
-  my $data = {
-    title => 'hello, world!',
-    date  => "2021-06-01T10:50:35+09:00"
-  };
+  $dirs->content_dir->parent->mkpath;
+  $dirs->content_dir->child('test.md')->spew_utf8(<<"...");
+---
+title: 'hello, world!'
+date: '2021-06-01T10:50:35+09:00'
+---
 
-  my $yaml = $dirs->build_dir->child('contents')->child('test/test.yaml');
-  $yaml->parent->mkpath;
-  $yaml->spew( YAML::Tiny::Dump($data) );
-
-  my $md = $dirs->build_dir->child('contents')->child('test/test.md');
-  $md->parent->mkpath;
-  $md->spew('hello, world!');
+hello, world!
+...
 
   my $tmpl = $dirs->templates_dir->child('test.pl');
   $tmpl->parent->mkpath;
@@ -40,23 +37,12 @@ sub main {
   testfile($dirs);
 
   my $context = Kalaclista::Context->instance(
-    dirs => $dirs,
-    data => {},
-    call => {
-      fixup => sub {
-        if ( @_ == 1 ) {
-          isa_ok( shift, 'Kalaclista::Entry::Meta' );
-        }
-        elsif ( @_ == 2 ) {
-          isa_ok( shift, 'Kalaclista::Entry::Content' );
-          isa_ok( shift, 'Kalaclista::Entry::Meta' );
-        }
-      },
-    },
+    dirs  => $dirs,
+    data  => {},
+    call  => {},
     query => {
       page => sub {
-        isa_ok( shift, 'Kalaclista::Entry::Content' );
-        isa_ok( shift, 'Kalaclista::Entry::Meta' );
+        isa_ok( shift, 'Kalaclista::Entry' );
 
         return Kalaclista::Page->new(
           dist     => $dirs->distdir->child('test/test.html'),

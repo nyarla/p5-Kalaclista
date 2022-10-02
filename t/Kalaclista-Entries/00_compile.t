@@ -4,7 +4,8 @@ use strict;
 use warnings;
 
 use Test2::V0;
-use Kalaclista::Actions::SplitContent;
+
+use Kalaclista::Entries;
 
 ok(1);
 
