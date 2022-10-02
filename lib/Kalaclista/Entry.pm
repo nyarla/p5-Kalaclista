@@ -23,9 +23,10 @@ sub new {
       meta    => q{},
       content => q{},
     },
-    href  => $href,
-    props => {},
-    dom   => undef,
+    href     => $href,
+    props    => {},
+    dom      => undef,
+    registry => [],
   }, $class;
 }
 
@@ -38,7 +39,7 @@ sub load {
 
   if ( !$self->loaded ) {
     my ( $yaml, $md ) = ( q{}, q{} );
-    open( my $fh, '<', $self->{'path'} )
+    open( my $fh, '<:encoding(UTF-8)', $self->{'path'} )
         or confess( "failed to open file: " . $self->{'path'} . ' :' . $! );
 
     my $inside = 0;
@@ -84,50 +85,105 @@ sub parse {
   return $self;
 }
 
-BEGIN {
-  my @props = qw(
-    title type slug date lastmod
-  );
+sub title {
+  my $self = shift;
 
-  no strict 'refs';
-  for my $prop (@props) {
-    *{ __PACKAGE__ . "::${prop}" } = sub {
-      my $self = shift;
-
-      if ( !$self->loaded ) {
-        $self->load;
-      }
-
-      if ( !$self->parsed ) {
-        $self->parse;
-      }
-
-      return $self->{'props'}->{$prop};
-    };
+  if ( defined( my $new = shift ) ) {
+    $self->{'props'}->{'title'} = $new;
   }
-  use strict 'refs';
+
+  $self->load  if ( !$self->loaded );
+  $self->parse if ( !$self->parsed );
+
+  return $self->{'props'}->{'title'} // q{};
+}
+
+sub type {
+  my $self = shift;
+
+  if ( defined( my $new = shift ) ) {
+    $self->{'props'}->{'type'} = $new;
+  }
+
+  $self->load  if ( !$self->loaded );
+  $self->parse if ( !$self->parsed );
+
+  return $self->{'props'}->{'type'} // q{};
+}
+
+sub slug {
+  my $self = shift;
+
+  if ( defined( my $new = shift ) ) {
+    $self->{'props'}->{'slug'} = $new;
+  }
+
+  $self->load  if ( !$self->loaded );
+  $self->parse if ( !$self->parsed );
+
+  return $self->{'props'}->{'slug'} // q{};
+}
+
+sub date {
+  my $self = shift;
+
+  if ( defined( my $new = shift ) ) {
+    $self->{'props'}->{'date'} = $new;
+  }
+
+  $self->load  if ( !$self->loaded );
+  $self->parse if ( !$self->parsed );
+
+  return $self->{'props'}->{'date'} // q{};
+}
+
+sub lastmod {
+  my $self = shift;
+
+  if ( defined( my $new = shift ) ) {
+    $self->{'props'}->{'lastmod'} = $new;
+  }
+
+  $self->load  if ( !$self->loaded );
+  $self->parse if ( !$self->parsed );
+
+  return $self->{'props'}->{'lastmod'} // $self->date // q{};
 }
 
 sub dom {
   my $self = shift;
 
+  $self->load if ( !$self->loaded );
+
   if ( !defined $self->{'dom'} ) {
     my $node = CommonMark->parse( string => $self->{'src'}->{'content'} );
     my $html = $node->render( format => 'html', unsafe => 1 );
-    $self->{'dom'} = Kalaclista::HTML5->parse($html);
+    $self->{'dom'} = Kalaclista::HTML5->parse($html)->body;
   }
 
   return $self->{'dom'};
 }
 
-sub transform {
+sub register {
   my ( $self, $processor ) = @_;
 
   if ( !ref $processor eq 'CODE' ) {
     confess 'processor is node CodeRef';
   }
 
-  return $processor->( $self->dom );
+  push $self->{'registry'}->@*, $processor;
+
+  return $self;
+}
+
+sub transform {
+  my $self = shift;
+
+  for my $processor ( $self->{'registry'}->@* ) {
+    $processor->( $self, $self->dom );
+  }
+
+  return $self;
 }
 
 1;
