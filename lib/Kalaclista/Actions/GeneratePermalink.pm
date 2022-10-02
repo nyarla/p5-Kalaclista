@@ -3,64 +3,24 @@ package Kalaclista::Actions::GeneratePermalink;
 use strict;
 use warnings;
 
-use Kalaclista::Sequential::Files;
+use Kalaclista::Entries;
 use Kalaclista::Parallel::Tasks;
-use Kalaclista::Entry::Meta;
-use Kalaclista::Entry::Content;
-use Kalaclista::Page;
-use Kalaclista::Files;
-
-use Kalaclista::Utils qw(make_fn make_href);
-
-use Path::Tiny;
-use URI::Escape qw( uri_unescape );
-
-sub makeHandle {
-  my $context = shift;
-  return sub {
-    my $file    = shift;
-    my $content = Kalaclista::Entry::Content->load( src => $file );
-
-    my $path = $file->stringify;
-    $path =~ s{\.md$}{.yaml};
-
-    my $fn = make_fn $path,
-      $context->dirs->build_dir->child('contents')->stringify;
-    my $href = make_href $fn, $context->baseURI;
-
-    my $meta = Kalaclista::Entry::Meta->load(
-      src  => $path,
-      href => $href,
-    );
-
-    $context->call( fixup => $meta );
-    $context->call( fixup => $content, $meta );
-
-    return
-      map { $_->baseURI( $context->baseURI ); $_ }
-      ( $context->query( page => $content, $meta ) );
-  };
-}
-
-sub files {
-  my ( $class, $rootdir ) = @_;
-
-  return
-    map { path($_) } grep { $_ =~ m{\.md$} } Kalaclista::Files->find($rootdir);
-}
 
 sub action {
-  my $class   = shift;
-  my $context = shift;
+  my ( $class, $ctx ) = @_;
 
-  my $build = $context->dirs->build_dir->child('contents');
-  my $dist  = $context->dirs->distdir;
+  my $dist    = $ctx->dirs->distdir;
+  my $content = $ctx->dirs->content_dir->stringify;
 
-  my $baseURI = $context->baseURI;
-  my @pages   = Kalaclista::Sequential::Files->new(
-    handle => makeHandle($context),
-    result => sub { return @_ },
-  )->run( $class->files( $build->stringify ) );
+  my $baseURI = $ctx->baseURI;
+  my $loader  = Kalaclista::Entries->new( $content, $baseURI );
+
+  my @pages = map {
+    $ctx->call( fixup => $_ );
+    my $page = $ctx->query( page => $_ );
+    $page->baseURI($baseURI);
+    $page
+  } $loader->entries->@*;
 
   my $builder = Kalaclista::Parallel::Tasks->new(
     handle => sub { shift->emit; {} },
@@ -72,7 +32,7 @@ sub action {
 
       return $result;
     },
-    threads => $context->threads,
+    threads => $ctx->threads,
   );
 
   return $builder->run(@pages);
