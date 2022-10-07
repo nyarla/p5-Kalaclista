@@ -13,6 +13,7 @@ sub action {
   my $dist    = $c->dirs->distdir;
 
   my $loader = Kalaclista::Entries->new( $content, $baseURI );
+  $loader->fixup( sub { return $c->call( fixup => shift ) } );
 
   for my $page ( $c->query( archives => $loader->entries->@* ) ) {
     $page->baseURI($baseURI);
