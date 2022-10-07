@@ -31,11 +31,11 @@ sub xmlize {
 }
 
 sub action {
-  my ( $class, $ctx ) = @_;
+  my ( $class, $c ) = @_;
 
-  my $dist    = $ctx->dirs->distdir->child('sitemap.xml');
-  my $content = $ctx->dirs->content_dir->stringify;
-  my $baseURI = $ctx->baseURI;
+  my $dist    = $c->dirs->distdir->child('sitemap.xml');
+  my $content = $c->dirs->content_dir->stringify;
+  my $baseURI = $c->baseURI;
 
   my $loader  = Kalaclista::Entries->new( $content, $baseURI );
   my @entries = $loader->entries->@*;

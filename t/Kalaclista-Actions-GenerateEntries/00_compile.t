@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Test2::V0;
-use Kalaclista::Actions::GeneratePermalink;
+use Kalaclista::Actions::GenerateEntries;
 
 ok(1);
 
