@@ -80,9 +80,8 @@ sub parse {
   my $self = shift;
 
   if ( !$self->parsed ) {
-    $self->{'props'}           = YAML::XS::Load( $self->{'src'}->{'meta'} );
-    $self->{'props'}->{'href'} = URI::Fast->new( $self->{'props'}->{'href'} );
-    $self->{'parsed'}          = 1;
+    $self->{'props'}  = YAML::XS::Load( $self->{'src'}->{'meta'} );
+    $self->{'parsed'} = 1;
   }
 
   return $self;
@@ -91,66 +90,91 @@ sub parse {
 sub title {
   my $self = shift;
 
-  if ( defined( my $new = shift ) ) {
-    $self->{'props'}->{'title'} = $new;
+  if ( @_ == 0 ) {
+    return $self->{'props'}->{'title'}
+        if defined $self->{'props'}->{'title'};
+
+    $self->load->parse;
+    $self->{'props'}->{'title'} //= q{};
+
+    return $self->{'props'}->{'title'};
   }
 
-  $self->load  if ( !$self->loaded );
-  $self->parse if ( !$self->parsed );
+  $self->{'props'}->{'title'} = shift;
 
-  return $self->{'props'}->{'title'} // q{};
+  return $self->{'props'}->{'title'};
 }
 
 sub type {
   my $self = shift;
 
-  if ( defined( my $new = shift ) ) {
-    $self->{'props'}->{'type'} = $new;
+  if ( @_ == 0 ) {
+    return $self->{'props'}->{'type'}
+        if defined $self->{'props'}->{'type'};
+
+    $self->load->parse;
+    $self->{'props'}->{'type'} //= q{};
+
+    return $self->{'props'}->{'type'};
   }
 
-  $self->load  if ( !$self->loaded );
-  $self->parse if ( !$self->parsed );
+  $self->{'props'}->{'type'} = shift;
 
-  return $self->{'props'}->{'type'} // q{};
+  return $self->{'props'}->{'type'};
 }
 
 sub slug {
   my $self = shift;
 
-  if ( defined( my $new = shift ) ) {
-    $self->{'props'}->{'slug'} = $new;
+  if ( @_ == 0 ) {
+    return $self->{'props'}->{'slug'}
+        if defined $self->{'props'}->{'slug'};
+
+    $self->load->parse;
+    $self->{'props'}->{'slug'} //= q{};
+
+    return $self->{'props'}->{'slug'};
   }
 
-  $self->load  if ( !$self->loaded );
-  $self->parse if ( !$self->parsed );
+  $self->{'props'}->{'slug'} = shift;
 
-  return $self->{'props'}->{'slug'} // q{};
+  return $self->{'props'}->{'slug'};
 }
 
 sub date {
   my $self = shift;
 
-  if ( defined( my $new = shift ) ) {
-    $self->{'props'}->{'date'} = $new;
+  if ( @_ == 0 ) {
+    return $self->{'props'}->{'date'}
+        if defined $self->{'props'}->{'date'};
+
+    $self->load->parse;
+    $self->{'props'}->{'date'} //= q{};
+
+    return $self->{'props'}->{'date'};
   }
 
-  $self->load  if ( !$self->loaded );
-  $self->parse if ( !$self->parsed );
+  $self->{'props'}->{'date'} = shift;
 
-  return $self->{'props'}->{'date'} // q{};
+  return $self->{'props'}->{'date'};
 }
 
 sub lastmod {
   my $self = shift;
 
-  if ( defined( my $new = shift ) ) {
-    $self->{'props'}->{'lastmod'} = $new;
+  if ( @_ == 0 ) {
+    return $self->{'props'}->{'lastmod'}
+        if defined $self->{'props'}->{'lastmod'};
+
+    $self->load->parse;
+    $self->{'props'}->{'lastmod'} //= $self->date // q{};
+
+    return $self->{'props'}->{'lastmod'};
   }
 
-  $self->load  if ( !$self->loaded );
-  $self->parse if ( !$self->parsed );
+  $self->{'props'}->{'lastmod'} = shift;
 
-  return $self->{'props'}->{'lastmod'} // $self->date // q{};
+  return $self->{'props'}->{'lastmod'};
 }
 
 sub dom {
