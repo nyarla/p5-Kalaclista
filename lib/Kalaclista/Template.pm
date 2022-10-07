@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use utf8;
 
-use Exporter 'import';
+use Exporter::Lite;
 
 our @EXPORT = qw(load);
 

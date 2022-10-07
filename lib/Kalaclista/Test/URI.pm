@@ -3,7 +3,7 @@ package Kalaclista::Test::URI;
 use strict;
 use warnings;
 
-use Exporter 'import';
+use Exporter::Lite;
 use URI;
 use Carp 'confess';
 
@@ -25,9 +25,9 @@ sub is_pages {
 
   if ( @path == 2 ) {
     return
-         $path[1] eq 'nyarla'
-      || $path[1] eq 'licenses'
-      || $path[1] eq 'policies';
+           $path[1] eq 'nyarla'
+        || $path[1] eq 'licenses'
+        || $path[1] eq 'policies';
   }
 
   return 0;
@@ -80,10 +80,10 @@ sub is_permalink {
   my @path = split q{/}, $href->path;
   if ( is_posts($href) || is_echos($href) ) {
     return
-         $path[2] =~ m{^\d{4}$}
-      && $path[3] =~ m{^\d{2}$}
-      && $path[4] =~ m{^\d{2}$}
-      && $path[5] =~ m{^\d{6}$};
+           $path[2] =~ m{^\d{4}$}
+        && $path[3] =~ m{^\d{2}$}
+        && $path[4] =~ m{^\d{2}$}
+        && $path[5] =~ m{^\d{6}$};
   }
 
   if ( is_notes($href) ) {
