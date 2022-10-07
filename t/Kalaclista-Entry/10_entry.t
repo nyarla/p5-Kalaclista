@@ -27,6 +27,9 @@ sub main {
 
   is( $entry->dom->at('p')->textContent, 'hello, world!' );
 
+  is( $entry->addon('example'), [] );
+  is( $entry->addon,            { example => [] } );
+
   done_testing;
 }
 

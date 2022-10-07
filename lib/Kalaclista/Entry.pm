@@ -27,6 +27,7 @@ sub new {
     props    => {},
     dom      => undef,
     registry => [],
+    addons   => {},
   }, $class;
 }
 
@@ -184,6 +185,21 @@ sub transform {
   }
 
   return $self;
+}
+
+sub addon {
+  my $self = shift;
+
+  if ( @_ == 0 ) {
+    return $self->{'addons'};
+  }
+
+  my $ns = shift;
+  if ( !exists $self->{'addons'}->{$ns} || ref $self->{'addons'}->{$ns} ne q{ARRAY} ) {
+    $self->{'addons'}->{$ns} = [];
+  }
+
+  return $self->{'addons'}->{$ns};
 }
 
 1;
