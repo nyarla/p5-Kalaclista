@@ -4,13 +4,13 @@ use strict;
 use warnings;
 
 use Test2::V0;
-use Path::Tiny qw(tempdir);
 use URI;
+use Path::Tiny qw(tempdir);
 
 use Kalaclista::Context;
 use Kalaclista::Directory;
 use Kalaclista::Page;
-use Kalaclista::Actions::GeneratePermalink;
+use Kalaclista::Actions::Generate;
 
 my $dirs = Kalaclista::Directory->instance;
 
@@ -42,12 +42,28 @@ sub main {
     call  => {},
     query => {
       page => sub {
-        isa_ok( shift, 'Kalaclista::Entry' );
+        my $entry = shift;
+
+        isa_ok( $entry, "Kalaclista::Entry" );
 
         return Kalaclista::Page->new(
-          dist     => $dirs->distdir->child('test/test.html'),
-          template => $dirs->templates_dir->child('test.pl')->stringify,
-          vars     => { foo => 'bar' },
+          dist     => $dirs->distdir->child('page.html'),
+          baseURI  => URI->new('https://example.com'),
+          template => $dirs->templates_dir->child('test.pl'),
+          vars     => {},
+        );
+      },
+      archives => sub {
+        my @entries = shift;
+
+        ok( @entries != 0 );
+        isa_ok( $_, "Kalaclista::Entry" ) for (@entries);
+
+        return Kalaclista::Page->new(
+          dist     => $dirs->distdir->child('index.html'),
+          baseURI  => URI->new('https://example.com'),
+          template => $dirs->templates_dir->child('test.pl'),
+          vars     => {},
         );
       },
     },
@@ -55,9 +71,12 @@ sub main {
     threads => 1,
   );
 
-  Kalaclista::Actions::GeneratePermalink->action($context);
+  testfile($dirs);
 
-  is( $dirs->distdir->child('test/test.html')->slurp, 'hello, world!' );
+  Kalaclista::Actions::Generate->action($context);
+
+  is( $dirs->distdir->child('page.html')->slurp,  'hello, world!' );
+  is( $dirs->distdir->child('index.html')->slurp, 'hello, world!' );
 
   done_testing;
 }
