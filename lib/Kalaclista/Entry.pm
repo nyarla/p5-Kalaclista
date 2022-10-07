@@ -10,7 +10,7 @@ use Carp qw(confess);
 use CommonMark;
 use Path::Tiny;
 use URI;
-use YAML::Tiny;
+use YAML::XS;
 
 sub new {
   my ( $class, $path, $href ) = @_;
@@ -66,6 +66,8 @@ sub load {
     close($fh)
         or confess( "failed to open file: " . $self->{'path'} . ' :' . $! );
 
+    utf8::encode($yaml);
+
     $self->{'src'}->{'meta'}    = $yaml;
     $self->{'src'}->{'content'} = $md;
     $self->{'loaded'}           = 1;
@@ -78,7 +80,7 @@ sub parse {
   my $self = shift;
 
   if ( !$self->parsed ) {
-    $self->{'props'}           = YAML::Tiny::Load( $self->{'src'}->{'meta'} );
+    $self->{'props'}           = YAML::XS::Load( $self->{'src'}->{'meta'} );
     $self->{'props'}->{'href'} = URI->new( $self->{'props'}->{'href'} );
     $self->{'parsed'}          = 1;
   }

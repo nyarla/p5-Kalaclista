@@ -10,7 +10,7 @@ use Kalaclista::Parallel::Files;
 use File::Spec;
 use Image::Scale;
 use Path::Tiny;
-use YAML::Tiny;
+use YAML::XS;
 
 # TODO
 my $x1 = 700;
@@ -95,20 +95,24 @@ sub makeHandle {
     }
 
     if ( $image->width > $x1 ) {
-      $data->{'1x'} = resize( $dist->child("${base}/${fn}_thumb_1x.png"),
-        Image::Scale->new( $file->stringify ), $x1 );
+      $data->{'1x'} = resize(
+        $dist->child("${base}/${fn}_thumb_1x.png"),
+        Image::Scale->new( $file->stringify ), $x1
+      );
     }
 
     if ( $image->width > $x2 ) {
-      $data->{'2x'} = resize( $dist->child("${base}/${fn}_thumb_2x.png"),
-        Image::Scale->new( $file->stringify ), $x2 );
+      $data->{'2x'} = resize(
+        $dist->child("${base}/${fn}_thumb_2x.png"),
+        Image::Scale->new( $file->stringify ), $x2
+      );
     }
 
-  YAML:
+YAML:
 
     my $yaml = $build->child("${base}/${fn}.yaml");
     $yaml->parent->mkpath;
-    $yaml->spew_utf8( YAML::Tiny::Dump($data) );
+    $yaml->spew_utf8( YAML::XS::Dump($data) );
 
     return {};
   };

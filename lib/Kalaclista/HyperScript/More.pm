@@ -6,7 +6,7 @@ use warnings;
 use Text::HyperScript qw(true);
 use Text::HyperScript::HTML5 qw(html link_ meta);
 
-use JSON::Tiny qw(encode_json);
+use JSON::XS qw(encode_json);
 
 use Exporter::Lite;
 
@@ -82,12 +82,12 @@ sub jsonld_breadcrumb {
 
   for my $item (@items) {
     push $out->@*,
-      +{
-      '@type'    => 'ListItem',
-      'item'     => $item->{'href'},
-      'name'     => $item->{'name'},
-      'position' => $idx,
-      };
+        +{
+          '@type'    => 'ListItem',
+          'item'     => $item->{'href'},
+          'name'     => $item->{'name'},
+          'position' => $idx,
+        };
 
     $idx++;
   }

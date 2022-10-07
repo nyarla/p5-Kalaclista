@@ -6,7 +6,7 @@ use warnings;
 use Test2::V0;
 
 use URI;
-use YAML::Tiny;
+use YAML::XS;
 use Path::Tiny qw(tempdir);
 
 use Kalaclista::Context;

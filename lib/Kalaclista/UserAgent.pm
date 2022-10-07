@@ -18,7 +18,7 @@ use Encode::Detect::Detector;
 
 use Time::Moment;
 
-use YAML::Tiny;
+use YAML::XS;
 use Carp qw(confess);
 use Path::Tiny;
 
@@ -46,7 +46,7 @@ sub fetch {
   my $data = {};
 
   if ( $file->is_file ) {
-    $data = YAML::Tiny::Load( $file->slurp_utf8 );
+    $data = YAML::XS::Load( $file->slurp_utf8 );
   }
 
   my %headers = ();
@@ -54,8 +54,7 @@ sub fetch {
 
   # Skip if last updated less than 2 week
   if ( ( $data->{'updated_at'} // 0 ) != 0
-    && ( $time - $data->{'updated_at'} ) <= 60 * 60 * 24 * 14 )
-  {
+    && ( $time - $data->{'updated_at'} ) <= 60 * 60 * 24 * 14 ) {
     return q{};
   }
 
@@ -91,7 +90,7 @@ sub fetch {
   $data->{'has_redirect'} = _has_redirect($href);
 
 EMIT:
-  $file->spew_utf8( YAML::Tiny::Dump($data) );
+  $file->spew_utf8( YAML::XS::Dump($data) );
 
   return _decode_content($res);
 }
@@ -103,12 +102,12 @@ sub _if_modified_since {
   my @month   = qw(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec);
 
   my $out = join q{ },
-    (
-    $dayweek[ $time->day_of_week - 1 ] . ",",
-    $time->strftime("%d"),
-    $month[ $time->month - 1 ],
-    $time->strftime('%Y %H:%M:%S'), "GMT"
-    );
+      (
+        $dayweek[ $time->day_of_week - 1 ] . ",",
+        $time->strftime("%d"),
+        $month[ $time->month - 1 ],
+        $time->strftime('%Y %H:%M:%S'), "GMT"
+      );
 
   return $out;
 }
@@ -187,19 +186,15 @@ sub _decode_content {
     goto DECODE;
   }
 
-  if ( defined( $charset = ( $content =~ m{<?xml.+?encoding="([^"]+)"} )[0] ) )
-  {
+  if ( defined( $charset = ( $content =~ m{<?xml.+?encoding="([^"]+)"} )[0] ) ) {
     goto DECODE;
   }
 
-  if ( defined( $charset = ( $content =~ m{<?xml.+?encoding='([^']+)'} )[0] ) )
-  {
+  if ( defined( $charset = ( $content =~ m{<?xml.+?encoding='([^']+)'} )[0] ) ) {
     goto DECODE;
   }
 
-  if (
-    defined( my $charset = ( $content =~ m{<?xml.+?encoding=([^ ?]+)} )[0] ) )
-  {
+  if ( defined( my $charset = ( $content =~ m{<?xml.+?encoding=([^ ?]+)} )[0] ) ) {
     goto DECODE;
   }
 
@@ -208,12 +203,7 @@ sub _decode_content {
     goto DECODE;
   }
 
-  if (
-    defined(
-      my $define = guess_encoding( $content, Encode->encodings(':all') )
-    )
-    )
-  {
+  if ( defined( my $define = guess_encoding( $content, Encode->encodings(':all') ) ) ) {
     $charset = $define->name;
     goto DECODE;
   }

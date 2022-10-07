@@ -5,7 +5,7 @@ use warnings;
 
 use Test2::V0;
 use Path::Tiny qw(tempdir);
-use YAML::Tiny;
+use YAML::XS;
 use URI;
 
 use Kalaclista::Context;
@@ -35,7 +35,7 @@ sub main {
 
   ok( $dirs->datadir->child("images/test.yaml")->is_file );
   is(
-    YAML::Tiny::Load( $dirs->datadir->child("images/test.yaml")->slurp ),
+    YAML::XS::Load( $dirs->datadir->child("images/test.yaml")->slurp ),
     {
       origin => {
         root   => $dirs->distdir->stringify,

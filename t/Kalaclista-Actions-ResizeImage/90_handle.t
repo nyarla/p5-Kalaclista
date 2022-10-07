@@ -5,7 +5,7 @@ use warnings;
 
 use Test2::V0;
 use Path::Tiny qw(tempdir);
-use YAML::Tiny;
+use YAML::XS;
 
 use Kalaclista::Directory;
 use Kalaclista::Actions::ResizeImages;
@@ -25,7 +25,7 @@ sub main {
 
   ok( $build->child("test.yaml")->is_file );
   is(
-    YAML::Tiny::Load( $build->child("test.yaml")->slurp ),
+    YAML::XS::Load( $build->child("test.yaml")->slurp ),
     {
       origin => {
         root   => $dist->stringify,

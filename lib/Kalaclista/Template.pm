@@ -52,7 +52,7 @@ sub load {
   use warnings;
   use utf8;
 
-  use YAML::Tiny;
+  use YAML::XS;
   use URI::Escape qw(uri_unescape);
  
   use Text::HyperScript;

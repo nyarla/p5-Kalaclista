@@ -7,15 +7,17 @@ use Test2::V0;
 use Kalaclista::HyperScript::More;
 use Text::HyperScript::HTML5 qw( head body );
 
-use JSON::Tiny qw( encode_json );
+use JSON::XS qw( encode_json decode_json );
 
 sub main {
-  is( document( head(""), body(""), ),
-    q|<!doctype html><html lang="ja"><head></head><body></body></html>| );
+  is(
+    document( head(""), body(""), ),
+    q|<!doctype html><html lang="ja"><head></head><body></body></html>|
+  );
 
   is(
     feed( "foo", "https://example.com/feed.xml", "application/rss+xml" ),
-q|<link href="https://example.com/feed.xml" rel="alternate" title="foo" type="application/rss+xml" />|
+    q|<link href="https://example.com/feed.xml" rel="alternate" title="foo" type="application/rss+xml" />|
   );
 
   is( property( "foo", "bar" ), q|<meta content="bar" property="foo" />| );
@@ -54,22 +56,24 @@ q|<link href="https://example.com/feed.xml" rel="alternate" title="foo" type="ap
   $jsonld =~ s{\\/}{/}g;
 
   is(
-    jsonld(
-      {
-        href      => 'https://example.com/foo',
-        type      => 'WebSite',
-        title     => 'Example',
-        author    => {},
-        publisher => {},
-        image     => 'https://example.com/image.svg',
-        parent    => 'https://example.com'
-      },
-      {
-        name => 'Example',
-        href => 'https://example.com/foo'
-      }
+    decode_json(
+      jsonld(
+        {
+          href      => 'https://example.com/foo',
+          type      => 'WebSite',
+          title     => 'Example',
+          author    => {},
+          publisher => {},
+          image     => 'https://example.com/image.svg',
+          parent    => 'https://example.com'
+        },
+        {
+          name => 'Example',
+          href => 'https://example.com/foo'
+        }
+      )
     ),
-    $jsonld
+    decode_json($jsonld)
   );
 
   done_testing;
