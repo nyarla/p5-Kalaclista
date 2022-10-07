@@ -4,6 +4,8 @@ use strict;
 use warnings;
 use utf8;
 
+use Carp qw(confess);
+
 use Kalaclista::Entry;
 use Kalaclista::Files;
 
@@ -30,6 +32,18 @@ sub href {
   return $url;
 }
 
+sub fixup {
+  my ( $self, $code ) = @_;
+
+  if ( !ref $code eq 'CODE' ) {
+    confess("fixup function is not CodeRef");
+  }
+
+  $code->($_) for $self->entries->@*;
+
+  return 1;
+}
+
 sub entries {
   my $self = shift;
 
@@ -39,6 +53,8 @@ sub entries {
       grep { $_ =~ m{\.md$} } Kalaclista::Files->find( $self->{'path'} )
     ];
   }
+
+  return $self->{'entries'};
 }
 
 1;

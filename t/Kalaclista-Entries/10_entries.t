@@ -21,6 +21,14 @@ sub main {
 
   is( $entry->href->as_string, 'https://example.com/test/' );
 
+  $loader->fixup(
+    sub {
+      my $entry = shift;
+
+      isa_ok( $entry, 'Kalaclista::Entry' );
+    }
+  );
+
   done_testing;
 }
 
