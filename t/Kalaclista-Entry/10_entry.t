@@ -5,7 +5,7 @@ use warnings;
 
 use Test2::V0;
 
-use URI;
+use URI::Fast;
 use Kalaclista::Entry;
 
 use Kalaclista::Directory;
@@ -13,7 +13,7 @@ use Kalaclista::Directory;
 my $dirs = Kalaclista::Directory->instance;
 
 sub main {
-  my $href  = URI->new('https://example.com/foo');
+  my $href  = URI::Fast->new('https://example.com/foo');
   my $entry = Kalaclista::Entry->new(
     $dirs->rootdir->child('t/fixtures/content/test.md')->stringify,
     $href,

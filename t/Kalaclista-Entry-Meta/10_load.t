@@ -15,7 +15,7 @@ sub main {
     href => 'https://example.com/test',
   );
 
-  is( ref $meta->href,        'URI::https' );
+  is( ref $meta->href,        'URI::Fast' );
   is( $meta->href->as_string, 'https://example.com/test' );
 
   is( $meta->title,     'test' );

@@ -5,7 +5,7 @@ use warnings;
 
 use Test2::V0;
 use Path::Tiny qw(tempdir);
-use URI;
+use URI::Fast;
 
 use Kalaclista::Context;
 use Kalaclista::Directory;
@@ -51,7 +51,7 @@ sub main {
         );
       },
     },
-    baseURI => URI->new('https://example.com'),
+    baseURI => URI::Fast->new('https://example.com'),
     threads => 1,
   );
 

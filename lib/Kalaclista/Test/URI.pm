@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Exporter::Lite;
-use URI;
+use URI::Fast;
 use Carp 'confess';
 
 our @EXPORT_OK = qw(

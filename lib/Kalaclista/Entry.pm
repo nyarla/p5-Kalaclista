@@ -9,7 +9,7 @@ use Kalaclista::HTML5;
 use Carp qw(confess);
 use CommonMark;
 use Path::Tiny;
-use URI;
+use URI::Fast;
 use YAML::XS;
 
 sub new {
@@ -81,7 +81,7 @@ sub parse {
 
   if ( !$self->parsed ) {
     $self->{'props'}           = YAML::XS::Load( $self->{'src'}->{'meta'} );
-    $self->{'props'}->{'href'} = URI->new( $self->{'props'}->{'href'} );
+    $self->{'props'}->{'href'} = URI::Fast->new( $self->{'props'}->{'href'} );
     $self->{'parsed'}          = 1;
   }
 

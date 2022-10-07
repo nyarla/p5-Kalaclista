@@ -5,7 +5,7 @@ use warnings;
 
 use Test2::V0;
 
-use URI;
+use URI::Fast;
 use YAML::XS;
 use Path::Tiny qw(tempdir);
 
@@ -25,7 +25,7 @@ sub main {
     data    => {},
     call    => {},
     query   => {},
-    baseURI => URI->new('https://example.com'),
+    baseURI => URI::Fast->new('https://example.com'),
     threads => 1,
   );
 

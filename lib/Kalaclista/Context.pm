@@ -30,7 +30,7 @@ sub new {
   }
 
   if ( ref( $args->{'baseURI'} ) !~ m{^URI::} ) {
-    confess '`baseURI` must be a URI-ish classes';
+    confess '`baseURI` must be a URI::Fast-ish classes';
   }
 
   if ( $args->{'threads'} !~ m{^\d+$} ) {

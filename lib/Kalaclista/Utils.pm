@@ -3,7 +3,7 @@ package Kalaclista::Utils;
 use strict;
 use warnings;
 
-use URI;
+use URI::Fast;
 use URI::Escape qw( uri_unescape );
 
 use Exporter::Lite;
@@ -64,7 +64,7 @@ sub make_href ($$) {
 
 sub make_path ($) {
   my $href = shift;
-  my $link = URI->new($href);
+  my $link = URI::Fast->new($href);
 
   if ( $link->path eq q{} ) {
     $link->path('/');

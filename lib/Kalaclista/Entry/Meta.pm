@@ -6,7 +6,7 @@ use utf8;
 
 use Carp qw(confess);
 use YAML::XS;
-use URI;
+use URI::Fast;
 use Path::Tiny;
 
 use Class::Accessor::Lite (
@@ -31,7 +31,7 @@ sub load {
     confess 'argument `href` is empty.';
   }
 
-  $href = URI->new("${href}") if ( ref $href ne 'URI' );
+  $href = URI::Fast->new("${href}") if ( ref $href ne 'URI' );
 
   my $data = YAML::XS::Load( $file->slurp_utf8 );
   $data->{'type'}    //= 'pages';

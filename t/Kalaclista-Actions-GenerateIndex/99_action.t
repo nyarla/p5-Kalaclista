@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Test2::V0;
-use URI;
+use URI::Fast;
 use Path::Tiny qw(tempdir);
 
 use Kalaclista::Context;
@@ -49,13 +49,13 @@ sub main {
 
         return Kalaclista::Page->new(
           dist     => $dirs->distdir->child('test/test.html'),
-          baseURI  => URI->new('https://example.com'),
+          baseURI  => URI::Fast->new('https://example.com'),
           template => $dirs->templates_dir->child('test.pl'),
           vars     => {},
         );
       },
     },
-    baseURI => URI->new('https://example.com'),
+    baseURI => URI::Fast->new('https://example.com'),
     threads => 1,
   );
 

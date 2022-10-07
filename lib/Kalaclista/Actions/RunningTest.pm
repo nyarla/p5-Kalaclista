@@ -11,7 +11,7 @@ sub action {
   my $ctx   = shift;
 
   isa_ok( $ctx,          'Kalaclista::Context' );
-  isa_ok( $ctx->baseURI, 'URI' );
+  isa_ok( $ctx->baseURI, 'URI::Fast' );
 
   is( $ctx->threads, 3 );
 }

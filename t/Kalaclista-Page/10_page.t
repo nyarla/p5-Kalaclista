@@ -5,7 +5,7 @@ use warnings;
 
 use Test2::V0;
 use Path::Tiny qw(tempdir);
-use URI;
+use URI::Fast;
 
 use Kalaclista::Page;
 use Kalaclista::Directory;
@@ -18,7 +18,7 @@ sub main {
 
   my $page = Kalaclista::Page->new(
     dist     => $dirs->build_dir->child('contents')->child('test.out'),
-    baseURI  => URI->new('https://example.com/foo/bar'),
+    baseURI  => URI::Fast->new('https://example.com/foo/bar'),
     template => $tmpl,
     vars     => {
       foo => 'bar',

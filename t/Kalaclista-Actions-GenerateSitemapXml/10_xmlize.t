@@ -13,11 +13,11 @@ use Text::HyperScript q(h);
 sub main {
   my @meta = (
     Kalaclista::Entry::Meta->new(
-      href    => URI->new('https://example.com/foo'),
+      href    => URI::Fast->new('https://example.com/foo'),
       lastmod => 10,
     ),
     Kalaclista::Entry::Meta->new(
-      href => URI->new('https://example.com/bar'),
+      href => URI::Fast->new('https://example.com/bar'),
     ),
   );
 
