@@ -5,8 +5,8 @@ use warnings;
 
 use Test2::V0;
 use Path::Tiny qw(tempdir);
-use YAML::Tiny;
-use URI;
+use YAML::XS;
+use URI::Fast;
 
 use Kalaclista::Context;
 use Kalaclista::Directory;
@@ -27,7 +27,7 @@ sub main {
     data    => {},
     call    => {},
     query   => {},
-    baseURI => URI->new('https://example.com'),
+    baseURI => URI::Fast->new('https://example.com'),
     threads => 1,
   );
 
@@ -35,16 +35,13 @@ sub main {
 
   ok( $dirs->datadir->child("images/test.yaml")->is_file );
   is(
-    YAML::Tiny::Load( $dirs->datadir->child("images/test.yaml")->slurp ),
+    YAML::XS::Load( $dirs->datadir->child("images/test.yaml")->slurp ),
     {
       origin => {
-        root   => $dirs->distdir->stringify,
-        path   => $dirs->distdir->child("images/test.png")->stringify,
         width  => 1024,
         height => 1024,
       },
       '1x' => {
-        path   => $dirs->distdir->child("images/test_thumb_1x.png")->stringify,
         width  => 700,
         height => 700,
       }

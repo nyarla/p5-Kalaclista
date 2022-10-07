@@ -3,7 +3,7 @@ package Kalaclista::HyperStyle;
 use strict;
 use warnings;
 
-use Exporter 'import';
+use Exporter::Lite;
 
 our @EXPORT = qw(
   css

@@ -7,7 +7,7 @@ use utf8;
 use Class::Accessor::Lite ( new => 1, rw => [qw( href title summary )] );
 
 use HTML5::DOM;
-use YAML::Tiny;
+use YAML::XS;
 use Carp qw(confess);
 
 my $parser = HTML5::DOM->new;
@@ -42,10 +42,9 @@ sub emit {
   my $file = shift;
 
   my %data;
-  @data{qw( href title summary )} =
-    ( $self->href, $self->title, $self->summary );
+  @data{qw( href title summary )} = ( $self->href, $self->title, $self->summary );
 
-  my $yaml = YAML::Tiny::Dump( \%data );
+  my $yaml = YAML::XS::Dump( \%data );
 
   return $file->spew_utf8($yaml);
 }

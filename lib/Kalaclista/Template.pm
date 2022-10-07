@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use utf8;
 
-use Exporter 'import';
+use Exporter::Lite;
 
 our @EXPORT = qw(load);
 
@@ -26,12 +26,18 @@ sub className {
   return $class;
 }
 
+my %cache;
+
 sub load {
   my $template = shift;
 
   if ( $template !~ m{^/} ) {
     Module::Load::load($template);
     return $template->can('render');
+  }
+
+  if ( exists $cache{$template} && ref $cache{$template} eq 'CODE' ) {
+    return $cache{$template};
   }
 
   my $dir   = Kalaclista::Directory->instance->templates_dir->stringify;
@@ -46,7 +52,7 @@ sub load {
   use warnings;
   use utf8;
 
-  use YAML::Tiny;
+  use YAML::XS;
   use URI::Escape qw(uri_unescape);
  
   use Text::HyperScript;
@@ -97,6 +103,8 @@ sub load {
     my $err = $@;
     return sub { return $err };
   }
+
+  $cache{$template} = $renderer;
 
   return $renderer;
 }

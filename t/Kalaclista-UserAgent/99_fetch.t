@@ -5,7 +5,7 @@ use warnings;
 
 use Test2::V0;
 use Path::Tiny qw(tempfile);
-use YAML::Tiny;
+use YAML::XS;
 
 use Kalaclista::UserAgent;
 
@@ -22,7 +22,7 @@ sub main {
 
   ok( $dist->is_file );
 
-  my $data = YAML::Tiny::LoadFile( $dist->stringify );
+  my $data = YAML::XS::LoadFile( $dist->stringify );
   ok($data);
   is( ref $data, 'HASH' );
 

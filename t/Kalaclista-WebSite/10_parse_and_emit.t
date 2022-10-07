@@ -6,7 +6,7 @@ use utf8;
 
 use Test2::V0;
 use Path::Tiny qw(tempfile);
-use YAML::Tiny;
+use YAML::XS;
 
 use Kalaclista::Directory;
 use Kalaclista::WebSite;
@@ -14,8 +14,7 @@ use Kalaclista::WebSite;
 my $dirs = Kalaclista::Directory->instance;
 
 sub main {
-  my $content =
-    $dirs->rootdir->child('t/Kalaclista-WebSite/fixture.html')->slurp_utf8;
+  my $content = $dirs->rootdir->child('t/Kalaclista-WebSite/fixture.html')->slurp_utf8;
 
   my $website = Kalaclista::WebSite->parse($content);
 
@@ -28,7 +27,7 @@ sub main {
   $website->emit($file);
 
   is(
-    YAML::Tiny::LoadFile( $file->stringify ),
+    YAML::XS::Load( $file->slurp_utf8 ),
     {
       href    => 'https://the.kalaclista.com/posts/',
       title   => 'カラクリスタ・ブログ',

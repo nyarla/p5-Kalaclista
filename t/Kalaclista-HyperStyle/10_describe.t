@@ -5,7 +5,7 @@ use warnings;
 
 use Test2::V0;
 use Kalaclista::HyperStyle qw(css);
-use YAML::Tiny;
+use YAML::XS;
 
 sub main {
   is( css( [ p => [ fontSize => '1em' ] ] ), 'p{font-size:1em;}' );

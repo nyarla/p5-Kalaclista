@@ -3,10 +3,10 @@ package Kalaclista::Utils;
 use strict;
 use warnings;
 
-use URI;
+use URI::Fast;
 use URI::Escape qw( uri_unescape );
 
-use Exporter 'import';
+use Exporter::Lite;
 
 our @EXPORT_OK = qw(split_md make_fn make_href make_path);
 
@@ -64,7 +64,7 @@ sub make_href ($$) {
 
 sub make_path ($) {
   my $href = shift;
-  my $link = URI->new($href);
+  my $link = URI::Fast->new($href);
 
   if ( $link->path eq q{} ) {
     $link->path('/');
@@ -74,8 +74,7 @@ sub make_path ($) {
   utf8::decode($path);
 
   $path =~ s{^https?://}{};
-  $path =~
-s{[^\p{InHiragana}\p{InKatakana}\p{InCJKUnifiedIdeographs}a-zA-Z0-9\-_/]}{_}g;
+  $path =~ s{[^\p{InHiragana}\p{InKatakana}\p{InCJKUnifiedIdeographs}a-zA-Z0-9\-_/]}{_}g;
 
   $path =~ s{_+}{_}g;
   $path =~ s{/$}{/index};

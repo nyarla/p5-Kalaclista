@@ -21,9 +21,14 @@ sub new {
 sub href {
   my ( $self, $path ) = @_;
 
-  $path =~ s|$self->{'path'}||;
-  $path =~ s{\.md}{};
-  $path =~ s{^/|/$}{}g;
+  my $len = length( $self->{'path'} );
+
+  substr( $path, 0,  $len, q{} );
+  substr( $path, -3, 3,    q{} );
+
+  substr( $path, 0, 1,  q{} ) if ( substr( $path, 0, 1 ) eq "/" );
+  substr( $path, 0, -1, q{} ) if ( substr( $path, 0, -1 ) eq "/" );
+
   $path .= "/";
 
   my $url = $self->{'baseURI'}->clone;

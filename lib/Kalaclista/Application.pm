@@ -8,7 +8,7 @@ our $VERSION = "v0.0.1";
 use Getopt::Long qw( :config posix_default no_ignore_case bundling );
 use Pod::Usage qw( pod2usage );
 use Module::Load qw(load);
-use URI;
+use URI::Fast;
 
 use Class::Accessor::Lite ( new => 1, rw => [qw(context)] );
 
@@ -70,7 +70,7 @@ sub run {
   $self->context(
     Kalaclista::Context->instance(
       $settings->%*,
-      baseURI => URI->new($baseURI),
+      baseURI => URI::Fast->new($baseURI),
       threads => $threads,
     )
   );

@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Test2::V0;
-use URI;
+use URI::Fast;
 
 use Kalaclista::Context;
 use Kalaclista::Directory;
@@ -28,7 +28,7 @@ Kalaclista::Context->instance(
     },
   },
 
-  baseURI => URI->new('https://example.com'),
+  baseURI => URI::Fast->new('https://example.com'),
   threads => 3,
 );
 

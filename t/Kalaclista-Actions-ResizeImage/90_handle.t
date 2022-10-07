@@ -5,7 +5,7 @@ use warnings;
 
 use Test2::V0;
 use Path::Tiny qw(tempdir);
-use YAML::Tiny;
+use YAML::XS;
 
 use Kalaclista::Directory;
 use Kalaclista::Actions::ResizeImages;
@@ -19,24 +19,18 @@ sub main {
 
   my $file = $assets->child('test.png');
 
-  my $handle =
-    Kalaclista::Actions::ResizeImages::makeHandle( $assets, $build, $dist );
+  my $handle = Kalaclista::Actions::ResizeImages::makeHandle( $assets, $build, $dist );
   $handle->($file);
 
   ok( $build->child("test.yaml")->is_file );
   is(
-    YAML::Tiny::Load( $build->child("test.yaml")->slurp ),
+    YAML::XS::Load( $build->child("test.yaml")->slurp ),
     {
       origin => {
-        root   => $dist->stringify,
-        path   => $dist->child("@{[ $file->basename ]}")->stringify,
         width  => 1024,
         height => 1024,
       },
       '1x' => {
-        path =>
-          $dist->child("@{[ $file->basename(qr<\.[^.]+$>) ]}_thumb_1x.png")
-          ->stringify,
         width  => 700,
         height => 700,
       }

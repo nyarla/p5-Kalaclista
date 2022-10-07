@@ -7,10 +7,10 @@ use Test2::V0;
 
 use Kalaclista::Utils qw( make_href );
 
-use URI;
+use URI::Fast;
 
 sub main {
-  my $baseURI = URI->new('https://example.com');
+  my $baseURI = URI::Fast->new('https://example.com');
 
   my @tests = (
     [ '/path/to/file', 'https://example.com/path/to/file/' ],

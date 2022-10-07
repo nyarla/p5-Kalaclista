@@ -5,8 +5,8 @@ use warnings;
 
 use Test2::V0;
 
-use URI;
-use YAML::Tiny;
+use URI::Fast;
+use YAML::XS;
 use Path::Tiny qw(tempdir);
 
 use Kalaclista::Context;
@@ -25,7 +25,7 @@ sub main {
     data    => {},
     call    => {},
     query   => {},
-    baseURI => URI->new('https://example.com'),
+    baseURI => URI::Fast->new('https://example.com'),
     threads => 1,
   );
 
