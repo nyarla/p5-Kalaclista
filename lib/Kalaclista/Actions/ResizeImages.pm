@@ -57,7 +57,6 @@ sub resize {
   $dist->spew_raw( $image->as_png );
 
   return {
-    path   => $dist->stringify,
     width  => $rw,
     height => $rh,
   };
@@ -83,8 +82,6 @@ sub makeHandle {
 
     my $data = {
       origin => {
-        root   => $dist->stringify,
-        path   => $dist->child("${base}/@{[ $file->basename ]}")->stringify,
         width  => $image->width,
         height => $image->height,
       },

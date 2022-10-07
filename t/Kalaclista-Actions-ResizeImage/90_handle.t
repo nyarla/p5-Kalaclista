@@ -19,8 +19,7 @@ sub main {
 
   my $file = $assets->child('test.png');
 
-  my $handle =
-    Kalaclista::Actions::ResizeImages::makeHandle( $assets, $build, $dist );
+  my $handle = Kalaclista::Actions::ResizeImages::makeHandle( $assets, $build, $dist );
   $handle->($file);
 
   ok( $build->child("test.yaml")->is_file );
@@ -28,15 +27,10 @@ sub main {
     YAML::XS::Load( $build->child("test.yaml")->slurp ),
     {
       origin => {
-        root   => $dist->stringify,
-        path   => $dist->child("@{[ $file->basename ]}")->stringify,
         width  => 1024,
         height => 1024,
       },
       '1x' => {
-        path =>
-          $dist->child("@{[ $file->basename(qr<\.[^.]+$>) ]}_thumb_1x.png")
-          ->stringify,
         width  => 700,
         height => 700,
       }

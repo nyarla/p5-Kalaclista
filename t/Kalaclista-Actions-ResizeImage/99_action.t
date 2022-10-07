@@ -38,13 +38,10 @@ sub main {
     YAML::XS::Load( $dirs->datadir->child("images/test.yaml")->slurp ),
     {
       origin => {
-        root   => $dirs->distdir->stringify,
-        path   => $dirs->distdir->child("images/test.png")->stringify,
         width  => 1024,
         height => 1024,
       },
       '1x' => {
-        path   => $dirs->distdir->child("images/test_thumb_1x.png")->stringify,
         width  => 700,
         height => 700,
       }
