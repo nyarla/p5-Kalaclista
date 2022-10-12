@@ -46,7 +46,7 @@ sub emit {
 
   my $yaml = YAML::XS::Dump( \%data );
 
-  return $file->spew_utf8($yaml);
+  return $file->spew($yaml);
 }
 
 sub _get {
