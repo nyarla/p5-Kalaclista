@@ -27,7 +27,7 @@ sub main {
   $website->emit($file);
 
   is(
-    YAML::XS::Load( $file->slurp_utf8 ),
+    YAML::XS::Load( $file->slurp_raw ),
     {
       href    => 'https://the.kalaclista.com/posts/',
       title   => 'カラクリスタ・ブログ',
