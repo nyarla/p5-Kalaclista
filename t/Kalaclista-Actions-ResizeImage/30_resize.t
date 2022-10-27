@@ -12,11 +12,9 @@ use Kalaclista::Actions::ResizeImages;
 my $dirs = Kalaclista::Directory->instance;
 
 sub main {
-  my $dist =
-    tempdir( 'kalaclista_test_XXXXXX', CLEANUP => 1 )->child("test.png");
+  my $dist = tempdir( 'kalaclista_test_XXXXXX', CLEANUP => 1 )->child("test.png");
 
-  my $src = Image::Scale->new(
-    $dirs->rootdir->child('t/fixtures/images/test.png')->stringify );
+  my $src = Image::Scale->new( $dirs->rootdir->child('t/fixtures/images/test.png')->stringify );
 
   my $x1 = 700;
 

@@ -13,8 +13,7 @@ sub link {
   my $self = shift;
 
   if ( !exists $self->{'link'} || $self->{'link'} eq q{} ) {
-    $self->{'link'} =
-      "https://www.amazon.co.jp/dp/@{[ $self->asin ]}?tag=@{[ $self->tag ]}";
+    $self->{'link'} = "https://www.amazon.co.jp/dp/@{[ $self->asin ]}?tag=@{[ $self->tag ]}";
   }
 
   return $self->{'link'};
@@ -36,8 +35,7 @@ sub beacon {
   my $self = shift;
 
   if ( !exists $self->{'beacon'} || $self->{'beacon'} eq q{} ) {
-    $self->{'beacon'} =
-"https://ir-jp.amazon-adsystem.com/e/ir?t=@{[ $self->tag ]}&language=ja_JP&l=li2&o=9&a=@{[ $self->asin ]}";
+    $self->{'beacon'} = "https://ir-jp.amazon-adsystem.com/e/ir?t=@{[ $self->tag ]}&language=ja_JP&l=li2&o=9&a=@{[ $self->asin ]}";
   }
 
   return $self->{'beacon'};

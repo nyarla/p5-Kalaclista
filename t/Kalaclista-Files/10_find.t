@@ -10,8 +10,7 @@ use Kalaclista::Files;
 my $dirs = Kalaclista::Directory->instance;
 
 sub main {
-  map { like( $_, qr{\.pm$} ) }
-    Kalaclista::Files->find( $dirs->rootdir->child('lib')->stringify );
+  map { like( $_, qr{\.pm$} ) } Kalaclista::Files->find( $dirs->rootdir->child('lib')->stringify );
 
   done_testing;
 }

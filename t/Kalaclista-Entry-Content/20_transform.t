@@ -21,8 +21,7 @@ sub transform {
 }
 
 sub main {
-  my $content = Kalaclista::Entry::Content->load(
-    src => $dirs->rootdir->child('t/fixtures/content/test.md') );
+  my $content = Kalaclista::Entry::Content->load( src => $dirs->rootdir->child('t/fixtures/content/test.md') );
 
   $content->transform( \&transform );
 

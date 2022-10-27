@@ -10,8 +10,7 @@ use Kalaclista::Directory;
 my $dirs = Kalaclista::Directory->instance;
 
 sub main {
-  my $entry = Kalaclista::Entry::Content->load(
-    src => $dirs->rootdir->child('t/fixtures/content/test.md') );
+  my $entry = Kalaclista::Entry::Content->load( src => $dirs->rootdir->child('t/fixtures/content/test.md') );
 
   is( $entry->dom->tag,                  'body' );
   is( $entry->dom->at('p')->textContent, "hello, world!" );
