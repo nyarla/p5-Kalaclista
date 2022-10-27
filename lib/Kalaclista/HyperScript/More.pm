@@ -6,7 +6,9 @@ use warnings;
 use Text::HyperScript qw(true);
 use Text::HyperScript::HTML5 qw(html link_ meta);
 
-use JSON::XS qw(encode_json);
+use JSON::XS ();
+
+my $jsonify = JSON::XS->new->utf8->canonical(1);
 
 use Exporter::Lite;
 
@@ -47,7 +49,7 @@ sub data_ {
 
 sub jsonld {
   my ( $desc, @items ) = @_;
-  my $jsonld = encode_json( [ jsonld_self($desc), jsonld_breadcrumb(@items) ] );
+  my $jsonld = $jsonify->encode( [ jsonld_self($desc), jsonld_breadcrumb(@items) ] );
   utf8::decode($jsonld);
   $jsonld =~ s{\\/}{/}g;
   return $jsonld;
