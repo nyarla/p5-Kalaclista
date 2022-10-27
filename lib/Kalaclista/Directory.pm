@@ -107,9 +107,9 @@ sub build_dir {
   my $build = $self->build;
 
   my $dir =
-    defined $build
-    ? $self->rootdir->child($build)
-    : tempdir( 'kalaclista_XXXXXX', CLEANUP => 1 );
+      defined $build
+      ? $self->rootdir->child($build)
+      : tempdir( 'kalaclista_XXXXXX', CLEANUP => 1 );
 
   $dir->mkpath if ( !$dir->is_dir );
   $dir->realpath;

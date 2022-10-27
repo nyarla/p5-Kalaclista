@@ -20,8 +20,9 @@ sub main {
 "https://ws-fe.amazon-adsystem.com/widgets/q?_encoding=UTF8&ASIN=XXXXXXXXXX&Format=_SL160_&ID=AsinImage&MarketPlace=JP&ServiceVersion=20070822&WS=1&tag=example-22&language=ja_JP",
   );
 
-  is( $item->beacon,
-"https://ir-jp.amazon-adsystem.com/e/ir?t=example-22&language=ja_JP&l=li2&o=9&a=XXXXXXXXXX"
+  is(
+    $item->beacon,
+    "https://ir-jp.amazon-adsystem.com/e/ir?t=example-22&language=ja_JP&l=li2&o=9&a=XXXXXXXXXX"
   );
 
   done_testing;

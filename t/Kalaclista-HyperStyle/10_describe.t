@@ -44,11 +44,7 @@ sub main {
 
   is(
     css(
-      [
-        [qw(p li)] => [
-          em => [ [qw(a img)] => [ backgroundColor => 'blue', color => 'red' ] ]
-        ]
-      ],
+      [ [qw(p li)] => [ em => [ [qw(a img)] => [ backgroundColor => 'blue', color => 'red' ] ] ] ],
     ),
 
     "p em a,p em img,li em a,li em img{background-color:blue;color:red;}"

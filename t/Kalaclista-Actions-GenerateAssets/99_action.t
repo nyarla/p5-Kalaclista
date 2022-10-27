@@ -12,8 +12,7 @@ use Kalaclista::Directory;
 use Kalaclista::Actions::GenerateAssets;
 
 sub main {
-  my $dirs = Kalaclista::Directory->instance(
-    tmp => tempdir( 'kalaclista_test_XXXXXX', CLEANUP => 1 ) );
+  my $dirs = Kalaclista::Directory->instance( tmp => tempdir( 'kalaclista_test_XXXXXX', CLEANUP => 1 ) );
   $dirs->root( $dirs->rootdir->child('t/fixtures') );
 
   my $context = Kalaclista::Context->instance(

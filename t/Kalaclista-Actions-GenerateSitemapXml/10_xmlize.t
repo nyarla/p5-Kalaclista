@@ -23,13 +23,12 @@ sub main {
 
   my $xml = Kalaclista::Actions::GenerateSitemapXml::xmlize(@meta);
 
-  my $result = q|<?xml version="1.0" encoding="UTF-8" ?>|
-    . h(
+  my $result = q|<?xml version="1.0" encoding="UTF-8" ?>| . h(
     'urlset',
     { xmlns => 'http://www.sitemaps.org/schemas/sitemap/0.9' },
     h( 'url', h( 'loc', "https://example.com/foo" ), h( "lastmod", 10 ) ),
     h( 'url', h( 'loc', "https://example.com/bar" ), h( "lastmod", 10 ) ),
-    );
+  );
 
   is( $xml, $result );
 

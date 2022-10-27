@@ -10,7 +10,7 @@ use YAML::XS;
 use Kalaclista::UserAgent;
 
 my $dist = tempfile;
-my $ua = 'Mozilla/5.0 (X11; Linux x86_64; rv:98.0) Gecko/20100101 Firefox/98.0';
+my $ua   = 'Mozilla/5.0 (X11; Linux x86_64; rv:98.0) Gecko/20100101 Firefox/98.0';
 
 sub main {
   my $agent = Kalaclista::UserAgent->new( agent => $ua );

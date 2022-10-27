@@ -27,8 +27,10 @@ sub main {
 
   $page->emit;
 
-  is( $dirs->build_dir->child('contents')->child('test.out')->slurp,
-    q{hello, world!} );
+  is(
+    $dirs->build_dir->child('contents')->child('test.out')->slurp,
+    q{hello, world!}
+  );
 
   done_testing;
 }
