@@ -7,8 +7,6 @@ my $tmpl = sub {
 
   is( $baseURI->as_string, 'https://example.com' );
 
-  is( __PACKAGE__, 'Kalaclista::Template::_Expand' );
-
   return 'ok';
 };
 
