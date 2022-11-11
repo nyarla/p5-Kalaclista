@@ -31,11 +31,13 @@ sub generate {
     substr( $path, 0, length( $images->path ) + 1, '' );
     $path =~ s{\.[^\.]+}{};
 
-    my $meta = "@{[ $distdir->path ]}/${path}.yaml";
+    my $meta = $datadir->child("${path}.yaml");
+    $meta->parent->mkpath;
+
     my $dest = $distdir->child("${path}");
     $dest->parent->mkpath;
 
-    push @tasks, [ $meta, $src, $dest->path, $sizes ];
+    push @tasks, [ $meta->path, $src, $dest->path, $sizes ];
   }
 
   my $worker = Kalaclista::Parallel::Tasks->new(
@@ -49,8 +51,22 @@ sub generate {
 sub resize {
   my ( $meta, $src, $dest, $scales ) = @_;
 
+  if ( $src =~ m{\.gif$} ) {
+    my $info = `identify '${src}' | head -n1 | cut -d ' ' -f3`;
+    my $data = {
+      src => {
+        width  => ( split qr{x}, $info )[0],
+        height => ( split qr{x}, $info )[1],
+      }
+    };
+    YAML::XS::DumpFile( $meta, $data );
+
+    return {};
+  }
+
   my $data = {};
   my $info = `identify '${src}' | cut -d ' ' -f3`;
+
   chomp($info);
 
   $data->{'src'} = {
