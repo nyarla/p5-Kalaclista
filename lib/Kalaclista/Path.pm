@@ -37,16 +37,8 @@ sub parent {
 }
 
 sub child {
-  my $self = shift;
-  state $cache ||= {};
-
-  my $path = shift;
-
-  return $cache->{$path} if ( exists $cache->{$path} );
-
-  $cache->{$path} = ref($self)->new( path => File::Spec->join( $self->path, $path ) );
-
-  return $cache->{$path};
+  my ( $self, $path ) = @_;
+  return ref($self)->new( path => File::Spec->join( $self->path, $path ) );
 }
 
 sub emit {
@@ -78,14 +70,10 @@ sub get {
 
 sub remove {
   my $self = shift;
-  if ( !-d $self->path ) {
-    unlink $self->path
-        or die "failed to unlink file: @{[ $self->path ]}: $!";
-  }
-  elsif ( -d $self->path ) {
-    rmdir $self->path
-        or die "failed to rmdir directory: @{[ $self->path ]}: $!";
-  }
+
+  return if ( !-d $self->path && -e $self->path && unlink $self->path );
+  return if ( -d $self->path && rmdir $self->path );
+  return;
 }
 
 sub mkpath {
@@ -152,12 +140,11 @@ sub cleanup {
   my $path = shift;
 
   do {
-    if ( $path->temporary && -e $path->path ) {
-      if ( !-d $path->path ) {
+    if ( $path->temporary ) {
+      if ( !-d $path->path && -e $path->path ) {
         $path->remove;
       }
-      else {
-        opendir( my $dh, $path->path ) or die "faild to open dir: @{[ $path->path ]}: $!";
+      elsif ( -d $path->path && opendir( my $dh, $path->path ) ) {
 
         for my $fn ( readdir $dh ) {
           next if ( $fn eq q{.} || $fn eq q{..} );
@@ -171,12 +158,12 @@ sub cleanup {
             $item->remove;
           }
         }
+
         closedir($dh) or die "failed to close dir:@{[ $path->path ]}: $!";
 
         $path->remove;
       }
     }
-
     return;
   } while ( defined( $path = $path->parent ) );
 }
