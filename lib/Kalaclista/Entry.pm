@@ -24,7 +24,7 @@ BEGIN {
     *{ __PACKAGE__ . "::${prop}" } = sub {
       my $self = shift;
       return $self->meta->{$prop}
-          if ( exists $self->meta->{$prop} && defined $self->meta->{$prop} );
+          if ( @_ == 0 && exists $self->meta->{$prop} && defined $self->meta->{$prop} );
 
       if ( defined( my $new = shift @_ ) ) {
         $self->meta->{$prop} = $new;
