@@ -34,4 +34,15 @@ sub rootdir {
   return $rootdir;
 }
 
+sub vars {
+  my $class = shift;
+  state $vars;
+
+  return Kalaclista::Variables->new( $vars->%* ) if ( defined $vars );
+
+  $vars = Kalaclista::Variables->new(@_);
+
+  return $vars;
+}
+
 1;
