@@ -68,7 +68,7 @@ sub jsonld_self {
     'image'     => $desc->{'image'},
     (
       exists $desc->{'parent'}
-      ? ( 'mainEntityOfPage' => { '@id' => $desc->{'parent'} } )
+      ? ( 'mainEntityOfPage' => $desc->{'parent'} )
       : ()
     ),
   };
