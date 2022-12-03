@@ -44,6 +44,8 @@ sub child {
 sub emit {
   my ( $self, $content ) = @_;
 
+  utf8::encode($content) if ( utf8::is_utf8($content) );
+
   open( my $fh, '>', $self->path )
       or die "failed to open file: @{[ $self->path ]}: $!";
 
@@ -85,7 +87,7 @@ sub mkpath {
     $path = File::Spec->join( $path, $dirname );
 
     if ( !-d $path ) {
-      mkdir($path) or die "failed to mkdir: ${path}: ${!}";
+      mkdir($path) or warn "failed to mkdir: ${path}: ${!}";
     }
   }
 
