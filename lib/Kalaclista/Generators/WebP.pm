@@ -77,11 +77,16 @@ sub resize {
   for my $scale ( $scales->@* ) {
     my $size  = $scale->[0];
     my $width = $scale->[1];
+    my $height;
 
-    next if ( $data->{'src'}->{'width'} < $width );
-
-    my $height = `cwebp -resize ${width} 0 -q 100 '${src}' -o '${dest}_${size}.webp' 2>&1 | grep Dimension | cut -d ' ' -f4`;
-    chomp($height);
+    if ( $data->{'src'}->{'width'} < $width ) {
+      $height = `cwebp -q 100 '${src}' -o '${dest}_${size}.webp' 2>&1 | grep Dimension | cut -d ' ' -f4`;
+      chomp($height);
+    }
+    else {
+      $height = `cwebp -resize ${width} 0 -q 100 '${src}' -o '${dest}_${size}.webp' 2>&1 | grep Dimension | cut -d ' ' -f4`;
+      chomp($height);
+    }
 
     $data->{$size} = {
       width  => $width,
