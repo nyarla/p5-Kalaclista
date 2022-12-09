@@ -65,13 +65,10 @@ sub jsonld_self {
     'headline'  => $desc->{'title'},
     'author'    => $desc->{'author'},
     'publisher' => $desc->{'publisher'},
-    'image'     => {
-      '@type' => 'URL',
-      'url'   => $desc->{'image'},
-    },
+    'image'     => $desc->{'image'},
     (
       exists $desc->{'parent'}
-      ? ( 'mainEntryOfPage' => { '@id' => $desc->{'parent'} } )
+      ? ( 'mainEntityOfPage' => $desc->{'parent'} )
       : ()
     ),
   };

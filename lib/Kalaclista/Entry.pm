@@ -4,74 +4,105 @@ use strict;
 use warnings;
 use utf8;
 
-use Kalaclista::HTML5;
+use feature qw(state);
 
-use Carp qw(confess);
 use CommonMark;
-use Path::Tiny;
+use HTML5::DOM;
 use URI::Fast;
 use YAML::XS;
 
-sub new {
-  my ( $class, $path, $href ) = @_;
+my $parser = HTML5::DOM->new( { script => 1 } );
 
-  return bless {
-    path   => $path,
-    loaded => 0,
-    parsed => 0,
-    src    => {
-      meta    => q{},
-      content => q{},
-    },
-    href     => $href,
-    props    => {},
-    dom      => undef,
-    registry => [],
-    addons   => {},
-  }, $class;
-}
+use Class::Accessor::Lite (
+  ro => [qw( path transformers )],
+  rw => [qw( href loaded parsed meta yaml markdown )],
+);
 
-sub loaded { return !!$_[0]->{'loaded'} }
-sub parsed { return !!$_[0]->{'parsed'} }
-sub href   { return $_[0]->{'href'} }
+BEGIN {
+  no strict 'refs';
+  for my $prop (qw( title type slug date )) {
+    *{ __PACKAGE__ . "::${prop}" } = sub {
+      my $self = shift;
+      return $self->meta->{$prop}
+          if ( @_ == 0 && exists $self->meta->{$prop} && defined $self->meta->{$prop} );
 
-sub load {
-  my ($self) = @_;
-
-  if ( !$self->loaded ) {
-    my ( $yaml, $md ) = ( q{}, q{} );
-    open( my $fh, '<:encoding(UTF-8)', $self->{'path'} )
-        or confess( "failed to open file: " . $self->{'path'} . ' :' . $! );
-
-    my $inside = 0;
-    while ( defined( my $line = <$fh> ) ) {
-      chomp($line);
-
-      if ( $line eq q{---} ) {
-        if ( $inside == 0 ) {
-          $inside++;
-          next;
-        }
-
-        if ( $inside > 0 ) {
-          last;
-        }
+      if ( defined( my $new = shift @_ ) ) {
+        $self->meta->{$prop} = $new;
+        return $new;
       }
 
-      $yaml .= $line . "\n";
+      $self->load->parse;
+
+      return $self->meta->{$prop}
+          if ( exists $self->meta->{$prop} && defined $self->meta->{$prop} );
+
+      return q{};
+    };
+  }
+
+  use strict 'refs';
+}
+
+sub new {
+  my $class = shift;
+  my $path  = shift;
+
+  state $cache ||= {};
+
+  return $cache->{$path}
+      if ( exists $cache->{$path} && ref $cache->{$path} eq 'Kalaclista::Entry' );
+
+  my $href = shift;
+  my $self = bless {
+    path         => $path,
+    href         => $href,
+    meta         => {},
+    transformers => [],
+    addon        => {},
+  }, $class;
+
+  $cache->{$path} = $self;
+
+  return $self;
+}
+
+sub load {
+  my $self = shift;
+  return $self if ( defined $self->loaded && $self->loaded );
+
+  open( my $fh, '<:encoding(UTF-8)', $self->path )
+      or die "failed to open entry: @{[ $self->path ]}: $!";
+
+  my $yaml   = q{};
+  my $inside = 0;
+  while ( defined( my $line = <$fh> ) ) {
+    chomp($line);
+
+    if ( $line eq q{---} ) {
+      if ( $inside == 0 ) {
+        $inside++;
+        next;
+      }
+
+      if ( $inside > 0 ) {
+        last;
+      }
     }
 
-    $md = do { local $/; <$fh> };
-
-    close($fh)
-        or confess( "failed to open file: " . $self->{'path'} . ' :' . $! );
-
-    utf8::encode($yaml);
-
-    $self->{'src'}->{'meta'}    = $yaml;
-    $self->{'src'}->{'content'} = $md;
-    $self->{'loaded'}           = 1;
+    $yaml .= "${line}\n";
   }
+
+  my $md = do { local $/; <$fh> };
+
+  close($fh)
+      or die "failed to close entry: @{[ $self->path ]}: $!";
+
+  utf8::encode($yaml);
+
+  $self->yaml($yaml);
+  $self->markdown($md);
+
+  $self->loaded(1);
 
   return $self;
 }
@@ -79,126 +110,60 @@ sub load {
 sub parse {
   my $self = shift;
 
-  if ( !$self->parsed ) {
-    $self->{'props'}  = YAML::XS::Load( $self->{'src'}->{'meta'} );
-    $self->{'parsed'} = 1;
-  }
+  return $self if ( defined $self->parsed && $self->parsed );
 
+  $self->meta( YAML::XS::Load( $self->yaml ) );
+  $self->parsed(1);
   return $self;
-}
-
-sub title {
-  my $self = shift;
-
-  if ( @_ == 0 ) {
-    return $self->{'props'}->{'title'}
-        if defined $self->{'props'}->{'title'};
-
-    $self->load->parse;
-    $self->{'props'}->{'title'} //= q{};
-
-    return $self->{'props'}->{'title'};
-  }
-
-  $self->{'props'}->{'title'} = shift;
-
-  return $self->{'props'}->{'title'};
-}
-
-sub type {
-  my $self = shift;
-
-  if ( @_ == 0 ) {
-    return $self->{'props'}->{'type'}
-        if defined $self->{'props'}->{'type'};
-
-    $self->load->parse;
-    $self->{'props'}->{'type'} //= q{};
-
-    return $self->{'props'}->{'type'};
-  }
-
-  $self->{'props'}->{'type'} = shift;
-
-  return $self->{'props'}->{'type'};
-}
-
-sub slug {
-  my $self = shift;
-
-  if ( @_ == 0 ) {
-    return $self->{'props'}->{'slug'}
-        if defined $self->{'props'}->{'slug'};
-
-    $self->load->parse;
-    $self->{'props'}->{'slug'} //= q{};
-
-    return $self->{'props'}->{'slug'};
-  }
-
-  $self->{'props'}->{'slug'} = shift;
-
-  return $self->{'props'}->{'slug'};
-}
-
-sub date {
-  my $self = shift;
-
-  if ( @_ == 0 ) {
-    return $self->{'props'}->{'date'}
-        if defined $self->{'props'}->{'date'};
-
-    $self->load->parse;
-    $self->{'props'}->{'date'} //= q{};
-
-    return $self->{'props'}->{'date'};
-  }
-
-  $self->{'props'}->{'date'} = shift;
-
-  return $self->{'props'}->{'date'};
 }
 
 sub lastmod {
   my $self = shift;
+  return $self->meta->{'lastmod'}
+      if ( exists $self->meta->{'lastmod'} && defined $self->meta->{'lastmod'} );
 
-  if ( @_ == 0 ) {
-    return $self->{'props'}->{'lastmod'}
-        if defined $self->{'props'}->{'lastmod'};
-
-    $self->load->parse;
-    $self->{'props'}->{'lastmod'} //= $self->date // q{};
-
-    return $self->{'props'}->{'lastmod'};
+  if ( defined( my $new = shift @_ ) ) {
+    $self->meta->{'lastmod'} = $new;
+    return $new;
   }
 
-  $self->{'props'}->{'lastmod'} = shift;
+  $self->load->parse;
+  return $self->meta->{'lastmod'}
+      if ( exists $self->meta->{'lastmod'} && defined $self->meta->{'lastmod'} );
 
-  return $self->{'props'}->{'lastmod'};
+  $self->meta->{'lastmod'} //= $self->date;
+  return $self->date;
 }
 
 sub dom {
   my $self = shift;
+  return $self->{'dom'}
+      if ( exists $self->{'dom'} && defined $self->{'dom'} );
 
-  $self->load if ( !$self->loaded );
-
-  if ( !defined $self->{'dom'} ) {
-    my $node = CommonMark->parse( string => $self->{'src'}->{'content'} );
-    my $html = $node->render( format => 'html', unsafe => 1 );
-    $self->{'dom'} = Kalaclista::HTML5->parse($html)->body;
+  if ( defined( my $new = shift @_ ) ) {
+    $self->{'dom'} = $new;
+    return $new;
   }
 
-  return $self->{'dom'};
+  $self->load;
+
+  my $node = CommonMark->parse( string => $self->markdown );
+  my $html = $node->render( format => 'html', unsafe => 1 );
+  my $dom  = $parser->parse($html)->body;
+
+  $self->{'dom'} = $dom;
+
+  return $dom;
 }
 
 sub register {
-  my ( $self, $processor ) = @_;
+  my $self = shift;
 
-  if ( !ref $processor eq 'CODE' ) {
-    confess 'processor is node CodeRef';
+  for my $transfomer (@_) {
+    die "transformer is not CODE reference." if ( ref $transfomer ne 'CODE' );
+
+    push $self->{'transformers'}->@*, $transfomer;
   }
-
-  push $self->{'registry'}->@*, $processor;
 
   return $self;
 }
@@ -206,8 +171,8 @@ sub register {
 sub transform {
   my $self = shift;
 
-  for my $processor ( $self->{'registry'}->@* ) {
-    $processor->( $self, $self->dom );
+  for my $transfomer ( $self->{'transformers'}->@* ) {
+    $transfomer->( $self, $self->dom );
   }
 
   return $self;
@@ -215,17 +180,14 @@ sub transform {
 
 sub addon {
   my $self = shift;
+  my $key  = shift // q{default};
 
-  if ( @_ == 0 ) {
-    return $self->{'addons'};
+  if ( defined( my $new = shift ) ) {
+    $self->{'addon'}->{$key} = $new;
+    return $new;
   }
 
-  my $ns = shift;
-  if ( !exists $self->{'addons'}->{$ns} || ref $self->{'addons'}->{$ns} ne q{ARRAY} ) {
-    $self->{'addons'}->{$ns} = [];
-  }
-
-  return $self->{'addons'}->{$ns};
+  return $self->{'addon'}->{$key};
 }
 
 1;

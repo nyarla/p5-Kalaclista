@@ -5,23 +5,19 @@ use warnings;
 
 use Test2::V0;
 
-use URI::Fast;
-
-use Kalaclista::Directory;
+use Kalaclista::Constants;
 use Kalaclista::Entries;
 
-my $dirs = Kalaclista::Directory->instance;
+sub init {
+  Kalaclista::Constants->baseURI('https://example.com');
+  Kalaclista::Constants->rootdir(qr{^t$});
+}
 
 sub main {
-  my $rootdir = $dirs->rootdir->child('t/fixtures/content')->stringify;
-  my $baseURI = URI::Fast->new('https://example.com');
+  my $entries = Kalaclista::Entries->instance( Kalaclista::Constants->rootdir->child('t/fixtures/content')->path );
+  my $entry   = $entries->entries->[0];
 
-  my $loader = Kalaclista::Entries->new( $rootdir, $baseURI );
-  my $entry  = $loader->entries->[0];
-
-  is( $entry->href->as_string, 'https://example.com/test/' );
-
-  $loader->fixup(
+  $entries->fixup(
     sub {
       my $entry = shift;
 
@@ -29,7 +25,10 @@ sub main {
     }
   );
 
+  is( $entry->href->to_string, 'https://example.com/test/' );
+
   done_testing;
 }
 
+init;
 main;

@@ -7,15 +7,14 @@ use Test2::V0;
 
 use URI::Fast;
 use Kalaclista::Entry;
-
-use Kalaclista::Directory;
-
-my $dirs = Kalaclista::Directory->instance;
+use Kalaclista::Path;
 
 sub main {
+  my $root = Kalaclista::Path->detect(qr{^t$});
+
   my $href  = URI::Fast->new('https://example.com/foo');
   my $entry = Kalaclista::Entry->new(
-    $dirs->rootdir->child('t/fixtures/content/test.md')->stringify,
+    $root->child('t/fixtures/content/test.md')->path,
     $href,
   );
 
@@ -27,8 +26,8 @@ sub main {
 
   is( $entry->dom->at('p')->textContent, 'hello, world!' );
 
-  is( $entry->addon('example'), [] );
-  is( $entry->addon,            { example => [] } );
+  is( $entry->addon( foo => 'bar' ), q{bar} );
+  is( $entry->addon('foo'),          'bar' );
 
   done_testing;
 }

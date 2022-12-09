@@ -13,7 +13,7 @@ our @EXPORT = qw(load);
 use Path::Tiny;
 use Module::Load ();
 
-use Kalaclista::Directory;
+use Kalaclista::Constants;
 
 sub className {
   my ( $klass, $dir ) = @_;
@@ -51,7 +51,7 @@ sub load {
     return $renderer;
   }
 
-  my $dir   = Kalaclista::Directory->instance->templates_dir->stringify;
+  my $dir   = Kalaclista::Constaints->rootdir->child('template')->path;
   my $path  = $template;
   my $class = 'Kalaclista::Template::Script' . className( $path, $dir );
 
@@ -80,7 +80,6 @@ use Text::HyperScript;
 use Text::HyperScript::HTML5;
 
 use Kalaclista::HyperScript::More;
-use Kalaclista::HyperStyle;
 
 our $dir;
 

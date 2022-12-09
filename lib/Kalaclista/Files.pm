@@ -4,22 +4,23 @@ use strict;
 use warnings;
 use utf8;
 
-use Carp qw(confess);
+use feature qw(state);
+
 use File::Spec;
 
-my %cache;
-
 sub find {
-  my ( $class, $rootdir ) = @_;
+  state $cache ||= {};
 
-  if ( exists $cache{$rootdir} && ref $cache{$rootdir} eq 'ARRAY' ) {
-    return $cache{$rootdir};
+  my ( $class, $root ) = @_;
+
+  if ( exists $cache->{$root} && ref $cache->{$root} eq 'ARRAY' ) {
+    return $cache->{$root}->@*;
   }
 
   my @files;
   my @dirs;
 
-  push @dirs, $rootdir;
+  push @dirs, $root;
 
   while ( defined( my $dir = shift @dirs ) ) {
     opendir( my $dh, $dir )
@@ -45,7 +46,7 @@ sub find {
         or confess("failed to close directory: ${dir}");
   }
 
-  $cache{$rootdir} = \@files;
+  $cache->{$root} = \@files;
 
   return @files;
 }

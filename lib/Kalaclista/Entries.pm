@@ -4,24 +4,41 @@ use strict;
 use warnings;
 use utf8;
 
-use Carp qw(confess);
+use feature qw(state);
 
-use Kalaclista::Entry;
+use Kalaclista::Constants;
 use Kalaclista::Files;
+use Kalaclista::Entry;
 
-sub new {
-  my ( $class, $rootdir, $baseURI ) = @_;
-  return bless {
-    path    => $rootdir,
-    baseURI => $baseURI,
-    entries => undef,
-  }, $class;
+sub instance {
+  state $instance;
+  return $instance if ( defined $instance );
+
+  my ( $class, $rootdir ) = @_;
+
+  $instance ||= bless \$rootdir, $class;
+
+  return $instance;
+}
+
+sub entries {
+  state $entries;
+  return $entries if ( defined $entries && ref $entries eq 'ARRAY' );
+
+  my $instance = shift;
+
+  $entries ||= [
+    map  { Kalaclista::Entry->new( $_, $instance->href($_) ) }
+    grep { $_ =~ m{\.md$} } Kalaclista::Files->find( $instance->$* )
+  ];
+
+  return $entries;
 }
 
 sub href {
-  my ( $self, $path ) = @_;
+  my ( $instance, $path ) = @_;
 
-  my $len = length( $self->{'path'} );
+  my $len = length( $instance->$* );
 
   substr( $path, 0,  $len, q{} );
   substr( $path, -3, 3,    q{} );
@@ -31,10 +48,10 @@ sub href {
 
   $path .= "/";
 
-  my $url = $self->{'baseURI'}->clone;
-  $url->path($path);
+  my $URI = Kalaclista::Constants->baseURI->clone;
+  $URI->path($path);
 
-  return $url;
+  return $URI;
 }
 
 sub fixup {
@@ -47,19 +64,6 @@ sub fixup {
   $code->($_) for $self->entries->@*;
 
   return 1;
-}
-
-sub entries {
-  my $self = shift;
-
-  if ( !defined $self->{'entries'} ) {
-    $self->{'entries'} = [
-      map  { Kalaclista::Entry->new( $_, $self->href($_) ) }
-      grep { $_ =~ m{\.md$} } Kalaclista::Files->find( $self->{'path'} )
-    ];
-  }
-
-  return $self->{'entries'};
 }
 
 1;
