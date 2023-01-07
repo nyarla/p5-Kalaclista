@@ -9,6 +9,7 @@ use feature qw(state);
 use URI::Fast;
 
 use Kalaclista::Path;
+use Kalaclista::Variables;
 
 sub baseURI {
   my $class = shift;
