@@ -38,6 +38,10 @@ sub main {
         width  => 700,
         height => 700,
       },
+      '2x' => {
+        width  => 1024,
+        height => 1024,
+      },
     }
   );
 
