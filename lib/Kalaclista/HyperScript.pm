@@ -1,23 +1,21 @@
-package Kalaclista::HyperScript::More;
+package Kalaclista::HyperScript;
 
 use strict;
 use warnings;
 
-use Text::HyperScript qw(true);
-use Text::HyperScript::HTML5 qw(html link_ meta);
+use Text::HyperScript;
+use Text::HyperScript::HTML5;
 
 use JSON::XS ();
 
+use parent qw(Exporter::Lite);
+
 my $jsonify = JSON::XS->new->utf8->canonical(1);
 
-use Exporter::Lite;
-
-our @EXPORT = qw(
-  document
-  feed
-  property
-  data_
-  jsonld
+our @EXPORT = (
+  @Text::HyperScript::EXPORT,
+  @Text::HyperScript::HTML5::EXPORT,
+  qw[ document feed property data_ jsonld ]
 );
 
 sub document {

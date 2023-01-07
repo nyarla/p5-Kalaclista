@@ -79,7 +79,7 @@ use URI::Escape qw(uri_unescape);
 use Text::HyperScript;
 use Text::HyperScript::HTML5;
 
-use Kalaclista::HyperScript::More;
+use Kalaclista::HyperScript;
 
 our $dir;
 
