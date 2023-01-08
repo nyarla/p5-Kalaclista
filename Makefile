@@ -23,11 +23,8 @@ test:
 	@rm -f t/Kalaclista-*/fixture_*.png
 	@prove -Ilib -j$(JOBS) t/*/*.t
 
-.PHONY: shell flake
-
-flake:
-	@cp /etc/nixos/flake.lock .
-	@$(MAKE) shell
+.PHONY: shell
 
 shell:
-	@nix develop -c env SHELL=zsh sh -c 'env PERL5LIB=$(shell pwd)/lib:$(shell pwd)/xlib:$$PERL5LIB zsh'
+	@cp /etc/nixos/flake.lock .
+	@nix develop -c env SHELL=zsh sh -c 'env PERL5LIB=$(shell pwd)/lib:$(shell pwd)/t/lib:$$PERL5LIB zsh'
