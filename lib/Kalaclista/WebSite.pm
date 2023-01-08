@@ -2,74 +2,65 @@ package Kalaclista::WebSite;
 
 use strict;
 use warnings;
-use utf8;
 
-use Class::Accessor::Lite ( new => 1, rw => [qw( href title summary )] );
+use URI::Fast;
+use URI::Escape qw(uri_unescape);
+use YAML::XS qw(Dump LoadFile);
 
-use HTML5::DOM;
-use YAML::XS;
-use Carp qw(confess);
+use Class::Accessor::Lite (
+  new => 1,
+  rw  => [
+    qw(
+      is_gone
+      is_ignore
+      has_redirect
 
-my $parser = HTML5::DOM->new;
+      updated_at
 
-sub parse {
-  my $class   = shift;
-  my $content = shift;
+      href
+      title
+      summary
+    )
+  ],
+);
 
-  my $dom   = $parser->parse($content);
-  my $title = _get(
-    $dom,
-    [ 'attr', 'meta[property="og:title"]',  'content' ],
-    [ 'attr', 'meta[name="twitter:title"]', 'content' ],
-    [ 'elm',  'title' ],
-  );
+sub filename {
+  my $self = shift;
+  my $href = URI::Fast->new( $self->href );
 
-  my $summary = _get(
-    $dom,
-    [ 'attr', 'meta[property="og:description"]',  'content' ],
-    [ 'attr', 'meta[name="twitter:description"]', 'content' ],
-    [ 'attr', 'meta[name="description"]',         'content' ],
-  );
+  if ( $href->path eq q{} ) {
+    $href->path('/');
+  }
 
-  return $class->new(
-    title   => $title,
-    summary => $summary,
-  );
+  my $path = uri_unescape( $href->as_string );
+  utf8::decode($path);
+
+  $path =~ s{^https?://}{};
+  $path =~ s{[^\p{InHiragana}\p{InKatakana}\p{InCJKUnifiedIdeographs}a-zA-Z0-9\-_/]}{_}g;
+  $path =~ s{/$}{/index};
+  $path =~ s{_+}{_}g;
+
+  return $path;
 }
 
 sub emit {
-  my $self = shift;
-  my $file = shift;
-
-  my %data;
-  @data{qw( href title summary )} = ( $self->href, $self->title, $self->summary );
-
-  my $yaml = YAML::XS::Dump( \%data );
-
-  return $file->spew($yaml);
+  my ( $self, $dir ) = @_;
+  return $dir->child( $self->filename . ".yaml" )->emit( { $self->%* } );
 }
 
-sub _get {
-  my $dom   = shift;
-  my @tasks = shift;
+sub load {
+  my ( $class, $href, $dir ) = @_;
 
-  for my $task (@tasks) {
-    if ( $task->[0] eq 'attr' ) {
-      my $el = $dom->at( $task->[1] );
-      if ( defined $el ) {
-        return $el->getAttribute( $task->[2] );
-      }
-    }
+  my $self = $class->new( href => $href );
+  my $fn   = $self->filename;
 
-    if ( $task->[0] eq 'elm' ) {
-      my $el = $dom->at( $task->[1] );
-      if ( defined $el ) {
-        return $el->textContent;
-      }
-    }
+  my $path = $dir->child("${fn}.yaml");
+
+  if ( -e $path->path ) {
+    $self->%* = LoadFile( $path->path )->%*;
   }
 
-  return q{};
+  return $self;
 }
 
 1;
