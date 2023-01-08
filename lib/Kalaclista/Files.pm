@@ -6,6 +6,7 @@ use utf8;
 
 use feature qw(state);
 
+use Carp qw(confess);
 use File::Spec;
 
 sub find {

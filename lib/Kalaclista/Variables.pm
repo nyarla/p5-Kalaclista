@@ -14,8 +14,10 @@ use Class::Accessor::Lite (
   ],
   rw => [
     qw(
+      begin
       breadcrumb
       description
+      end
       entries
       href
       kind

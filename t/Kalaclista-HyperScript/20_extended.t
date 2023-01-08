@@ -4,8 +4,7 @@ use strict;
 use warnings;
 
 use Test2::V0;
-use Kalaclista::HyperScript::More;
-use Text::HyperScript::HTML5 qw( head body );
+use Kalaclista::HyperScript qw(document head body property data_ feed jsonld);
 
 use JSON::XS qw( encode_json decode_json );
 
@@ -27,17 +26,14 @@ sub main {
   my $jsonld = encode_json(
     [
       {
-        '@context' => 'https://schema.org',
-        '@id'      => 'https://example.com/foo',
-        '@type'    => 'WebSite',
-        headline   => 'Example',
-        author     => {},
-        publisher  => {},
-        image      => {
-          '@type' => 'URL',
-          'url'   => 'https://example.com/image.svg',
-        },
-        mainEntryOfPage => { '@id' => 'https://example.com' },
+        '@context'       => 'https://schema.org',
+        '@id'            => 'https://example.com/foo',
+        '@type'          => 'WebSite',
+        headline         => 'Example',
+        author           => {},
+        publisher        => {},
+        image            => 'https://example.com/image.svg',
+        mainEntityOfPage => 'https://example.com',
       },
       {
         '@context'        => 'https://schema.org',

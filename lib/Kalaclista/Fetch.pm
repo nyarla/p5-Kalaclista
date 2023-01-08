@@ -1,16 +1,11 @@
-package Kalaclista::UserAgent;
+package Kalaclista::Fetch;
 
 use strict;
 use warnings;
 use utf8;
 
-use Class::Accessor::Lite (
-  new => 1,
-  rw  => [qw(agent)],
-  ro  => [qw(ua)],
-);
-
 use HTTP::Tinyish;
+use HTML5::DOM;
 
 use Encode;
 use Encode::Guess;
@@ -18,53 +13,65 @@ use Encode::Detect::Detector;
 
 use Time::Moment;
 
-use YAML::XS;
-use Carp qw(confess);
-use Path::Tiny;
+use Class::Accessor::Lite (
+  new => 1,
+  ro  => [qw( datadir agent timeout max_redirect  )],
+);
+
+use Kalaclista::WebSite;
+
+my $parser = HTML5::DOM->new();
 
 sub client {
   my $self = shift;
 
-  if ( !defined $self->ua ) {
-    $self->agent(
-      HTTP::Tinyish->new(
-        agent        => $self->ua,
-        timeout      => 10,
-        max_redirect => 3,
-      )
-    );
+  if ( exists $self->{'client'} && defined( $self->{'client'} ) ) {
+    return $self->{'client'};
   }
 
-  return $self->agent;
+  $self->{'client'} = HTTP::Tinyish->new(
+    agent        => $self->agent,
+    timeout      => $self->timeout,
+    max_redirect => $self->max_redirect,
+  );
+
+  return $self->{'client'};
 }
 
 sub fetch {
   my $self = shift;
   my $href = shift;
-  my $file = shift;
 
-  my $data = {};
+  my $data = Kalaclista::WebSite->load( $href, $self->datadir );
 
-  if ( $file->is_file ) {
-    $data = YAML::XS::Load( $file->slurp_utf8 );
+  if ( $data->is_ignore ) {
+    return $data;
   }
 
-  my %headers = ();
-  my $time    = time;
-
-  # Skip if last updated less than 2 week
-  if ( ( $data->{'updated_at'} // 0 ) != 0
-    && ( $time - $data->{'updated_at'} ) <= 60 * 60 * 24 * 14 ) {
-    return q{};
+  if ( $data->is_gone ) {
+    return $data;
   }
 
-  # Skip if page is gone
-  # if ( defined( $data->{'gone'} ) && $data->{'gone'} == 1 ) {
-  #   return q{};
-  # }
+  my $now = time;
+  my %headers;
 
-  if ( ( $data->{'lastmod'} // 0 ) != 0 ) {
-    $headers{'Modified-Since'} = _if_modified_since($time);
+  if ( ( $data->updated_at // 0 ) != 0 ) {
+    $headers{'Modified-Since'} = _if_modified_since($now);
+  }
+
+  $data->updated_at($now);
+
+  if ( _has_redirect($href) ) {
+    $data->has_redirect(1);
+
+    my $new = _get_location($href);
+    if ( $new eq q{} ) {
+      $data->is_gone(1);
+      return $data;
+    }
+
+    $href = $new;
+    $data->href($new);
   }
 
   my $res;
@@ -72,27 +79,25 @@ sub fetch {
   eval { $res = $self->client->get( $href => { headers => \%headers } ); };
 
   if ($@) {
-    $data->{'gone'}       = 1;
-    $data->{'updated_at'} = $time;
-
-    goto EMIT;
+    $data->is_gone(1);
+    return $data;
   }
 
-  if ( !$res->{'success'} && $res->{'status'} =~ m{^(?:4|5)} ) {
-    $data->{'gone'}       = 1;
-    $data->{'updated_at'} = $time;
+  if ( !$res->{'success'} ) {
+    if ( $res->{'status'} =~ m{^4} ) {
+      $data->is_gone(1);
+    }
 
-    goto EMIT;
+    return $data;
   }
 
-  $data->{'lastmod'}      = $time;
-  $data->{'updated_at'}   = $time;
-  $data->{'has_redirect'} = _has_redirect($href);
+  my $content = _decode_content($res);
+  my $parsed  = _parse_content($content);
 
-EMIT:
-  $file->spew_utf8( YAML::XS::Dump($data) );
+  $data->title( $parsed->{'title'} );
+  $data->summary( $parsed->{'summary'} );
 
-  return _decode_content($res);
+  return $data;
 }
 
 sub _if_modified_since {
@@ -122,6 +127,27 @@ sub _has_redirect {
   }
 
   return 0;
+}
+
+sub _get_location {
+  my $href  = shift;
+  my $redir = shift;
+
+  my $link = q{};
+
+  for ( 0 .. $redir ) {
+    my $out = `curl -w "%{redirect_url}" -s -o /dev/null '${href}'`;
+    chomp($out);
+
+    if ( $out eq q{} ) {
+      $link = $href;
+      last;
+    }
+
+    $href = $out;
+  }
+
+  return $link;
 }
 
 sub _fix_encoding {
@@ -223,6 +249,53 @@ DECODE:
   }
 
   return $decoder->decode($content);
+}
+
+sub _parse_content {
+  my $content = shift;
+
+  my $dom   = $parser->parse($content);
+  my $title = _get_content(
+    $dom,
+    [ 'attr', 'meta[property="og:title"]',  'content' ],
+    [ 'attr', 'meta[name="twitter:title"]', 'content' ],
+    [ 'elm',  'title' ],
+  );
+
+  my $summary = _get_content(
+    $dom,
+    [ 'attr', 'meta[property="og:description"]',  'content' ],
+    [ 'attr', 'meta[name="twitter:description"]', 'content' ],
+    [ 'attr', 'meta[name="description"]',         'content' ],
+  );
+
+  return {
+    title   => $title,
+    summary => $summary,
+  };
+}
+
+sub _get_content {
+  my $dom   = shift;
+  my @tasks = shift;
+
+  for my $task (@tasks) {
+    if ( $task->[0] eq 'attr' ) {
+      my $el = $dom->at( $task->[1] );
+      if ( defined $el ) {
+        return $el->getAttribute( $task->[2] );
+      }
+    }
+
+    if ( $task->[0] eq 'elm' ) {
+      my $el = $dom->at( $task->[1] );
+      if ( defined $el ) {
+        return $el->textContent;
+      }
+    }
+  }
+
+  return q{};
 }
 
 1;

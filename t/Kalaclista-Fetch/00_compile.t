@@ -5,7 +5,7 @@ use warnings;
 
 use Test2::V0;
 
-use Kalaclista::Sequential::Files;
+use Kalaclista::Fetch;
 
 ok(1);
 

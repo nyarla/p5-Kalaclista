@@ -82,6 +82,7 @@ sub resize {
     if ( $data->{'src'}->{'width'} < $width ) {
       $height = `cwebp -q 100 '${src}' -o '${dest}_${size}.webp' 2>&1 | grep Dimension | cut -d ' ' -f4`;
       chomp($height);
+      $width = $data->{'src'}->{'width'};
     }
     else {
       $height = `cwebp -resize ${width} 0 -q 100 '${src}' -o '${dest}_${size}.webp' 2>&1 | grep Dimension | cut -d ' ' -f4`;

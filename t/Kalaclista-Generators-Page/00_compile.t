@@ -4,7 +4,8 @@ use strict;
 use warnings;
 
 use Test2::V0;
-use Kalaclista::HyperScript::More;
+
+use Kalaclista::Generators::Page;
 
 ok(1);
 

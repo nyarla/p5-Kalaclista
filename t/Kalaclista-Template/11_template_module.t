@@ -6,11 +6,12 @@ use warnings;
 use Test2::V0;
 
 use Kalaclista::Template qw(load);
+use Kalaclista::Variables;
 
 sub main {
-  my $tmpl = load('TestApp::Templates::Home');
+  my $tmpl = load('Test::Kalaclista::TestTemplate');
 
-  is( $tmpl->(), 'hello' );
+  is( $tmpl->( Kalaclista::Variables->new ), 'ok' );
 
   done_testing;
 }

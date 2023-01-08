@@ -5,7 +5,7 @@ use warnings;
 
 use Test2::V0;
 
-use Kalaclista::UserAgent;
+use Kalaclista::HyperScript ();
 
 ok(1);
 
