@@ -8,6 +8,7 @@ use feature qw(state);
 
 use FindBin ();
 use File::Spec;
+use File::Temp ();
 
 use Class::Accessor::Lite (
   new => 1,
@@ -96,46 +97,16 @@ sub mkpath {
 
 sub tempdir {
   my ( $class, $format ) = @_;
-
   $format //= 'kalaclista_XXXXXXXXXX';
 
-  state $chars  ||= [ split q{}, 'abdcefghijklmnopqrstuvwxyzABDCEFGHIJKLMNOPQRSTUVWXYZ._' ];
-  state $len    ||= scalar( $chars->@* );
-  state $tmpdir ||= $class->new( path => ( $ENV{'TMP'} // $ENV{'TEMP'} // $ENV{'TEMPDIR'} ), temporary => 0 );
-
-  while (1) {
-    my $path = $format;
-    $path =~ s{X}{$chars->[rand($len-1)]}eg;
-
-    my $dir = $tmpdir->child($path);
-    if ( !-e $dir->path ) {
-      $dir->temporary(1);
-      $dir->mkpath;
-      return $dir;
-    }
-  }
+  return $class->new( path => File::Temp::tempdir(), temporary => 1, );
 }
 
 sub tempfile {
   my ( $class, $format ) = @_;
-
   $format //= 'kalaclista_XXXXXXXXXX';
 
-  state $chars  ||= [ split q{}, 'abdcefghijklmnopqrstuvwxyzABDCEFGHIJKLMNOPQRSTUVWXYZ._' ];
-  state $len    ||= scalar( $chars->@* );
-  state $tmpdir ||= $class->new( path => ( $ENV{'TMP'} // $ENV{'TEMP'} // $ENV{'TEMPDIR'} ), temporary => 0 );
-
-  while (1) {
-    my $path = $format;
-    $path =~ s{X}{$chars->[rand($len-1)]}eg;
-    my $file = $tmpdir->child($path);
-
-    if ( !-e $file->path ) {
-      $file->temporary(1);
-      $file->parent->mkpath;
-      return $file;
-    }
-  }
+  return $class->new( path => ( File::Temp::tempfile() )[1], temporary => 1 );
 }
 
 sub cleanup {
