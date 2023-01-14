@@ -14,6 +14,7 @@ use Class::Accessor::Lite (
       is_gone
       is_ignore
       has_redirect
+      status
 
       updated_at
 
@@ -45,7 +46,11 @@ sub filename {
 
 sub emit {
   my ( $self, $dir ) = @_;
-  return $dir->child( $self->filename . ".yaml" )->emit( { $self->%* } );
+
+  my $file = $dir->child( $self->filename . ".yaml" );
+  $file->parent->mkpath;
+
+  return $file->emit( Dump( { $self->%* } ) );
 }
 
 sub load {

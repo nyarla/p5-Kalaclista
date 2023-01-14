@@ -44,11 +44,11 @@ sub fetch {
 
   my $data = Kalaclista::WebSite->load( $href, $self->datadir );
 
-  if ( $data->is_ignore ) {
+  if ( defined( $data->is_ignore ) && $data->is_ignore ) {
     return $data;
   }
 
-  if ( $data->is_gone ) {
+  if ( defined( $data->is_gone ) && $data->is_gone ) {
     return $data;
   }
 
@@ -64,7 +64,7 @@ sub fetch {
   if ( _has_redirect($href) ) {
     $data->has_redirect(1);
 
-    my $new = _get_location($href);
+    my $new = _get_location( $href, $self->max_redirect );
     if ( $new eq q{} ) {
       $data->is_gone(1);
       return $data;
@@ -80,14 +80,21 @@ sub fetch {
 
   if ($@) {
     $data->is_gone(1);
+    $data->status(599);
     return $data;
   }
 
+  $data->status( $res->{'status'} );
+
   if ( !$res->{'success'} ) {
-    if ( $res->{'status'} =~ m{^4} ) {
+    if ( $res->{'status'} =~ m{^(?:4|599)} ) {
       $data->is_gone(1);
     }
 
+    return $data;
+  }
+
+  if ( $res->{'status'} == 304 ) {
     return $data;
   }
 
@@ -230,13 +237,15 @@ sub _decode_content {
   }
 
   if ( defined( my $define = guess_encoding( $content, Encode->encodings(':all') ) ) ) {
-    $charset = $define->name;
+    if ( ref $define ) {
+      $charset = $define->name;
+    }
     goto DECODE;
   }
 
 DECODE:
 
-  if ( $charset eq q{} ) {
+  if ( !defined $charset || $charset eq q{} ) {
     $charset = "utf8";
   }
 
