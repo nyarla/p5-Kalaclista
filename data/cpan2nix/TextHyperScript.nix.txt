@@ -1,9 +1,9 @@
   TextHyperScript = buildPerlModule {
     pname = "Text-HyperScript";
-    version = "0.05";
+    version = "0.06";
     src = fetchurl {
-      url = "mirror://cpan/authors/id/N/NY/NYARLA/Text-HyperScript-0.05.tar.gz";
-      sha256 = "e0a68f90decdd513f604752f6078fdf1fe254395fba9f39d539dbc10dc264820";
+      url = "mirror://cpan/authors/id/N/NY/NYARLA/Text-HyperScript-0.06.tar.gz";
+      sha256 = "1b3ba5b1d087ec19f4f3f34f34997f8a5650acf0334fe3b7a22a97a9eeccc399";
     };
     buildInputs = [ ModuleBuildTiny Test2Suite ];
     propagatedBuildInputs = [ ExporterLite ];
