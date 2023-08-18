@@ -10,7 +10,6 @@ use Exporter::Lite;
 
 our @EXPORT = qw(load);
 
-use Path::Tiny;
 use Module::Load ();
 
 use Kalaclista::Constants;
