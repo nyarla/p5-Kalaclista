@@ -22,7 +22,6 @@ requires( 'Test2::V0',                       0 );
 requires( 'Text::HyperScript',               0 );
 requires( 'Time::Moment',                    0 );
 requires( 'URI::Fast',                       0 );
-requires( 'XML::LibXML',                     0 );
 requires( 'YAML::XS',                        0 );
 
 # vim: ft=perl :

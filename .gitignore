@@ -1,3 +1,4 @@
-resources
-private
 .githooks
+extlib
+private
+resources
