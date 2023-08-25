@@ -1,34 +1,27 @@
-use strict;
-use warnings;
+use v5.38;
 use utf8;
 
-package Kalaclista::Template;
+package Kalaclista::Template {
+  use Exporter::Lite;
+  use Module::Load ();
 
-use feature qw(state);
+  our @EXPORT = qw(load);
 
-use Exporter::Lite;
+  sub load {
+    state $renderers ||= {};
 
-our @EXPORT = qw(load);
+    my $template = shift;
+    if ( exists $renderers->{$template} ) {
+      return $renderers->{$template};
+    }
 
-use Module::Load ();
+    Module::Load::load($template);
+    my $renderer = ($renderers->{$template} = $template->can('render'));
 
-use Kalaclista::Constants;
+    if ( ref $renderer ne q{CODE} ) {
+      die "This template (${template}) does not have 'render' method.";
+    }
 
-sub load {
-  state $renderers ||= {};
-
-  my $template = shift;
-
-  if ( exists $renderers->{$template} ) {
-    return $renderers->{$template};
+    return $renderer;
   }
-
-  Module::Load::load($template);
-  my $renderer = $template->can('render');
-
-  $renderers->{$template} = $renderer;
-
-  return $renderer;
 }
-
-1;
