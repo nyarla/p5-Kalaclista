@@ -23,5 +23,6 @@ requires( 'Text::HyperScript',               0 );
 requires( 'Time::Moment',                    0 );
 requires( 'URI::Fast',                       0 );
 requires( 'YAML::XS',                        0 );
+requires('Perl::Tidy',0);
 
 # vim: ft=perl :

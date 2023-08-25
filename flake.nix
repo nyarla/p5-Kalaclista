@@ -20,7 +20,6 @@
               perlPackages.Appcpanminus
               perlPackages.Appcpm
               perlPackages.Carton
-              perlPackages.PerlTidy
               perlPackages.locallib
               pkgconfig
               stdenv.cc.cc
