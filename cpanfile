@@ -14,6 +14,7 @@ requires( 'JSON::XS',                        0 );
 requires( 'Module::CPANfile',                0 );
 requires( 'Module::Load',                    0 );
 requires( 'Parallel::Fork::BossWorkerAsync', 0 );
+requires( 'Perl::Tidy',                      0 );
 requires( 'Plack',                           0 );
 requires( 'Plack::Middleware::DirIndex',     0 );
 requires( 'Proclet',                         0 );
@@ -21,8 +22,8 @@ requires( 'Sub::Uplevel',                    0 );
 requires( 'Test2::V0',                       0 );
 requires( 'Text::HyperScript',               0 );
 requires( 'Time::Moment',                    0 );
+requires( 'URI::Escape::XS',                 0 );
 requires( 'URI::Fast',                       0 );
 requires( 'YAML::XS',                        0 );
-requires('Perl::Tidy',0);
 
 # vim: ft=perl :
