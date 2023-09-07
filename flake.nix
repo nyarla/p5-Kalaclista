@@ -4,7 +4,6 @@
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
-      cpanfile = import ./cpanfile.nix { inherit pkgs; };
     in {
       devShell.${system} = with pkgs;
         (buildFHSUserEnv rec {
@@ -13,6 +12,7 @@
             with p; [
               cmark
               coreutils
+              glibc.dev
               gnumake
               libxcrypt
               openssl.dev
@@ -29,6 +29,10 @@
           runScript = writeShellScript "start.sh" ''
             export PATH=$(pwd)/extlib/bin:$PATH
             export PERL5LIB=$(pwd)/extlib/lib/perl5:$(pwd)/app/lib:$(pwd)/lib
+
+            export CFLAGS=-I/usr/include
+            export CXXFLAGS=-I/usr/include
+            export CPPFLAGS=-I/usr/include
 
             unset IN_NIX_SHELL
             export IN_PERL_SHELL=1
