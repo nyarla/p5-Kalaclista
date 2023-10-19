@@ -6,9 +6,9 @@ use utf8;
 
 use feature qw(state);
 
-use Kalaclista::Constants;
-use Kalaclista::Files;
+use Kalaclista::Context;
 use Kalaclista::Entry;
+use Kalaclista::Files;
 
 sub instance {
   state $instance;
@@ -48,7 +48,7 @@ sub href {
 
   $path .= "/";
 
-  my $URI = Kalaclista::Constants->baseURI->clone;
+  my $URI = Kalaclista::Context->instance->baseURI->clone;
   $URI->path($path);
 
   return $URI;
