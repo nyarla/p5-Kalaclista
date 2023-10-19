@@ -5,8 +5,6 @@ use warnings;
 
 use Text::HyperScript qw(h raw);
 
-use Kalaclista::Constants;
-
 use YAML::XS;
 
 sub generate {
