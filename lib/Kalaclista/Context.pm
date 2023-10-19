@@ -16,14 +16,14 @@ class Kalaclista::Context {
     my $class = shift;
     my %args  = @_;
 
-    my $baseURI    = URI::Fast->new( $args{'baseURI'} );
-    my $dirs       = Kalaclista::Data::Directory->instance( $args{'dirs'}->%* );
-    my $production = !!( delete $args{'production'} );
+    my $uri  = URI::Fast->new( $args{'baseURI'} );
+    my $dir  = Kalaclista::Data::Directory->instance( $args{'dirs'}->%* );
+    my $prod = !!( delete $args{'production'} );
 
     my $instance = $class->new(
-      baseURI    => $baseURI,
-      dirs       => $dirs,
-      production => $production,
+      baseURI    => $uri,
+      dirs       => $dir,
+      production => $prod,
     );
 
     $class->instance($instance);
@@ -31,7 +31,11 @@ class Kalaclista::Context {
 
   sub instance {
     shift;
-    state $instance ||= shift;
+    state $instance;
+
+    if ( @_ > 0 ) {
+      $instance = shift;
+    }
 
     return $instance;
   }
