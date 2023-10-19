@@ -3,37 +3,31 @@ use builtin qw(true false);
 use feature qw(class state);
 no warnings qw(experimental);
 
-use Text::CSV;
+use YAML::XS;
 use URI::Escape::XS;
 
 class Kalaclista::Data::WebSite::Loader {
   field $path : param = q{};
-  field $websites = undef;
+  field $final = undef;
 
   method load {
     my $href = shift;
 
-    if ( !defined $websites ) {
-      $websites = {};
-      my $csv = Text::CSV::csv( in => $path );
-      shift $csv->@*;    # strip header line
+    if ( !defined $final ) {
+      $final = {};
 
-      for my $row ( $csv->@* ) {
-        my ( $action, $locked, $gone, $unixtime, $status, $title, $link, $permalink, $summary ) = $row->@*;
-        my $data = {
-          gone      => $gone eq 'yes',
-          title     => $title,
-          link      => $link,
-          permalink => $permalink,
-          summary   => $summary,
-        };
+      my $websites = YAML::XS::LoadFile($path);
 
-        $websites->{$link}      = $data;
-        $websites->{$permalink} = $data;
+      for my $link ( sort keys $websites->%* ) {
+        $final->{$link} = $websites->{$link};
+
+        if ( exists $websites->{$link}->{'permalink'} && defined( my $permalink = $websites->{$link}->{'permalink'} ) ) {
+          $final->{$permalink} = $websites->{$link};
+        }
       }
     }
 
-    return $websites->{$href} if exists $websites->{$href};
+    return $final->{$href} if exists $final->{$href};
     return;
   }
 }
@@ -100,7 +94,11 @@ class Kalaclista::Data::WebSite {
     my $info = $class->loader->load($href);
     return $class->new( title => $text, link => $href ) if !$info;
 
+    delete $info->{$_} for (qw[ lock status action updated ]);
+
     $info->{'title'} //= $text;
+    $info->{'link'}  //= $href;
+
     return $class->new( $info->%* );
   }
 }

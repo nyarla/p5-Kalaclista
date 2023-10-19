@@ -8,29 +8,37 @@ use Test2::V0;
 use Kalaclista::Path;
 use Kalaclista::Data::WebSite;
 
-subtest 'loader should load data from csv file' => sub {
-  my $path   = Kalaclista::Path->detect(qr{^t$})->child('fixtures')->child('website.csv')->path;
+subtest 'loader should load data from json file' => sub {
+  my $path   = Kalaclista::Path->detect(qr{^t$})->child('fixtures')->child('website.json')->path;
   my $loader = Kalaclista::Data::WebSite::Loader->new( path => $path );
 
   is $loader->load('https://example.com'), {
+    action    => !!0,
     gone      => !!0,
-    title     => 'hi',
     link      => 'http://example.com',
+    lock      => !!0,
     permalink => 'https://example.com',
+    status    => 200,
     summary   => 'hi!',
+    title     => 'hi',
+    updated   => 0,
   };
 
   is $loader->load('http://example.com'), {
+    action    => !!0,
     gone      => !!0,
-    title     => 'hi',
     link      => 'http://example.com',
+    lock      => !!0,
     permalink => 'https://example.com',
+    status    => 200,
     summary   => 'hi!',
+    title     => 'hi',
+    updated   => 0,
   };
 };
 
 subtest 'it should load data from csv file by Kalaclista::Data::WebSite->load' => sub {
-  my $path = Kalaclista::Path->detect(qr{^t$})->child('fixtures')->child('website.csv')->path;
+  my $path = Kalaclista::Path->detect(qr{^t$})->child('fixtures')->child('website.json')->path;
   Kalaclista::Data::WebSite->init($path);
 
   my $web = Kalaclista::Data::WebSite->load( text => 'hello', href => 'http://example.com' );
@@ -43,7 +51,7 @@ subtest 'it should load data from csv file by Kalaclista::Data::WebSite->load' =
 };
 
 subtest 'it should fallback to default values' => sub {
-  my $path = Kalaclista::Path->detect(qr{^t$})->child('fixtures')->child('website.csv')->path;
+  my $path = Kalaclista::Path->detect(qr{^t$})->child('fixtures')->child('website.json')->path;
   Kalaclista::Data::WebSite->init($path);
 
   my $web = Kalaclista::Data::WebSite->load( text => 'hello', href => 'https://example.com/hi' );

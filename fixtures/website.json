@@ -1,0 +1,13 @@
+{
+  "http://example.com": {
+    "action": false,
+    "gone": false,
+    "link": "http://example.com",
+    "lock": false,
+    "permalink": "https://example.com",
+    "status": 200,
+    "summary": "hi!",
+    "title": "hi",
+    "updated": 0
+  }
+}
