@@ -33,12 +33,18 @@ class Kalaclista::Data::WebSite::Loader {
 }
 
 class Kalaclista::Data::WebSite {
+  field $label : param     = q{};
   field $title : param     = q{};
   field $summary : param   = q{};
   field $link : param      = q{};
   field $permalink : param = q{};
   field $gone : param      = false;
   field $cite              = undef;
+
+  method label {
+    return $label if $label ne q{};
+    return;
+  }
 
   method title {
     return $title if $title ne q{};

@@ -18,6 +18,12 @@ subtest 'it should return $summary value' => sub {
   is $web->summary, 'my web site';
 };
 
+subtest 'it should return $label value' => sub {
+  my $web = Kalaclista::Data::WebSite->new( label => 'website' );
+
+  is $web->label, 'website';
+};
+
 subtest 'it should fallback to $title content' => sub {
   my $web = Kalaclista::Data::WebSite->new( title => 'hello' );
 
