@@ -21,7 +21,7 @@
               perlPackages.Appcpm
               perlPackages.Carton
               perlPackages.locallib
-              pkgconfig
+              pkg-config
               stdenv.cc.cc
               stdenv.cc.libc
             ];
