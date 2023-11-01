@@ -5,8 +5,13 @@ use warnings;
 
 use Test2::V0;
 
-use Kalaclista::Entry;
-
-ok(1);
+ok(
+  try_ok(
+    sub {
+      use Kalaclista::Entry;
+    }
+  ),
+  'This module should be loadable.'
+);
 
 done_testing;

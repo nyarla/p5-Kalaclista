@@ -1,193 +1,180 @@
-package Kalaclista::Entry;
+use v5.38;
+use builtin qw(true false);
+use feature qw(class state);
+no warnings qw(experimental);
 
-use strict;
-use warnings;
-use utf8;
-
-use feature qw(state);
-
-use CommonMark;
+use Carp;
 use HTML5::DOM;
 use URI::Fast;
 use YAML::XS;
 
-my $parser = HTML5::DOM->new( { script => 1 } );
+use Kalaclista::Path;
 
-use Class::Accessor::Lite (
-  ro => [qw( path transformers )],
-  rw => [qw( href loaded parsed meta yaml markdown )],
-);
+class Kalaclista::Entry {
+  field $path : param         = q{};
+  field $transformers : param = [];
 
-BEGIN {
-  no strict 'refs';
-  for my $prop (qw( title type slug date )) {
-    *{ __PACKAGE__ . "::${prop}" } = sub {
-      my $self = shift;
-      return $self->meta->{$prop}
-          if ( @_ == 0 && exists $self->meta->{$prop} && defined $self->meta->{$prop} );
+  field $href : param : = undef;
+  field $loaded : param = false;
 
-      if ( defined( my $new = shift @_ ) ) {
-        $self->meta->{$prop} = $new;
-        return $new;
+  field $meta : param = {};
+  field $src : param  = q{};
+  field $dom : param  = undef;
+
+  field $parser = HTML5::DOM->new( { script => 1 } );
+
+  method loaded { return $loaded }
+
+  method load {
+    return $self if $loaded;
+
+    open( my $fh, '<:encoding(UTF-8)', $self->path->path )
+        or die "failed to open entry file: @{[ $self->path ]}: ${!}";
+
+    my $yaml  = q{};
+    my $lines = 0;
+
+    while ( defined( my $line = <$fh> ) ) {
+      chomp($line);
+
+      if ( $line =~ m{^---+$} ) {
+        if ( $lines == 0 ) {
+          $lines++;
+          next;
+        }
+
+        if ( $lines > 0 ) {
+          last;
+        }
       }
 
-      $self->load->parse;
-
-      return $self->meta->{$prop}
-          if ( exists $self->meta->{$prop} && defined $self->meta->{$prop} );
-
-      return q{};
-    };
-  }
-
-  use strict 'refs';
-}
-
-sub new {
-  my $class = shift;
-  my $path  = shift;
-
-  state $cache ||= {};
-
-  return $cache->{$path}
-      if ( exists $cache->{$path} && ref $cache->{$path} eq 'Kalaclista::Entry' );
-
-  my $href = shift;
-  my $self = bless {
-    path         => $path,
-    href         => $href,
-    meta         => {},
-    transformers => [],
-    addon        => {},
-  }, $class;
-
-  $cache->{$path} = $self;
-
-  return $self;
-}
-
-sub load {
-  my $self = shift;
-  return $self if ( defined $self->loaded && $self->loaded );
-
-  open( my $fh, '<:encoding(UTF-8)', $self->path )
-      or die "failed to open entry: @{[ $self->path ]}: $!";
-
-  my $yaml   = q{};
-  my $inside = 0;
-  while ( defined( my $line = <$fh> ) ) {
-    chomp($line);
-
-    if ( $line eq q{---} ) {
-      if ( $inside == 0 ) {
-        $inside++;
-        next;
-      }
-
-      if ( $inside > 0 ) {
-        last;
-      }
+      $yaml .= $line . "\n";
     }
 
-    $yaml .= "${line}\n";
+    $src = do { local $/; <$fh> };
+
+    close($fh) or die "failed to close entry file: @{[ $self->path ]}${$!}";
+
+    $meta = {
+      $meta->%*,
+      YAML::XS::Load($yaml)->%*,
+    };
+
+    $loaded = true;
+    return true;
   }
 
-  my $md = do { local $/; <$fh> };
+  method href {
+    if ( @_ == 0 ) {
+      return undef if !$href || $href eq {};
+      return $href if ref $href eq 'URI::Fast';
 
-  close($fh)
-      or die "failed to close entry: @{[ $self->path ]}: $!";
+      if ( !ref $href ) {
+        $href = URI::Fast->new($href);
+      }
 
-  utf8::encode($yaml);
+      return $href;
+    }
 
-  $self->yaml($yaml);
-  $self->markdown($md);
+    my $new = shift;
+    if ( !$new || $new eq q{} ) {
+      Carp::croak("argument should be string or instance URI::Fast");
+    }
 
-  $self->loaded(1);
+    if ( !ref $new ) {
+      $new = URI::Fast->new($new);
+    }
 
-  return $self;
-}
+    $href = $new;
 
-sub parse {
-  my $self = shift;
-
-  return $self if ( defined $self->parsed && $self->parsed );
-
-  $self->meta( YAML::XS::Load( $self->yaml ) );
-  $self->parsed(1);
-  return $self;
-}
-
-sub lastmod {
-  my $self = shift;
-  return $self->meta->{'lastmod'}
-      if ( exists $self->meta->{'lastmod'} && defined $self->meta->{'lastmod'} );
-
-  if ( defined( my $new = shift @_ ) ) {
-    $self->meta->{'lastmod'} = $new;
-    return $new;
+    return $href;
   }
 
-  $self->load->parse;
-  return $self->meta->{'lastmod'}
-      if ( exists $self->meta->{'lastmod'} && defined $self->meta->{'lastmod'} );
+  method path {
+    if ( @_ == 0 ) {
+      return undef if !$path || $path eq q{};
+      return $path if $path eq 'Kalaclista::Path';
 
-  $self->meta->{'lastmod'} //= $self->date;
-  return $self->date;
-}
+      if ( !ref $path ) {
+        $path = Kalaclista::Path->new( path => $path );
+      }
 
-sub dom {
-  my $self = shift;
-  return $self->{'dom'}
-      if ( exists $self->{'dom'} && defined $self->{'dom'} );
+      return $path;
+    }
 
-  if ( defined( my $new = shift @_ ) ) {
-    $self->{'dom'} = $new;
-    return $new;
+    my $new = shift;
+    if ( !$new || $new eq q{} ) {
+      Carp::croak("argument should be string or instance of Kalaclista::Path");
+    }
+
+    if ( !ref $new ) {
+      $new = Kalaclista::Path->new( path => $new );
+    }
+
+    $path = $new;
+    return $path;
   }
 
-  $self->load;
+  method src {
+    if ( @_ == 0 ) {
+      return $src;
+    }
 
-  my $node = CommonMark->parse( string => $self->markdown );
-  my $html = $node->render( format => 'html', unsafe => 1 );
-  my $dom  = $parser->parse($html)->body;
+    my $new = shift;
+    $new = "${new}";
+    $src = $new;
 
-  $self->{'dom'} = $dom;
-
-  return $dom;
-}
-
-sub register {
-  my $self = shift;
-
-  for my $transfomer (@_) {
-    die "transformer is not CODE reference." if ( ref $transfomer ne 'CODE' );
-
-    push $self->{'transformers'}->@*, $transfomer;
+    return $src;
   }
 
-  return $self;
-}
+  method dom {
+    if ( @_ == 0 ) {
+      return undef if $src eq q{};
 
-sub transform {
-  my $self = shift;
+      $dom = $parser->parse($src)->body;
+      return $dom;
+    }
 
-  for my $transfomer ( $self->{'transformers'}->@* ) {
-    $transfomer->( $self, $self->dom );
+    my $new = shift;
+    if ( ref $new =~ m{^HTML5::DOM} ) {
+      $dom = $new;
+      return $dom;
+    }
+
+    $src = "${new}";
+    $dom = $parser->parse($src)->body;
+    return $dom;
   }
 
-  return $self;
-}
-
-sub addon {
-  my $self = shift;
-  my $key  = shift // q{default};
-
-  if ( defined( my $new = shift ) ) {
-    $self->{'addon'}->{$key} = $new;
-    return $new;
+  method add_transformer {
+    push $transformers->@*, shift;
   }
 
-  return $self->{'addon'}->{$key};
-}
+  method transform {
+    for my $transformer ( $transformers->@* ) {
+      $transformer->($self);
+    }
 
-1;
+    return $self;
+  }
+
+  method meta {
+    my $key = shift;
+    if ( @_ > 0 ) {
+      $meta->{$key} = shift;
+    }
+
+    if ( exists $meta->{$key} ) {
+      return $meta->{$key};
+    }
+
+    return undef;
+  }
+
+  method title   { $self->meta( 'title'   => @_ ) }
+  method summary { $self->meta( 'summary' => @_ ) }
+  method type    { $self->meta( 'type'    => @_ ) }
+  method slug    { $self->meta( 'slug'    => @_ ) }
+  method date    { $self->meta( 'date'    => @_ ) }
+  method lastmod { $self->meta( 'lastmod' => @_ ) }
+}
