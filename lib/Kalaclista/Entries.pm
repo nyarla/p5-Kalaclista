@@ -1,69 +1,26 @@
 package Kalaclista::Entries;
 
-use strict;
-use warnings;
-use utf8;
-
-use feature qw(state);
+use v5.38;
+use builtin qw(true);
+no warnings qw(experimental);
 
 use Kalaclista::Context;
 use Kalaclista::Entry;
 use Kalaclista::Files;
 
-sub instance {
-  state $instance;
-  return $instance if ( defined $instance );
+sub lookup {
+  my $class   = shift;
+  my $rootdir = shift;
+  my %args    = @_;
+  my @entries = Kalaclista::Files->find($rootdir);
 
-  my ( $class, $rootdir ) = @_;
+  my $filter = $args{'filter'} //= sub { return true };
+  my $sort   = $args{'sort'}   //= sub { $_[0]->path->path cmp $_[1]->path->path };
+  my $fixup  = $args{'fixup'}  //= sub { return $_[0] };
 
-  $instance ||= bless \$rootdir, $class;
-
-  return $instance;
-}
-
-sub entries {
-  state $entries;
-  return $entries if ( defined $entries && ref $entries eq 'ARRAY' );
-
-  my $instance = shift;
-
-  $entries ||= [
-    map  { Kalaclista::Entry->new( $_, $instance->href($_) ) }
-    grep { $_ =~ m{\.md$} } Kalaclista::Files->find( $instance->$* )
+  return [
+    sort { $sort->( $a, $b ) }
+    map  { my $e = Kalaclista::Entry->new( path => $_ ); $fixup->($e); $e }
+    grep { $filter->($_) } @entries
   ];
-
-  return $entries;
 }
-
-sub href {
-  my ( $instance, $path ) = @_;
-
-  my $len = length( $instance->$* );
-
-  substr( $path, 0,  $len, q{} );
-  substr( $path, -3, 3,    q{} );
-
-  substr( $path, 0, 1,  q{} ) if ( substr( $path, 0, 1 ) eq "/" );
-  substr( $path, 0, -1, q{} ) if ( substr( $path, 0, -1 ) eq "/" );
-
-  $path .= "/";
-
-  my $URI = Kalaclista::Context->instance->baseURI->clone;
-  $URI->path($path);
-
-  return $URI;
-}
-
-sub fixup {
-  my ( $self, $code ) = @_;
-
-  if ( !ref $code eq 'CODE' ) {
-    confess("fixup function is not CodeRef");
-  }
-
-  $code->($_) for $self->entries->@*;
-
-  return 1;
-}
-
-1;
