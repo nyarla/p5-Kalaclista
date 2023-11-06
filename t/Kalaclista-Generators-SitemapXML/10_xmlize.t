@@ -14,10 +14,10 @@ use YAML::XS;
 sub main {
   my @entries;
   for my $path (qw(foo bar)) {
-    my $entry = Kalaclista::Entry->new( $path, URI::Fast->new("https://example.com/${path}") );
-
-    $entry->loaded(1);
-    $entry->parsed(1);
+    my $entry = Kalaclista::Entry->new(
+      path => $path,
+      href => URI::Fast->new("https://example.com/${path}")
+    );
 
     $entry->date('2022-01-01T00:00:00+09:00');
 
@@ -28,11 +28,11 @@ sub main {
     push @entries, $entry;
   }
 
-  my $xml = Kalaclista::Generators::SitemapXML::xmlize(@entries);
+  my $xml = Kalaclista::Generators::SitemapXML::xmlize( [@entries] );
 
   is(
     $xml,
-    q|<?xml version="1.0" encoding="UTF-8"?>| . h(
+    q|<?xml version="1.0" encoding="UTF-8" ?>| . h(
       urlset => { xmlns => 'http://www.sitemaps.org/schemas/sitemap/0.9' },
       h(
         url => [
