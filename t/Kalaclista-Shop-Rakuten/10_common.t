@@ -6,7 +6,7 @@ use warnings;
 use Test2::V0;
 use Kalaclista::Shop::Rakuten;
 
-use URI::Escape qw(uri_escape_utf8);
+use URI::Escape::XS qw(uri_escape);
 
 sub main {
   my $item = Kalaclista::Shop::Rakuten->new( shop => 'https://example.com/shop/item', );
@@ -17,7 +17,7 @@ sub main {
 
   my $query = "https://search.rakuten.co.jp/search/mall/foo+bar/";
   my $href  = "https://hb.afl.rakuten.co.jp/hgc/0d591c80.1e6947ee.197d1bf7.7a323c41/?pc=";
-  $href .= uri_escape_utf8($query);
+  $href .= uri_escape($query);
   $href .= "&link_type=text&ut=eyJwYWdlIjoidXJsIiwidHlwZSI6InRleHQiLCJjb2wiOjF9";
 
   is( $item->link, $href );
