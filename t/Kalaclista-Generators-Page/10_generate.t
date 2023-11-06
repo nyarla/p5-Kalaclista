@@ -7,16 +7,16 @@ use Test2::V0;
 
 use Kalaclista::Path;
 use Kalaclista::Generators::Page;
-use Kalaclista::Variables;
+use Kalaclista::Data::Page;
 
 sub main {
   my $file = Kalaclista::Path->tempfile;
-  my $vars = Kalaclista::Variables->new;
+  my $page = Kalaclista::Data::Page->new;
 
   Kalaclista::Generators::Page->generate(
     dist     => $file,
-    template => 'Test::Kalaclista::TestTemplate',
-    vars     => $vars,
+    template => 'Test::Kalaclista::Templates::Test',
+    page     => $page,
   );
 
   is( $file->get, 'ok' );

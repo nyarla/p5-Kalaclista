@@ -11,10 +11,10 @@ sub generate {
 
   my $dist     = delete $args{'dist'};
   my $template = delete $args{'template'};
-  my $vars     = delete $args{'vars'};
+  my $page     = delete $args{'page'};
 
   my $renderer = load($template);
-  my $output   = $renderer->($vars);
+  my $output   = $renderer->($page);
 
   $dist->parent->mkpath;
   $dist->emit($output);
