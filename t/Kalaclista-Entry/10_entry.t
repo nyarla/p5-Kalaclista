@@ -26,6 +26,7 @@ subtest load => sub {
     is $entry->slug,          'hello';
     is $entry->date,          '2022-01-01T00:00:00Z';
     is $entry->lastmod,       '2023-01-01T00:00:00Z';
+    is $entry->updated,       '2023-01-01T00:00:00Z';
     is $entry->summary,       'foo bar baz';
     is $entry->meta('extra'), 'hi,';
 

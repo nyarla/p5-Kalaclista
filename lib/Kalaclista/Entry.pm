@@ -1,4 +1,5 @@
 use v5.38;
+use utf8;
 use builtin qw(true false);
 use feature qw(class state);
 no warnings qw(experimental);
@@ -52,6 +53,8 @@ class Kalaclista::Entry {
     }
 
     $src = do { local $/; <$fh> };
+
+    utf8::encode($yaml);
 
     close($fh) or die "failed to close entry file: @{[ $self->path ]}${$!}";
 
@@ -123,6 +126,7 @@ class Kalaclista::Entry {
     my $new = shift;
     $new = "${new}";
     $src = $new;
+    $dom = undef;
 
     return $src;
   }
@@ -130,6 +134,7 @@ class Kalaclista::Entry {
   method dom {
     if ( @_ == 0 ) {
       return undef if $src eq q{};
+      return $dom  if defined $dom;
 
       $dom = $parser->parse($src)->body;
       return $dom;
@@ -177,4 +182,9 @@ class Kalaclista::Entry {
   method slug    { $self->meta( 'slug'    => @_ ) }
   method date    { $self->meta( 'date'    => @_ ) }
   method lastmod { $self->meta( 'lastmod' => @_ ) }
+
+  method updated {
+    return $self->lastmod if defined $self->lastmod;
+    return $self->date;
+  }
 }
