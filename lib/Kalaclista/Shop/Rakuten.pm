@@ -9,7 +9,7 @@ use Class::Accessor::Lite (
   ro  => [qw( label search width height image shop )],
 );
 
-use URI::Escape qw( uri_escape_utf8 );
+use URI::Escape::XS qw( uri_escape );
 
 sub link {
   my $self = shift;
@@ -24,7 +24,7 @@ sub link {
 
     my $link = "https://search.rakuten.co.jp/search/mall/${search}/";
     my $href =
-"https://hb.afl.rakuten.co.jp/hgc/0d591c80.1e6947ee.197d1bf7.7a323c41/?pc=@{[ uri_escape_utf8($link) ]}&link_type=text&ut=eyJwYWdlIjoidXJsIiwidHlwZSI6InRleHQiLCJjb2wiOjF9";
+"https://hb.afl.rakuten.co.jp/hgc/0d591c80.1e6947ee.197d1bf7.7a323c41/?pc=@{[ uri_escape($link) ]}&link_type=text&ut=eyJwYWdlIjoidXJsIiwidHlwZSI6InRleHQiLCJjb2wiOjF9";
 
     $self->{'link'} = $href;
   }
