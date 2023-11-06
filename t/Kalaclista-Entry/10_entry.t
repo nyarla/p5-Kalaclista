@@ -47,37 +47,3 @@ subtest load => sub {
 };
 
 done_testing;
-
-=pod
-subtest src => sub { };
-
-subtest transformers => sub { };
-
-done_testing;
-
-sub main {
-  my $root = Kalaclista::Path->detect(qr{^t$});
-
-  my $href  = URI::Fast->new('https://example.com/foo');
-  my $entry = Kalaclista::Entry->new(
-    $root->child('t/fixtures/content/test.md')->path,
-    $href,
-  );
-
-  is( $entry->title,   'hello world' );
-  is( $entry->type,    'posts' );
-  is( $entry->slug,    'hello' );
-  is( $entry->date,    '2022-01-01T00:00:00Z' );
-  is( $entry->lastmod, '2023-01-01T00:00:00Z' );
-
-  is( $entry->dom->at('p')->textContent, 'hello, world!' );
-
-  is( $entry->addon( foo => 'bar' ), q{bar} );
-  is( $entry->addon('foo'),          'bar' );
-
-  done_testing;
-}
-
-main;
-
-=cut
