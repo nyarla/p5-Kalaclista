@@ -1,0 +1,28 @@
+---
+name: Tests for p5-Kalaclista
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/perl-test.yml"
+      - "cpanfile"
+      - "lib/**"
+      - "t/**"
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: '5.38'
+      - name: Install dependencies
+        run: |
+          cpm install -L extlib
+      - name: Run tests
+        run: |
+          prove -Iextlib/lib/perl5 -Ilib -It/lib -vr t/
