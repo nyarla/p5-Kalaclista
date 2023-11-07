@@ -8,6 +8,20 @@ use URI::Fast;
 use Kalaclista::Data::Directory;
 use Kalaclista::Data::WebSite;
 
+class Kalaclista::Context::Environment {
+  field $environment : param;
+  field $on : param;
+
+  method production  { $environment eq 'production' }
+  method development { $environment eq 'development' }
+  method staging     { $environment eq 'staging' }
+  method test        { $environment eq 'test' }
+
+  method ci      { $on eq 'ci' }
+  method local   { $on eq 'local' }
+  method runtime { $on eq 'runtime' }
+}
+
 class Kalaclista::Context {
   field $baseURI : param;
   field $dirs : param;
