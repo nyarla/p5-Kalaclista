@@ -25,7 +25,7 @@ class Kalaclista::Context::Environment {
 class Kalaclista::Context {
   field $baseURI : param;
   field $dirs : param;
-  field $production : param;
+  field $env : param;
   field $website : param  = undef;
   field $sections : param = undef;
 
@@ -33,14 +33,13 @@ class Kalaclista::Context {
     my $class = shift;
     my %args  = @_;
 
-    my $uri  = URI::Fast->new( $args{'baseURI'} );
-    my $dir  = Kalaclista::Data::Directory->instance( $args{'dirs'}->%* );
-    my $prod = !!( delete $args{'production'} );
+    my $uri = URI::Fast->new( $args{'baseURI'} );
+    my $dir = Kalaclista::Data::Directory->instance( $args{'dirs'}->%* );
 
     my $instance = $class->new(
-      baseURI    => $uri,
-      dirs       => $dir,
-      production => $prod,
+      baseURI => $uri,
+      dirs    => $dir,
+      env     => $args{'env'},
     );
 
     $class->instance($instance);
@@ -65,8 +64,8 @@ class Kalaclista::Context {
     return $dirs;
   }
 
-  method production {
-    return $production;
+  method env {
+    return $env;
   }
 
   method website {

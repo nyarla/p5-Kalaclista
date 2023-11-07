@@ -15,7 +15,10 @@ subtest init => sub {
         dirs    => {
           detect => qr{^t$},
         },
-        production => !!0,
+        env => Kalaclista::Context::Environment->new(
+          environment => 'test',
+          on          => 'local',
+        ),
       );
     },
     'This module shoule be initialisable'
@@ -34,8 +37,8 @@ subtest dirs => sub {
   isa_ok( Kalaclista::Context->instance->dirs, 'Kalaclista::Data::Directory' );
 };
 
-subtest production => sub {
-  ok( !Kalaclista::Context->instance->production, 'In this case, this method should return false' );
+subtest env => sub {
+  isa_ok( Kalaclista::Context->instance->env, 'Kalaclista::Context::Environment' );
 };
 
 done_testing;
