@@ -16,16 +16,16 @@ class Kalaclista::Data::Directory {
   field $src : param   = q{src};
 
   sub instance {
+    state $instance;
     my $class = shift;
-    state $instance ||= do {
+
+    if ( @_ > 0 ) {
       my %args   = @_;
       my $detect = delete $args{'detect'};
 
-      my $instance = $class->new(%args);
+      $instance = $class->new(%args);
       $instance->detect($detect);
-
-      $instance;
-    };
+    }
 
     return $instance;
   }
