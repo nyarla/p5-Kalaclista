@@ -1,0 +1,41 @@
+---
+name: Make pull request to make cpanfile update
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  push:
+    paths:
+      - ".github/workflows/update-cpanfile.yml"
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      # runner environment
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          ref: 'refs/heads/test-update-cpanfile'
+
+      # perl environment
+      - uses: shogo82148/actions-setup-perl@b85abdedef080b3995bd109b3bd6bc99abbeb080 # v1.26.0
+        with:
+          perl-version: '5.38'
+          install-modules-with: cpm
+          install-modules-args: '-L extlib App::UpdateCPANfile'
+
+      - name: update cpanfile
+        id: update-cpanfile
+        run: |
+          echo "message:$(make update-cpanfile)" >> $GITHUB_OUTPUT
+          echo "datetime:$(date +%Y-%m-%d)" >> $GITHUB_OUTPUT
+
+      - uses: peter-evans/create-pull-request@153407881ec5c347639a548ade7d8ad1d6740e38 # v5.0.2
+        with:
+          branch: 'update-cpanfile-at-${{ steps.update-cpanfile.outputs.datetime }}'
+          title: 'Bump cpanfile at ${{ steps.update-cpanfile.outputs.datetime }}'
+          commit-message: 'chore(cpanfile): update cpanfile at ${{ steps.update-cpanfile.outputs.datetime }}'
+          body: ${{ steps.update-cpanfile-outputs.message }}
+          add-paths: cpanfile
+          committer: CPAN Update Bot <nyarla@kalaclista.com>
+          draft: true # for test
