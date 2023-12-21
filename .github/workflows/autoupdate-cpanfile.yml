@@ -18,8 +18,7 @@ jobs:
       # runner environment
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
-          # ref: '${{ github.head_ref }}'
-          ref: 'refs/heads/test-branch-update-cpanfile' # for test
+          ref: '${{ github.head_ref }}'
 
       # perl environment
       - uses: shogo82148/actions-setup-perl@b85abdedef080b3995bd109b3bd6bc99abbeb080 # v1.26.0
@@ -54,4 +53,3 @@ jobs:
           body: ${{ steps.update-cpanfile.outputs.msg }}
           branch: 'update-cpanfile-at-${{ steps.update-cpanfile.outputs.date }}'
           add-paths: cpanfile
-          draft: true # for test
