@@ -34,17 +34,18 @@ jobs:
           test ! -f cpanfile.snapshot || rm cpanfile.snapshot
           carton install
 
-          echo date=$(date +%Y-%m-%d) >> $GITHUB_OUTPUT
+          exec > >(tee -a $GITHUB_OUTPUT)
 
-          echo 'msg<<.....' >> $GITHUB_OUTPUT
-          echo "### Update cpanfile at $(date +%Y-%m-%d)" >> $GITHUB_OUTPUT
-          echo >> $GITHUB_OUTPUT
-          carton exec update-cpanfile update | perl -lnpe 's<- ([a-zA-Z0-9:]+)><- [$1](https://metacpan.org/pod/$1) > == ' >> $GITHUB_OUTPUT
-          echo >> $GITHUB_OUTPUT
-          echo '---' >> $GITHUB_OUTPUT
-          echo 'This pull request made by GitHub Actions' >> $GITHUB_OUTPUT
-          echo >> $GITHUB_OUTPUT
-          echo '.....' >> $GITHUB_OUTPUT
+          echo "date=$(date +%Y-%m-%d)"
+          echo 'msg<<.....'
+          echo "### Update cpanfile at $(date +%Y-%m-%d)"
+          echo
+          carton exec update-cpanfile update | perl -lnpe 's<- ([a-zA-Z0-9:]+)><- [$1](https://metacpan.org/pod/$1) > == '
+          echo
+          echo '---'
+          echo 'This pull request made by GitHub Actions'
+          echo
+          echo '.....'
 
       - uses: peter-evans/create-pull-request@153407881ec5c347639a548ade7d8ad1d6740e38 # v5.0.2
         with:
