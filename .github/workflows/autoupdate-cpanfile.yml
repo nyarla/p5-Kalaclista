@@ -43,4 +43,5 @@ jobs:
           commit-message: 'chore(cpanfile): update cpanfile at ${{ steps.update-cpanfile.outputs.date }}'
           body: ${{ steps.update-cpanfile-outputs.msg }}
           branch: 'update-cpanfile-at-${{ steps.update-cpanfile.outputs.date }}'
+          add-paths: cpanfile
           draft: true # for test
