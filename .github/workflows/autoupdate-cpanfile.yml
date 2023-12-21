@@ -25,7 +25,8 @@ jobs:
       - uses: shogo82148/actions-setup-perl@b85abdedef080b3995bd109b3bd6bc99abbeb080 # v1.26.0
         with:
           perl-version: '5.38'
-          install-modules-with: cpm
+          install-modules-with: carton
+          install-modules: App::UpdateCPANfile
 
       - name: Update cpanfile
         id: update-cpanfile
