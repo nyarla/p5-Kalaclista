@@ -39,7 +39,7 @@ jobs:
           echo 'msg<<.....' >> $GITHUB_OUTPUT
           echo "### Update cpanfile at $(date +%Y-%m-%d)" >> $GITHUB_OUTPUT
           echo >> $GITHUB_OUTPUT
-          carton exec update-cpanfile | perl -lnpe 's<- ([a-zA-Z0-9:]+)><- [$1](https://metacpan.org/pod/$1) > == ' >> $GITHUB_OUTPUT
+          carton exec update-cpanfile update | perl -lnpe 's<- ([a-zA-Z0-9:]+)><- [$1](https://metacpan.org/pod/$1) > == ' >> $GITHUB_OUTPUT
           echo >> $GITHUB_OUTPUT
           echo '---' >> $GITHUB_OUTPUT
           echo 'This pull request made by GitHub Actions' >> $GITHUB_OUTPUT
