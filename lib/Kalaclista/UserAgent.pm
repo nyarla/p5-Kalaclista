@@ -30,44 +30,44 @@ class Kalaclista::UserAgent::Response {
   method decoded_content {
     return $decoded if defined $decoded;
 
-    my $name;
+    my $name = q{};
+    my $id   = HTML5::DOM::Encoding->NOT_DETERMINED;
 
-    # in html
-    if ( $headers->{'content-type'} =~ m{html}i ) {
-      my $id = HTML5::DOM::Encoding->NOT_DETERMINED;
-
-      # detect encoding from content
+    # detect from content
+    my $content_type = $headers->{'content-type'};
+    if ( $content_type =~ m{html}i ) {
       for my $method (qw<detectByPrescanStream detectByCharset detectBomAndCut detect>) {
         my $func = HTML5::DOM::Encoding->can($method);
         $id = $func->($content);
         if ( $id != HTML5::DOM::Encoding->NOT_DETERMINED ) {
+          $name = HTML5::DOM::Encoding::id2name($name);
           last;
         }
       }
-
-      # detect from content type
-      if ( HTML5::DOM::Encoding->NOT_DETERMINED ) {
-        my $fragment = qq{<meta http-equiv="content-type" content="@{[ $headers->{'content-type'} ]}">};
-        $id = HTML5::DOM::Encoding::detectByPrescanStream($fragment);
-      }
-
-      # force use utf8
-      $id   = HTML5::DOM::Encoding->UTF_8;
-      $name = HTML5::DOM::Encoding::id2name($id);
     }
-    elsif ( $headers->{'content-type'} =~ m{xml} ) {
-
-      # detect from xml header
+    elsif ( $content_type =~ m{xml}i ) {
       $name = ( $content =~ m{encoding="([^"]+)"} )[0];
       if ( !$name ) {
         $name = ( $content =~ m{encoding='([^']+)'} )[0];
       }
     }
 
-    if ( !$name ) {
-      $name = 'UTF-8';
+    # detect from content-type header
+    if ( $name eq q{} ) {
+      my $fragment = qq{<meta http-equiv="content-type" content="@{[ $headers->{'content-type'} ]}">};
+      $id = HTML5::DOM::Encoding::detectByCharset($fragment);
+      if ( $id != HTML5::DOM::Encoding->NOT_DETERMINED ) {
+        $name = HTML5::DOM::Encoding::id2name($id);
+      }
     }
 
+    # force fallback to UTF-8
+    if ( $name eq q{} ) {
+      $id   = HTML5::DOM::Encoding->UTF_8;
+      $name = HTML5::DOM::Encoding::id2name($id);
+    }
+
+    # decode by encoding name
     $decoded = Encode::decode( $name, $content );
 
     return $decoded;
