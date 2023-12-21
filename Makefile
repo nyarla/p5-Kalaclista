@@ -16,3 +16,8 @@ cpan:
 
 snapshot:
 	@carton install --path extlib
+
+cpanfile:
+	@test ! -f cpanfile.snapshot || rm cpanfile.snapshot
+	@$(MAKE) snapshot
+	@carton exec update-cpanfile update
