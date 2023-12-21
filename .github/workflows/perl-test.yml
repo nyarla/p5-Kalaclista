@@ -16,13 +16,17 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: shogo82148/actions-setup-perl@v1
+      # runner environment
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      # perl environment
+      - uses: shogo82148/actions-setup-perl@16c2635046967c17c139af8e8da7dd64bedf00df # v1.25.0
         with:
           perl-version: '5.38'
-      - name: Install dependencies
-        run: |
-          cpm install -L extlib
+          install-modules-with: cpm
+          install-modules-args: '-L extlib'
+
+      # testing
       - name: Run tests
         run: |
           prove -Iextlib/lib/perl5 -Ilib -It/lib -vr t/
