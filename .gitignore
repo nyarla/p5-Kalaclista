@@ -2,3 +2,5 @@
 extlib
 private
 resources
+local
+cpanfile.snapshot

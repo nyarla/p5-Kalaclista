@@ -1,0 +1,55 @@
+---
+name: Autoupdate cpanfile
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  push:
+    paths:
+      - ".github/workflows/autoupdate-cpanfile.yml"
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      # runner environment
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          ref: 'refs/heads/main'
+
+      # perl environment
+      - uses: shogo82148/actions-setup-perl@b85abdedef080b3995bd109b3bd6bc99abbeb080 # v1.26.0
+        with:
+          perl-version: '5.38'
+          install-modules-with: carton
+          install-modules: App::UpdateCPANfile
+
+      - name: Update cpanfile
+        id: update-cpanfile
+        run: |
+          test ! -f cpanfile.snapshot || rm cpanfile.snapshot
+          carton install
+
+          {
+            echo "date=$(date +%Y-%m-%d)"
+            echo 'msg<<.....'
+            echo "### Update cpanfile at $(date +%Y-%m-%d)"
+            echo
+            carton exec update-cpanfile update | perl -lnpe 's<- ([a-zA-Z0-9:]+)><- [$1](https://metacpan.org/pod/$1) ==>'
+            echo
+            echo '---'
+            echo 'This pull request made by GitHub Actions'
+            echo
+            echo '.....'
+          } >> $GITHUB_OUTPUT
+
+      - uses: peter-evans/create-pull-request@153407881ec5c347639a548ade7d8ad1d6740e38 # v5.0.2
+        with:
+          title: 'Bump cpanfile at ${{ steps.update-cpanfile.outputs.date }}'
+          commit-message: 'chore(cpanfile): update cpanfile at ${{ steps.update-cpanfile.outputs.date }}'
+          body: ${{ steps.update-cpanfile.outputs.msg }}
+          branch: 'update-cpanfile-at-${{ steps.update-cpanfile.outputs.date }}'
+          add-paths: cpanfile
