@@ -41,7 +41,7 @@ jobs:
         with:
           title: 'Bump cpanfile at ${{ steps.update-cpanfile.outputs.date }}'
           commit-message: 'chore(cpanfile): update cpanfile at ${{ steps.update-cpanfile.outputs.date }}'
-          body: ${{ steps.update-cpanfile-outputs.msg }}
+          body: ${{ steps.update-cpanfile.outputs.msg }}
           branch: 'update-cpanfile-at-${{ steps.update-cpanfile.outputs.date }}'
           add-paths: cpanfile
           draft: true # for test
