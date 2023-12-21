@@ -1,4 +1,4 @@
-requires( 'Carp',                  0 );
+requires( 'Carp',                  '== 1.50' );
 requires( 'Class::Accessor::Lite', '== 0.08' );
 requires( 'Encode',                '== 3.20' );
 requires( 'Exporter::Lite',        '== 0.09' );
