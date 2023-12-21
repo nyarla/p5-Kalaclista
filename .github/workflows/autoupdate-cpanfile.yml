@@ -18,7 +18,7 @@ jobs:
       # runner environment
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
-          ref: '${{ github.head_ref }}'
+          ref: 'refs/heads/main'
 
       # perl environment
       - uses: shogo82148/actions-setup-perl@b85abdedef080b3995bd109b3bd6bc99abbeb080 # v1.26.0
