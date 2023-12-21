@@ -13,3 +13,6 @@ shell:
 cpan:
 	@test ! -d extlib || rm -rf extlib
 	@cpm install -L extlib --home=$(HOME)/Applications/Development/cpm --with-develop
+
+snapshot:
+	@carton install --path extlib
