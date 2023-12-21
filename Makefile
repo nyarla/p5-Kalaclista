@@ -4,7 +4,7 @@ test:
 	@rm -f t/Kalaclista-*/fixture_*.png
 	@prove -Ilib -j$(JOBS) t/*/*.t
 
-.PHONY: shell
+.PHONY: shell cpan update-cpanfile snapshot
 
 shell:
 	@cp /etc/nixos/flake.lock .
