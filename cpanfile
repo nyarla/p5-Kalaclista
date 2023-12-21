@@ -13,4 +13,9 @@ requires( 'URI::Escape::XS',       0 );
 requires( 'URI::Fast',             0 );
 requires( 'YAML::XS',              0 );
 
+on develop => sub {
+  requires( 'Carton',              0 );
+  requires( 'App::UpdateCPANfile', 0 );
+};
+
 # vim: ft=perl :
