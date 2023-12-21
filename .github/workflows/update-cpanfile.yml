@@ -27,8 +27,9 @@ jobs:
       - name: update cpanfile
         id: update-cpanfile
         run: |
-          update="local/bin/update-cpanfile update | perl -lnpe 's<^- ([a-zA-Z0-9:]+)><- [\$1](https://metacpan.org/pod/\$1)>"
-          echo "message=$($update)" >> $GITHUB_OUTPUT
+          update="local/bin/update-cpanfile update"
+          message="perl -lnpe 's<^- ([a-zA-Z0-9:]+)><- [\$1](https://metacpan.org/pod/\$1)>'"
+          echo "message=$( $update | $message )" >> $GITHUB_OUTPUT
           echo "datetime=$(date +%Y-%m-%d)" >> $GITHUB_OUTPUT
 
       - uses: peter-evans/create-pull-request@153407881ec5c347639a548ade7d8ad1d6740e38 # v5.0.2
