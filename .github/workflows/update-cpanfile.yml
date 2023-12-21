@@ -27,8 +27,8 @@ jobs:
       - name: update cpanfile
         id: update-cpanfile
         run: |
-          echo "message:$(make update-cpanfile)" >> $GITHUB_OUTPUT
-          echo "datetime:$(date +%Y-%m-%d)" >> $GITHUB_OUTPUT
+          echo "message=$(make update-cpanfile)" >> $GITHUB_OUTPUT
+          echo "datetime=$(date +%Y-%m-%d)" >> $GITHUB_OUTPUT
 
       - uses: peter-evans/create-pull-request@153407881ec5c347639a548ade7d8ad1d6740e38 # v5.0.2
         with:
