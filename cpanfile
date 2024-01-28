@@ -11,7 +11,7 @@ requires( 'Test2::V0',             '== 0.000159' );
 requires( 'Text::HyperScript',     '== 0.08' );
 requires( 'URI::Escape::XS',       '== 0.14' );
 requires( 'URI::Fast',             '== 0.55' );
-requires( 'YAML::XS',              '== 0.88' );
+requires( 'YAML::XS',              '== 0.89' );
 
 on develop => sub {
   requires( 'App::UpdateCPANfile', '== v1.1.1' );
