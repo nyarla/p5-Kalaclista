@@ -6,7 +6,7 @@ requires( 'HTML5::DOM',            '== 1.25' );
 requires( 'HTTP::Tinyish',         '== 0.18' );
 requires( 'JSON::XS',              '== 4.03' );
 requires( 'Module::Load',          0 );
-requires( 'Perl::Tidy',            '== 20230912' );
+requires( 'Perl::Tidy',            '== 20240202' );
 requires( 'Test2::V0',             '== 0.000159' );
 requires( 'Text::HyperScript',     '== 0.08' );
 requires( 'URI::Escape::XS',       '== 0.14' );
