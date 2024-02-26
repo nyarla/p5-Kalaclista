@@ -1,6 +1,6 @@
 requires( 'Carp',                  '== 1.50' );
 requires( 'Class::Accessor::Lite', '== 0.08' );
-requires( 'Encode',                '== 3.20' );
+requires( 'Encode',                '== 3.21' );
 requires( 'Exporter::Lite',        '== 0.09' );
 requires( 'HTML5::DOM',            '== 1.25' );
 requires( 'HTTP::Tinyish',         '== 0.18' );
