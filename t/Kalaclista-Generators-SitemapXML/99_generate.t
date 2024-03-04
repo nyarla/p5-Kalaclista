@@ -30,7 +30,7 @@ sub main {
   Kalaclista::Generators::SitemapXML->generate( dist => $file, entries => $entries );
 
   is(
-    $file->get,
+    $file->load,
     q|<?xml version="1.0" encoding="UTF-8" ?>| . h(
       urlset => { xmlns => 'http://www.sitemaps.org/schemas/sitemap/0.9' },
       [
