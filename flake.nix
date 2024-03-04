@@ -14,6 +14,7 @@
               coreutils
               glibc.dev
               gnumake
+              libidn.dev
               libxcrypt
               openssl.dev
               perl
