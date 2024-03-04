@@ -12,7 +12,7 @@ sub main {
   my $child   = $rootdir->child('t/Kalaclista-Path');
 
   ok( -d $child->path );
-  is( $child->parent->path, $rootdir->child('t')->path );
+  is( $child->parent->path, $rootdir->child('t')->to_string );
 
   done_testing;
 }

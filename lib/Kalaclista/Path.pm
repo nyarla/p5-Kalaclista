@@ -37,6 +37,10 @@ class Kalaclista::Path {
     return $path;
   }
 
+  method to_string {
+    return $path;
+  }
+
   method temporary {
     return $temporary;
   }
@@ -68,7 +72,7 @@ class Kalaclista::Path {
     return true;
   }
 
-  method get {
+  method load {
     open( my $fh, '<', $path )
         or die "failed to open file: ${path}: $!";
 

@@ -12,7 +12,7 @@ sub main {
 
   $file->emit("hello, world!");
   ok( -f $file->path );
-  is( $file->get, 'hello, world!' );
+  is( $file->load, 'hello, world!' );
   $file->cleanup;
   ok( !-e $file );
 
@@ -21,7 +21,7 @@ sub main {
 
   $nested->parent->mkpath;
   $nested->emit('nested path');
-  is( $nested->get, 'nested path' );
+  is( $nested->load, 'nested path' );
 
   undef $nested;
   ok( !-e $path || !-d $path );
