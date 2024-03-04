@@ -3,108 +3,92 @@ use builtin qw(true false);
 use feature qw(class state);
 no warnings qw(experimental);
 
-use YAML::XS;
-use URI::Escape::XS;
+class Kalaclista::Data::WebSite::Internal {
+  use URI::Escape::XS qw(decodeURIComponentIDN);
 
-class Kalaclista::Data::WebSite::Loader {
-  field $path : param = q{};
-  field $final = undef;
+  field $label : param;
+  field $title : param;
+  field $summary : param;
+  field $href : param;
 
-  method load {
-    my $href = shift;
+  field $cite = "";
 
-    if ( !defined $final ) {
-      $final = {};
+  method label   { $label }
+  method title   { $title }
+  method summary { $summary }
+  method href    { $href }
 
-      my $websites = YAML::XS::LoadFile($path);
-
-      for my $link ( sort keys $websites->%* ) {
-        $final->{$link} = $websites->{$link};
-
-        if ( exists $websites->{$link}->{'permalink'} && defined( my $permalink = $websites->{$link}->{'permalink'} ) ) {
-          $final->{$permalink} = $websites->{$link};
-        }
-      }
-    }
-
-    return $final->{$href} if exists $final->{$href};
-    return;
-  }
-}
-
-class Kalaclista::Data::WebSite {
-  field $label : param     = q{};
-  field $title : param     = q{};
-  field $summary : param   = q{};
-  field $link : param      = q{};
-  field $permalink : param = q{};
-  field $gone : param      = false;
-  field $cite              = undef;
-
-  method label {
-    return $label if $label ne q{};
-    return;
-  }
-
-  method title {
-    return $title if $title ne q{};
-    return;
-  }
-
-  method summary {
-    return $summary if $summary ne q{};
-    return $title   if $title ne q{};
-    return;
-  }
-
-  method permalink {
-    return $permalink if $permalink ne q{};
-    return $link      if $link ne q{};
-    return;
-  }
+  method internal { true }
+  method external { false }
 
   method cite {
-    return $cite if defined $cite;
+    return $cite if $cite ne q{};
 
-    $cite = URI::Escape::XS::uri_unescape( $self->permalink );
-    utf8::decode($cite);
+    $cite = decodeURIComponentIDN( $href->to_string );
 
     return $cite;
   }
+}
 
-  method gone {
-    return $gone;
+class Kalaclista::Data::WebSite::External {
+  use URI::Escape::XS qw(decodeURIComponentIDN);
+
+  field $title : param;
+  field $href : param;
+  field $link : param;
+  field $gone : param;
+
+  field $cite = "";
+
+  method title { $title }
+  method href  { $href }
+  method link  { $link }
+  method gone  { $gone }
+
+  method internal { false }
+  method external { true }
+
+  method cite {
+    return $cite if $cite ne q{};
+
+    $cite = decodeURIComponentIDN( $href->to_string );
+
+    return $cite;
   }
+}
 
-  sub init {
-    shift->loader(shift);
-  }
+package Kalaclista::Data::WebSite {
+  use Carp qw(croak);
 
-  sub loader {
-    state $loader;
-    return $loader if defined $loader;
-
-    shift;
-    my $path = shift;
-    $loader = Kalaclista::Data::WebSite::Loader->new( path => $path );
-
-    return $loader;
-  }
-
-  sub load {
+  sub new {
     my $class = shift;
-    my $args  = ref $_[0] ? $_[0] : {@_};
+    my $props = {@_};
 
-    my ( $text, $href ) = @{$args}{qw/ text href /};
+    my $title   = delete $props->{'title'};
+    my $summary = delete $props->{'summary'};
+    my $href    = delete $props->{'href'};
 
-    my $info = $class->loader->load($href);
-    return $class->new( title => $text, link => $href ) if !$info;
-
-    delete $info->{$_} for (qw[ lock status action updated ]);
-
-    $info->{'title'} //= $text;
-    $info->{'link'}  //= $href;
-
-    return $class->new( $info->%* );
+    if ( exists $props->{'label'} && !exists $props->{'gone'} ) {
+      my $label = delete $props->{'label'};
+      return Kalaclista::Data::WebSite::Internal->new(
+        label   => $label,
+        title   => $title,
+        summary => $summary,
+        href    => $href,
+      );
+    }
+    elsif ( !exists $props->{'label'} && exists $props->{'gone'} ) {
+      my $link = delete $props->{'link'} // $href;
+      my $gone = delete $props->{'gone'};
+      return Kalaclista::Data::WebSite::External->new(
+        title => $title,
+        href  => $href,
+        link  => $link,
+        gone  => $gone,
+      );
+    }
+    else {
+      croak 'failed to detect website is internal or external';
+    }
   }
 }
