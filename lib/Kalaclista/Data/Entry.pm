@@ -30,6 +30,8 @@ class Kalaclista::Data::Entry {
   method dom     { $dom }
   method meta    { $meta }
 
+  method updated { $self->lastmod // $self->date }
+
   method clone {
     my $class     = ref($self);
     my %overrides = @_;
