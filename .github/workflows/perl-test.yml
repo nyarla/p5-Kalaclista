@@ -18,6 +18,11 @@ jobs:
     steps:
       # runner environment
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - name: Install ubuntu dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libidn-dev
 
       # perl environment
       - uses: shogo82148/actions-setup-perl@28eae78d12c2bba1163aec45d123f6d9228bc307 # v1.29.0
