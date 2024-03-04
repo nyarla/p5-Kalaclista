@@ -6,6 +6,7 @@ requires( 'HTML5::DOM',            '== 1.25' );
 requires( 'HTTP::Tinyish',         '== 0.18' );
 requires( 'JSON::XS',              '== 4.03' );
 requires( 'Module::Load',          0 );
+requires( 'Net::IDN::Encode',      '== 2.500' );
 requires( 'Perl::Tidy',            '== 20240202' );
 requires( 'Test2::V0',             '== 0.000159' );
 requires( 'Text::HyperScript',     '== 0.08' );
