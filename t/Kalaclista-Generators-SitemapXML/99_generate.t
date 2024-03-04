@@ -7,7 +7,7 @@ use Test2::V0;
 use Text::HyperScript qw(h);
 
 use Kalaclista::Context;
-use Kalaclista::Entries;
+use Kalaclista::Data::Entry;
 
 use Kalaclista::Generators::SitemapXML;
 
@@ -19,13 +19,34 @@ sub main {
     },
   );
 
-  my $entries = Kalaclista::Entries->lookup( $c->dirs->rootdir->child('fixtures/content')->path );
-  my $file    = Kalaclista::Path->tempfile;
+  my $entries = [
+    Kalaclista::Data::Entry->new(
+      title   => '',
+      summary => '',
+      section => '',
+      date    => '2023-01-01T00:00:00Z',
+      lastmod => '2023-01-01T00:00:00Z',
+      href    => URI::Fast->new('https://example.com/baz'),
+    ),
+    Kalaclista::Data::Entry->new(
+      title   => '',
+      summary => '',
+      section => '',
+      date    => '2023-01-01T00:00:00Z',
+      lastmod => '2023-02-01T00:00:00Z',
+      href    => URI::Fast->new('https://example.com/bar'),
+    ),
+    Kalaclista::Data::Entry->new(
+      title   => '',
+      summary => '',
+      section => '',
+      date    => '2023-01-01T00:00:00Z',
+      lastmod => '2023-03-01T00:00:00Z',
+      href    => URI::Fast->new('https://example.com/foo'),
+    )
+  ];
 
-  for ( $entries->@* ) {
-    $_->load if !$_->loaded;
-    $_->href( URI::Fast->new("https://example.com/test/") );
-  }
+  my $file = Kalaclista::Path->tempfile;
 
   Kalaclista::Generators::SitemapXML->generate( dist => $file, entries => $entries );
 
@@ -36,19 +57,19 @@ sub main {
       [
         h(
           url => [
-            h( loc     => 'https://example.com/test/' ),
-            h( lastmod => q{2023-01-01T00:00:00Z} )
+            h( loc     => 'https://example.com/foo' ),
+            h( lastmod => q{2023-03-01T00:00:00Z} )
           ]
         ),
         h(
           url => [
-            h( loc     => 'https://example.com/test/' ),
-            h( lastmod => q{2023-01-01T00:00:00Z} )
+            h( loc     => 'https://example.com/bar' ),
+            h( lastmod => q{2023-02-01T00:00:00Z} )
           ]
         ),
         h(
           url => [
-            h( loc     => 'https://example.com/test/' ),
+            h( loc     => 'https://example.com/baz' ),
             h( lastmod => q{2023-01-01T00:00:00Z} )
           ]
         )

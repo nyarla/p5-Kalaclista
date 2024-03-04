@@ -4,26 +4,25 @@ use strict;
 use warnings;
 
 use Test2::V0;
+use URI::Fast;
 use Text::HyperScript qw(h);
 
 use Kalaclista::Generators::SitemapXML;
-use Kalaclista::Entry;
+use Kalaclista::Data::Entry;
 
 use YAML::XS;
 
 sub main {
   my @entries;
   for my $path (qw(foo bar)) {
-    my $entry = Kalaclista::Entry->new(
-      path => $path,
-      href => URI::Fast->new("https://example.com/${path}")
+    my $entry = Kalaclista::Data::Entry->new(
+      title   => '',
+      summary => '',
+      section => '',
+      date    => '2022-01-01T00:00:00+09:00',
+      lastmod => ( $path eq 'foo' ? '2023-01-01T00:00:00+09:00' : '2022-01-01T00:00:00+09:00' ),
+      href    => URI::Fast->new( 'https://example.com/' . $path ),
     );
-
-    $entry->date('2022-01-01T00:00:00+09:00');
-
-    if ( $path eq 'foo' ) {
-      $entry->lastmod('2023-01-01T00:00:00+09:00');
-    }
 
     push @entries, $entry;
   }
