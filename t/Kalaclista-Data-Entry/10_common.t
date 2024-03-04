@@ -31,6 +31,7 @@ subtest common => sub {
   is $entry->draft,           false;
   is $entry->date,            '2024-01-01T00:00:00';
   is $entry->lastmod,         '2024-02-01T00:00:00';
+  is $entry->updated,         '2024-02-01T00:00:00';
   is $entry->href->to_string, 'https://example.com/entry';
   is $entry->dom,             undef;
   is $entry->src,             '';
