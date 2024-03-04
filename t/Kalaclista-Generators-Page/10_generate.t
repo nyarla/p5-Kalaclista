@@ -19,7 +19,7 @@ sub main {
     page     => $page,
   );
 
-  is( $file->get, 'ok' );
+  is( $file->load, 'ok' );
 
   done_testing;
 }
