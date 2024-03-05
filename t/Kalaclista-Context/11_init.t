@@ -16,8 +16,8 @@ subtest init => sub {
           detect => qr{^t$},
         },
         env => Kalaclista::Context::Environment->new(
-          environment => 'test',
-          on          => 'local',
+          stage => 'test',
+          on    => 'local',
         ),
       );
     },
