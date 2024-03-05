@@ -1,22 +1,17 @@
-package Kalaclista::Files;
+package Kalaclista::Loader::Files;
 
-use strict;
-use warnings;
+use v5.38;
 use utf8;
 
-use feature qw(state);
+use Exporter::Lite;
+use Carp qw(croak);
 
-use Carp qw(confess);
 use File::Spec;
 
-sub find {
-  state $cache ||= {};
+our @EXPORT = qw(files);
 
-  my ( $class, $root ) = @_;
-
-  if ( exists $cache->{$root} && ref $cache->{$root} eq 'ARRAY' ) {
-    return $cache->{$root}->@*;
-  }
+sub files : prototype($) {
+  my $root = shift;
 
   my @files;
   my @dirs;
@@ -46,8 +41,6 @@ sub find {
     closedir($dh)
         or confess("failed to close directory: ${dir}");
   }
-
-  $cache->{$root} = \@files;
 
   return @files;
 }
