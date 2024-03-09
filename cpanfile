@@ -3,7 +3,7 @@ requires( 'Class::Accessor::Lite', '== 0.08' );
 requires( 'Encode',                '== 3.21' );
 requires( 'Exporter::Lite',        '== 0.09' );
 requires( 'HTML5::DOM',            '== 1.25' );
-requires( 'HTTP::Tinyish',         '== 0.18' );
+requires( 'HTTP::Tinyish',         '== 0.19' );
 requires( 'JSON::XS',              '== 4.03' );
 requires( 'Module::Load',          0 );
 requires( 'Net::LibIDN',           '== 0.12' );
