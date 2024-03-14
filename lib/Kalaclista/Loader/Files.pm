@@ -20,10 +20,10 @@ sub files : prototype($) {
 
   while ( defined( my $dir = shift @dirs ) ) {
     opendir( my $dh, $dir )
-        or confess("failed to open directory: ${dir}: $!");
+        or croak("failed to open directory: ${dir}: $!");
 
     while ( defined( my $item = readdir $dh ) ) {
-      next if ( $item eq q{.} || $item eq q{..} );
+      next if ( $item =~ m{^\.} );
 
       my $path = File::Spec->join( $dir, $item );
 
@@ -39,7 +39,7 @@ sub files : prototype($) {
     }
 
     closedir($dh)
-        or confess("failed to close directory: ${dir}");
+        or croak("failed to close directory: ${dir}");
   }
 
   return @files;
