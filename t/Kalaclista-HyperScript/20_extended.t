@@ -4,73 +4,15 @@ use strict;
 use warnings;
 
 use Test2::V0;
-use Kalaclista::HyperScript qw(document head body property data_ feed jsonld);
-
-use JSON::XS qw( encode_json decode_json );
+use Kalaclista::HyperScript qw(document head body classes);
 
 sub main {
   is(
     document( head(""), body(""), ),
-    q|<!doctype html><html lang="ja"><head></head><body></body></html>|
+    q|<!DOCTYPE html><html lang="ja"><head></head><body></body></html>|
   );
 
-  is(
-    feed( "foo", "https://example.com/feed.xml", "application/rss+xml" ),
-    q|<link href="https://example.com/feed.xml" rel="alternate" title="foo" type="application/rss+xml" />|
-  );
-
-  is( property( "foo", "bar" ), q|<meta content="bar" property="foo" />| );
-
-  is( data_( "foo", "bar" ), q|<meta content="bar" name="foo" />|, );
-
-  my $jsonld = encode_json(
-    [
-      {
-        '@context'       => 'https://schema.org',
-        '@id'            => 'https://example.com/foo',
-        '@type'          => 'WebSite',
-        headline         => 'Example',
-        author           => {},
-        publisher        => {},
-        image            => 'https://example.com/image.svg',
-        mainEntityOfPage => 'https://example.com',
-      },
-      {
-        '@context'        => 'https://schema.org',
-        '@type'           => 'BreadcrumbList',
-        'itemListElement' => [
-          {
-            '@type'  => 'ListItem',
-            'item'   => 'https://example.com/foo',
-            name     => 'Example',
-            position => 1
-          }
-        ],
-      }
-    ]
-  );
-  $jsonld =~ s{\\/}{/}g;
-
-  is(
-    decode_json(
-      jsonld(
-        {
-          href      => 'https://example.com/foo',
-          type      => 'WebSite',
-          title     => 'Example',
-          author    => {},
-          publisher => {},
-          image     => 'https://example.com/image.svg',
-          parent    => 'https://example.com'
-        },
-        {
-          name => 'Example',
-          href => 'https://example.com/foo'
-        }
-      )
-    ),
-    decode_json($jsonld)
-  );
+  is classes( qw|aaa bbb ccc|, q|ddd eee fff| ), { class => 'aaa bbb ccc ddd eee fff' };
 
   done_testing;
 }
