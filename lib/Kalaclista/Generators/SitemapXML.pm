@@ -26,7 +26,7 @@ sub compare {
 
   my $cmp = $cmpB cmp $cmpA;
   return $cmp if ( $cmp != 0 );
-  return $b->path->path cmp $a->path->path;
+  return $b->href->path cmp $a->href->path;
 }
 
 sub xmlize {
