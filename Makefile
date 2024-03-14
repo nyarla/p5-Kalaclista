@@ -2,7 +2,7 @@ JOBS = $(shell nproc --all --ignore 1)
 
 test:
 	@rm -f t/Kalaclista-*/fixture_*.png
-	@prove -Ilib -j$(JOBS) t/*/*.t
+	@prove -j$(JOBS) -Iextlib/lib/perl5 -Ilib -It/lib -vr t/
 
 .PHONY: shell
 
