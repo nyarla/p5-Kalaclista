@@ -107,31 +107,28 @@ class Kalaclista::Path {
   method cleanup {
     my $target = $self;
 
-    do {
-      if ( !-d $target->path ) {
-        $target->remove;
+    if ( !-d $target->path ) {
+      return $target->remove;
+    }
 
-      }
-      elsif ( -d $target->path && opendir( my $dh, $target->path ) ) {
-        for my $fn ( readdir $dh ) {
-          next if $fn eq q{.} || $fn eq q{..};
+    if ( -d $target->path && opendir( my $dh, $target->path ) ) {
+      for my $fn ( readdir $dh ) {
+        next if $fn eq q{.} || $fn eq q{..};
 
-          my $item = $target->child($fn);
+        my $item = $target->child($fn);
 
-          if ( -d $item->path ) {
-            $item->cleanup;
-          }
-          elsif ( !-d $item->path ) {
-            $item->remove;
-          }
+        if ( -d $item->path ) {
+          $item->cleanup;
         }
-
-        closedir($dh) or die "failed to close dir: @{[ $target->path ]}: $!";
-        return $target->remove;
+        elsif ( -e $item->path ) {
+          $item->remove;
+        }
       }
 
-      return;
-    } while ( defined( $target = $target->parent ) );
+      closedir($dh) or die "failed to close dir: @{[ $target->path ]}: ${!}";
+    }
+
+    return;
   }
 
   method DESTROY {
