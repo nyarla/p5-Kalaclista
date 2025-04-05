@@ -8,7 +8,7 @@ requires( 'JSON::XS',              '== 4.03' );
 requires( 'Module::Load',          0 );
 requires( 'Net::LibIDN',           '== 0.12' );
 requires( 'Perl::Tidy',            '== 20250311' );
-requires( 'Test2::V0',             '== 1.302209' );
+requires( 'Test2::V0',             '== 1.302210' );
 requires( 'Text::CSV',             '== 2.06' );
 requires( 'Text::HyperScript',     '== 0.08' );
 requires( 'URI::Escape::XS',       '== 0.14' );
