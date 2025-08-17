@@ -33,8 +33,8 @@ jobs:
           perl-version: ${{ env.perl-version }}
       - name: Install CPAN module dependencies
         run: |
-          cpm -Llocal install Carton::Snapshot
-          cpm -Llocal install
+          cpm install -Llocal Carton::Snapshot
+          cpm install -Llocal
       - name: Run tests
         run: |
           prove -Ilocal/lib/perl5 -Ilib -It/lib -vr t/
