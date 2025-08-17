@@ -1,0 +1,39 @@
+name: Run tests for p5-Kalaclista
+
+env:
+  perl-version: '5.40'
+
+on:
+  pull_request:
+    branches: ["*"]
+    paths:
+      - ".github/workflows/test-p5-Kalaclista.yml"
+      - "cpanfile"
+      - "cpanfile.snapshot"
+      - "lib/**"
+      - "t/**"
+  push:
+    branches:
+      - main
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - name: Install XS dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install \
+            --assume-yes \
+            --only-upgrade \
+            --no-install-recommends \
+            libidn-dev
+      - uses: shogo82148/actions-setup-perl@5796a908661aa68fc0a5b8f55c6791af2376d72e # v1.35.0
+        with:
+          perl-version: ${{ env.perl-version }}
+          install-modules-with: cpm
+          install-modules-args: -L=local
+      - name: Run tests
+        run: |
+          prove -Ilocal/lib/perl5 -Ilib -It/lib -vr t/
