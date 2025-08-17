@@ -33,7 +33,7 @@ jobs:
         with:
           perl-version: ${{ env.perl-version }}
           install-modules-with: cpm
-          install-modules-args: -L=local
+          install-modules-args: -Llocal
       - name: Run tests
         run: |
           prove -Ilocal/lib/perl5 -Ilib -It/lib -vr t/

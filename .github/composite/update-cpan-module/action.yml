@@ -94,7 +94,7 @@ runs:
         mv local local.system
         [[ ! -e "${{ inputs.cpanfile }}.snapshot" ]] || rm "${{ inputs.cpanfile }}.snapshot"
 
-        cpm install -L=local --show-build-log-on-failure
+        cpm install -Llocal --show-build-log-on-failure
         carton install
 
         rm local -rf
