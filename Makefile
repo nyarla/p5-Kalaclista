@@ -4,6 +4,7 @@ JOBS = $(shell nproc --all --ignore 1)
 
 install:
 	cpm install -w$(JOBS) -Llocal --home=$(shell pwd)/local/.cpm --show-build-log-on-failure
+	carton install
 
 test:
 	prove -j$(JOBS) -Ilocal/lib/perl5 -Ilib -It/lib -vr t/

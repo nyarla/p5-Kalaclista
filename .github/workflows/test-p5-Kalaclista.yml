@@ -31,8 +31,10 @@ jobs:
       - uses: shogo82148/actions-setup-perl@5796a908661aa68fc0a5b8f55c6791af2376d72e # v1.35.0
         with:
           perl-version: ${{ env.perl-version }}
-          install-modules-with: cpm
-          install-modules-args: -Llocal
+      - name: Install CPAN module dependencies
+        run: |
+          cpm install -Llocal Carton::Snapshot
+          cpm install -Llocal
       - name: Run tests
         run: |
           prove -Ilocal/lib/perl5 -Ilib -It/lib -vr t/

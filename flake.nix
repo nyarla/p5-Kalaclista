@@ -40,6 +40,7 @@
                 perl
                 perlPackages.Appcpanminus
                 perlPackages.Appcpm
+                perlPackages.Carton
                 perlPackages.locallib
               ];
 
