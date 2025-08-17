@@ -15,9 +15,4 @@ requires( 'URI::Escape::XS',       '== 0.14' );
 requires( 'URI::Fast',             '== 0.55' );
 requires( 'YAML::XS',              '== v0.904.0' );
 
-on develop => sub {
-  requires( 'App::UpdateCPANfile', '== v1.1.1' );
-  requires( 'Carton',              '== 1.000035' );
-};
-
 # vim: ft=perl :
