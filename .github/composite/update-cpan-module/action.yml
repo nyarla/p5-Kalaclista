@@ -1,0 +1,136 @@
+name: Update CPAN module.
+description: Updating cpanfile and cpanfile.snapshot
+
+inputs:
+  perl-version:
+    description: the perl runtime version.
+    type: string
+    required: true
+    default: '5.42'
+ 
+  module:
+    description: the CPAN module name.
+    type: string
+    required: true
+
+  cpanfile:
+    description: the path to cpanfile.
+    type: string
+    default: cpanfile
+
+  branch-prefix:
+    description: the prefix string of pull request branches.
+    type: string
+    default: 'bump-cpanfile-'
+
+  commit-message:
+    description: the template of commit message.
+    type: string
+    default: 'chore(cpanfile): update @module@ to @version@'
+
+  pull-request-title:
+    description: the template to make pull request title.
+    type: string
+    default: 'chore(cpanfile): update @module@ to @version@'
+
+  pull-request-body:
+    description: the template to make pull request content body.
+    tyep: string
+    default: |
+      ## CPAN module update
+
+      - [@module@](https://metacpan.org/pod/@module@) - @version@ ([Changes](https://metacpan.org/dist/@dist@/changes))
+
+      Remark:
+        - This pull request made by GitHub Actions bot.
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+    - uses: shogo82148/actions-setup-perl@5796a908661aa68fc0a5b8f55c6791af2376d72e # v1.35.0
+      with:
+        perl-version: ${{ inputs.perl-version }}
+        enable-modules-cache: true
+        install-modules-with: cpm
+        install-modules-args: App::UpdateCPANfile
+    - name: Update cpanfile
+      id: update
+      shell: bash
+      run: |
+        err() {
+          echo "${1:-}" >&2
+          exit 1
+        }
+
+        if [[ "${{ inputs.cpanfile }}" = "" ]]; then
+          err 'The action arguments of `inputs.cpanfile` is empty'
+        fi
+
+        if [[ ! -e "${{ inputs.cpanfile }}" ]]; then
+          err 'The file of `${{ inputs.cpanfile }}` is missing.'
+          exit 1
+        fi
+
+        if [[ "${{ inputs.module }}" =~ [^a-zA-Z0-9_:] ]]; then
+          err 'The malformed module name: `${{ inputs.module }}`'
+          exit 1
+        fi
+
+        export out="$(update-cpanfile update "${{ inputs.cpanfile }}" --output=json --limit=1 --filter='\A${{ inputs.module }}\z')"
+        {
+          echo -n "module="
+          echo $out | jq -r '.[0].package_name'
+
+          echo -n "version="
+          echo $out | jq -r '.[0].version'
+
+          echo -n "dist="
+          echo $out | jq -r '.[0].dist_name'
+        } >> $GITHUB_OUTPUT
+    - name: Update cpanfile.snapshot
+      shell: bash
+      run: |
+        mv local local.system
+        [[ ! -e "${{ inputs.cpanfile }}.snapshot" ]] || rm "${{ inputs.cpanfile }}.snapshot"
+
+        cpm install -L=local --show-build-log-on-failure
+        carton install
+
+        rm local -rf
+        mv local.system local
+    - name: Make metadata
+      id: meta
+      shell: bash
+      run: |
+        substitude() {
+          cat - \
+            | sed 's/@module@/${{ steps.update.outputs.module }}/g'   \
+            | sed 's/@version@/${{ steps.update.outputs.version }}/g' \
+            | sed 's/@dist@/${{ steps.update.outputs.dist }}/g'
+        }
+
+        {
+          echo -n "title=" 
+          echo '${{ inputs.pull-request-title }}' | substitude
+
+          echo "body<<....."
+          echo '${{ inputs.pull-request-body }}' | substitude
+          echo "....."
+
+          echo -n "commit-message="
+          echo '${{ inputs.commit-message }}' | substitude
+
+          echo -n "branch="
+          echo '${{ inputs.branch-prefix }}@dist@-@version@' | substitude
+        } >> $GITHUB_OUTPUT
+    - name: Make to update cpanfile pull request
+      uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
+      with:
+        title: ${{ steps.meta.outputs.title }}
+        body: ${{ steps.meta.outputs.body }}
+        commit-message: ${{ steps.meta.outputs.commit-message }}
+        branch: ${{ steps.meta.outputs.branch }}
+        add-paths: |
+          ${{ inputs.cpanfile }}
+          ${{ inputs.cpanfile }}.snapshot

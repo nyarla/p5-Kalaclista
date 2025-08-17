@@ -1,0 +1,26 @@
+name: Update CPAN module manually.
+
+env:
+  perl-version: "5.40"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+on:
+  workflow_dispatch:
+    inputs:
+      module:
+        description: The updating module name.
+        type: string
+        required: true
+
+jobs:
+  bump-cpanfile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: ./.github/composite/update-cpan-module
+        with:
+          perl-version: ${{ inputs.perl-version }}
+          module: ${{ inputs.module }}

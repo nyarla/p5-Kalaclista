@@ -1,0 +1,51 @@
+name: Update CPAN modules by schedule.
+
+env:
+  perl-version: "5.40"
+  cpanfile: cpanfile
+
+permissions:
+  contents: write
+  pull-requests: write
+
+on:
+  schedule:
+    - cron: "45 16 * * 5"
+  workflow_dispatch:
+    
+jobs:
+  matrix:
+    name: Setup update matrix
+    outputs:
+      modules: ${{ steps.matrix.outputs.modules }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: shogo82148/actions-setup-perl@5796a908661aa68fc0a5b8f55c6791af2376d72e # v1.35.0
+        with:
+          perl-version: ${{ env.perl-version }}
+          enable-modules-cache: true
+          install-modules-with: cpm
+          install-modules-args: App::UpdateCPANfile
+      - name: Setup matrix by update-cpanfile
+        id: matrix
+        run: |
+          {
+            echo -n "modules="
+            update-cpanfile update ${{ env.cpanfile }} --shuffle --output=json
+          } >> $GITHUB_OUTPUT 
+
+  make-pull-request:
+    name: Make matrix pull requests
+    runs-on: ubuntu-latest
+    needs:
+      - matrix
+    strategy:
+      matrix:
+        module: ${{ fromJson(needs.matrix.outputs.modules) }}
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: ./.github/composite/update-cpan-module
+        with:
+          perl-version: ${{ env.perl-version }}
+          module: ${{ matrix.module.package_name }}
