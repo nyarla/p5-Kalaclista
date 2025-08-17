@@ -5,7 +5,7 @@ requires( 'Exporter::Lite',        '== 0.09' );
 requires( 'HTML5::DOM',            '== 1.26' );
 requires( 'HTTP::Tinyish',         '== 0.19' );
 requires( 'JSON::XS',              '== 4.03' );
-requires( 'Module::Load',          0 );
+requires( 'Module::Load',          '== 0.36' );
 requires( 'Net::LibIDN',           '== 0.12' );
 requires( 'Perl::Tidy',            '== 20250711' );
 requires( 'Test2::V0',             '== 1.302214' );
