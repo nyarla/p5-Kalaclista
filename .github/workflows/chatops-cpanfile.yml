@@ -1,0 +1,70 @@
+name: ChatOps for CPAN modules
+
+env:
+  perl-version: "5.40"
+  commit-message-prefix: "chore(cpanfile): update"
+  commit-message-regexp: 's/\A[a-f0-9]+ chore\(cpanfile\): update ([a-zA-Z0-9_:]+) to .+\z/$1/'
+
+permissions:
+  issues: write
+  pull-requests: write
+  contents: write
+
+on:
+  issue_comment:
+    types:
+      - created
+  repository_dispatch:
+    types:
+      - recreate-command
+
+jobs:
+  dispatch:
+    if: >-
+      github.event_name == 'issue_comment' 
+      && github.actor == github.repository_owner
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - name: Getting the target module name
+        id: module
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -x
+
+          gh pr checkout ${{ github.event.issue.number }}
+
+          export module="$( \
+              git log --format=oneline --grep="${{ env.commit-message-prefix }}" \
+              | head -n1 \
+              | perl -lpe '${{ env.commit-message-regexp }}' \
+          )"
+
+          if [[ "${{ inputs.module }}" =~ [^a-zA-Z0-9_:] ]]; then
+            export module=""
+          fi
+
+          echo "module=${module}" >> $GITHUB_OUTPUT
+      - if: steps.module.outputs.module != ''
+        uses: peter-evans/slash-command-dispatch@13bc09769d122a64f75aa5037256f6f2d78be8c4 # v4.0.0
+        with:
+          token: ${{ github.token }}
+          issue-type: pull-request
+          commands: |
+            recreate
+          static-args: |
+            module=${{ steps.module.outputs.module }}
+
+  recreate-command:
+    if: >-
+      github.event_name == 'repository_dispatch'
+      && github.event.client_payload.slash_command.command == 'recreate'
+      && github.event.client_payload.slash_command.args.named.module != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: ./.github/composite/update-cpan-module
+        with:
+          perl-version: ${{ env.perl-version }}
+          module: ${{ github.event.client_payload.slash_command.args.named.module }}
