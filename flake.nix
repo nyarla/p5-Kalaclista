@@ -32,6 +32,8 @@
                 gnumake
                 pkg-config
 
+                libidn
+                libidn.dev
                 libxcrypt
                 openssl.dev
 
@@ -45,6 +47,9 @@
               eval "$(perl -I/usr/lib/perl5/site_perl/${pkgs.perl.version} -Mlocal::lib="$(pwd)/local")"
               export PERL_CPANM_OPT="-L $(pwd)/local"
               export PERL_CPANM_HOME="$(pwd)/local/.build"
+
+              export LIBRARY_PATH=/usr/lib
+              export CPATH=/usr/include
             '';
           }).env;
       }
