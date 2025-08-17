@@ -1,6 +1,2 @@
 .githooks
-extlib
-private
-resources
 local
-cpanfile.snapshot
