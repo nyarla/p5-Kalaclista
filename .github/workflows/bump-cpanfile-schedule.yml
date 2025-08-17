@@ -37,7 +37,7 @@ jobs:
 
   make-pull-request:
     if: >-
-      jobs.matrix.outputs.modules != ''
+      needs.matrix.outputs.modules != ''
     name: Make matrix pull requests
     runs-on: ubuntu-latest
     needs:
