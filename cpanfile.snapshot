@@ -91,10 +91,10 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 0
       Test::More 0.31
       Time::HiRes 0
-  JSON-XS-4.03
-    pathname: M/ML/MLEHMANN/JSON-XS-4.03.tar.gz
+  JSON-XS-4.04
+    pathname: M/ML/MLEHMANN/JSON-XS-4.04.tar.gz
     provides:
-      JSON::XS 4.03
+      JSON::XS 4.04
     requirements:
       Canary::Stability 0
       ExtUtils::MakeMaker 6.52
