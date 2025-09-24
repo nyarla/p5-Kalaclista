@@ -54,6 +54,11 @@ runs:
         enable-modules-cache: true
         install-modules-with: cpm
         install-modules-args: App::UpdateCPANfile
+    - name: Install CPAN module dependencies
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libidn-dev
     - name: Update cpanfile
       id: update
       shell: bash
