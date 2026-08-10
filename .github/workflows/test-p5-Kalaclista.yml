@@ -28,7 +28,7 @@ jobs:
             --assume-yes \
             --no-install-recommends \
             libidn-dev
-      - uses: shogo82148/actions-setup-perl@a198315ec4e9244f206879ea7b63078003aec8a6 # v1.41.1
+      - uses: shogo82148/actions-setup-perl@53e33bb27be492a926eee378e8a5f7ff6618b061 # v1.43.1
         with:
           perl-version: ${{ env.perl-version }}
       - name: Install CPAN module dependencies
