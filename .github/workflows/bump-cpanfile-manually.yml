@@ -1,26 +1,30 @@
-name: Update CPAN module manually.
+name: Update CPAN module manually
 
-env:
-  perl-version: "5.40"
-
-permissions:
-  contents: write
-  pull-requests: write
+permissions: {}
 
 on:
   workflow_dispatch:
     inputs:
       module:
-        description: The updating module name.
-        type: string
+        description: CPAN module
         required: true
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
 
 jobs:
   bump-cpanfile:
+    name: Bump cpanfile
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write # Needs to create a pull request for CPAN module update
+      pull-requests: write # Needs to create a pull request for CPAN module update
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-      - uses: ./.github/composite/update-cpan-module
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          perl-version: ${{ inputs.perl-version }}
-          module: ${{ inputs.module }}
+          persist-credentials: false
+      - uses: nyarla/bump-cpanfile/update-cpan-module@ea6206481b6e1532d30b4ba84e2ad587f00cbd9b
+        with:
+          module: "${{ inputs.module }}"
