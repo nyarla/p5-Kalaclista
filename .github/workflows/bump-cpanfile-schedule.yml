@@ -59,6 +59,10 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+      - name: Install CPAN module dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libidn-dev
       # ghasec-ignore: missing-sha-ref-comment
       - uses: nyarla/bump-cpanfile/update-cpan-module@ea6206481b6e1532d30b4ba84e2ad587f00cbd9b
         with:
