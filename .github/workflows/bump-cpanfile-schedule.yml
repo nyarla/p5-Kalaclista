@@ -1,54 +1,65 @@
 name: Update CPAN modules by schedule.
 
-env:
-  perl-version: "5.40"
-  cpanfile: cpanfile
-
-permissions:
-  contents: write
-  pull-requests: write
+permissions: {}
 
 on:
   schedule:
     - cron: "45 16 * * 5"
-  workflow_dispatch:
-    
+  workflow_dispatch: {}
+
+env:
+  perl-version: "5.44"
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
 jobs:
   matrix:
     name: Setup update matrix
     outputs:
-      modules: ${{ steps.matrix.outputs.modules }}
+      modules: "${{ steps.matrix.outputs.modules }}"
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-      - uses: shogo82148/actions-setup-perl@a198315ec4e9244f206879ea7b63078003aec8a6 # v1.41.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: shogo82148/actions-setup-perl@53e33bb27be492a926eee378e8a5f7ff6618b061 # v1.43.1
         with:
           perl-version: ${{ env.perl-version }}
           enable-modules-cache: true
           install-modules-with: cpm
           install-modules-args: App::UpdateCPANfile
-      - name: Setup matrix by update-cpanfile
+      - name: Make update matrix
         id: matrix
         run: |
           {
             echo -n "modules="
-            update-cpanfile update ${{ env.cpanfile }} --shuffle --output=json
-          } >> $GITHUB_OUTPUT 
+            update-cpanfile update cpanfile --output=json
+          } >> "$GITHUB_OUTPUT"
 
-  make-pull-request:
+  create-pull-requests:
+    name: Create pull requests
     if: >-
-      needs.matrix.outputs.modules != ''
-      && needs.matrix.outputs.modules != '[]'
-    name: Make matrix pull requests
+      needs.matrix.outputs.modules != '' && needs.matrix.outputs.modules != '[]'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write # Needs to create a pull request for CPAN module update
+      pull-requests: write # Needs to create a pull request for CPAN module update
     needs:
       - matrix
     strategy:
       matrix:
-        module: ${{ fromJson(needs.matrix.outputs.modules) }}
+        module: "${{ fromJson(needs.matrix.outputs.modules) }}"
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-      - uses: ./.github/composite/update-cpan-module
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          perl-version: ${{ env.perl-version }}
-          module: ${{ matrix.module.package_name }}
+          persist-credentials: false
+      # ghasec-ignore: missing-sha-ref-comment
+      - uses: nyarla/bump-cpanfile/update-cpan-module@ea6206481b6e1532d30b4ba84e2ad587f00cbd9b
+        with:
+          module: "${{ matrix.module.package_name }}"
