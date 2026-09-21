@@ -7,7 +7,7 @@ requires( 'HTTP::Tinyish',         '== 0.20' );
 requires( 'JSON::XS',              '== 4.04' );
 requires( 'Module::Load',          '== 0.36' );
 requires( 'Net::LibIDN',           '== 0.12' );
-requires( 'Perl::Tidy',            '== 20250912' );
+requires( 'Perl::Tidy',            '== 20260826' );
 requires( 'Test2::V0',             '== 1.302219' );
 requires( 'Text::CSV',             '== 2.06' );
 requires( 'Text::HyperScript',     '== 0.08' );

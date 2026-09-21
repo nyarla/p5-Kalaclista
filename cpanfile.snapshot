@@ -136,23 +136,23 @@ DISTRIBUTIONS
       Net::LibIDN 0.12
     requirements:
       ExtUtils::MakeMaker 0
-  Perl-Tidy-20250912
-    pathname: S/SH/SHANCOCK/Perl-Tidy-20250912.tar.gz
+  Perl-Tidy-20260826
+    pathname: S/SH/SHANCOCK/Perl-Tidy-20260826.tar.gz
     provides:
-      Perl::Tidy 20250912
-      Perl::Tidy::Debugger 20250912
-      Perl::Tidy::Diagnostics 20250912
-      Perl::Tidy::FileWriter 20250912
-      Perl::Tidy::Formatter 20250912
-      Perl::Tidy::HtmlWriter 20250912
-      Perl::Tidy::IOScalar 20250912
-      Perl::Tidy::IOScalarArray 20250912
-      Perl::Tidy::IndentationItem 20250912
-      Perl::Tidy::Logger 20250912
-      Perl::Tidy::Tokenizer 20250912
-      Perl::Tidy::VerticalAligner 20250912
-      Perl::Tidy::VerticalAligner::Alignment 20250912
-      Perl::Tidy::VerticalAligner::Line 20250912
+      Perl::Tidy 20260826
+      Perl::Tidy::Debugger 20260826
+      Perl::Tidy::Diagnostics 20260826
+      Perl::Tidy::FileWriter 20260826
+      Perl::Tidy::Formatter 20260826
+      Perl::Tidy::HtmlWriter 20260826
+      Perl::Tidy::IOScalar 20260826
+      Perl::Tidy::IOScalarArray 20260826
+      Perl::Tidy::IndentationItem 20260826
+      Perl::Tidy::Logger 20260826
+      Perl::Tidy::Tokenizer 20260826
+      Perl::Tidy::VerticalAligner 20260826
+      Perl::Tidy::VerticalAligner::Alignment 20260826
+      Perl::Tidy::VerticalAligner::Line 20260826
     requirements:
       ExtUtils::MakeMaker 0
       perl 5.008001
