@@ -13,6 +13,6 @@ requires( 'Text::CSV',             '== 2.06' );
 requires( 'Text::HyperScript',     '== 0.08' );
 requires( 'URI::Escape::XS',       '== 0.14' );
 requires( 'URI::Fast',             '== 0.55' );
-requires( 'YAML::XS',              '== v0.904.0' );
+requires( 'YAML::XS',              '== v0.910.0' );
 
 # vim: ft=perl :
