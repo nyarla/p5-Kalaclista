@@ -208,11 +208,12 @@ DISTRIBUTIONS
       ExtUtils::MakeMaker 6.63_03
       parent 0
       perl 5.010
-  YAML-LibYAML-v0.904.0
-    pathname: T/TI/TINITA/YAML-LibYAML-v0.904.0.tar.gz
+  YAML-LibYAML-v0.910.0
+    pathname: T/TI/TINITA/YAML-LibYAML-v0.910.0.tar.gz
     provides:
-      YAML::LibYAML v0.904.0
-      YAML::XS v0.904.0
+      YAML::LibYAML v0.910.0
+      YAML::XS v0.910.0
+      YAML::XS::LibYAML v0.910.0
     requirements:
       B::Deparse 0
       Exporter 0
