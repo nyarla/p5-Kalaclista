@@ -1,15 +1,31 @@
 ---
 version: 2
 updates:
+  # for GitHub Actions
   - package-ecosystem: github-actions
-    directory: '/'
+    commit-message:
+      prefix: "chore(github-actions): "
+    labels:
+      - "dependencis(gh-actions)"
+    pull-request-branch-name:
+      separator: "-"
+    directory: "/"
+    cooldown:
+      default-days: 3
     schedule:
       interval: weekly
       time: "10:00"
       timezone: "Asia/Tokyo"
-    labels:
-      - github-actions-update
-    pull-request-branch-name:
-      separator: '-'
+
+  # for Nix
+  - package-ecosystem: nix
     commit-message:
-      prefix: 'chore(github-actions): '
+      prefix: "chore(flake): "
+    labels:
+      - "dependencies(flake)"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "10:00"
+      timezone: "Asia/Tokyo"
