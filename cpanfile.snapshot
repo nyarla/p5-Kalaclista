@@ -407,13 +407,14 @@ DISTRIBUTIONS
     requirements:
       ExtUtils::MakeMaker 0
       common::sense 0
-  URI-Escape-XS-0.14
-    pathname: D/DA/DANKOGAI/URI-Escape-XS-0.14.tar.gz
+  URI-Escape-XS-0.15
+    pathname: D/DA/DANKOGAI/URI-Escape-XS-0.15.tar.gz
     provides:
-      URI::Escape::XS 0.14
+      URI::Escape::XS 0.15
     requirements:
       ExtUtils::MakeMaker 0
       Test::More 0
+      perl 5.008001
   URI-Fast-0.55
     pathname: J/JE/JEFFOBER/URI-Fast-0.55.tar.gz
     provides:
